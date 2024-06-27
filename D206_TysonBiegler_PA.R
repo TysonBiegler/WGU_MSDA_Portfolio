@@ -18,8 +18,18 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
   churn <- read_csv("C:/Users/tyson/WGU/R/D206/raw_data/churn_raw_data.csv")
   names(churn)
   glimpse(churn)
+  
+  
+  
+  
+  
 #Dupilicates--------------------------------------------------------------------
   sum(duplicated(churn)) #Returns 0 duplicates
+  
+  
+  
+  
+  
 #Missing Values-----------------------------------------------------------------
   #looking for the amount of NA in each column
     colSums(is.na(churn)) 
@@ -141,9 +151,11 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       sum(is.na(churn$Techie))
       unique(churn$Techie)
       
-    #
       
-#Outliers-----------------------------------------------------------------------
+      
+      
+      
+#Outliers-----------NOT DONE YET------------------------------------------------
     
     #children
     boxplot(churn$Children)
@@ -157,6 +169,8 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
     
     #Bandwidth_GB_Year
     boxplot(churn$Bandwidth_GB_Year) #does not appear to be outliers present
+    
+    
     
     
     
@@ -182,7 +196,7 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
     #EDUCATION LEVEL ordinal encoding 1-12 and changing to factor
       churn$Education <- as.factor(churn$Education)
-      edu_num <- revalue(x=churn$Education, replace = c(
+      Edu_num <- revalue(x=churn$Education, replace = c(
         "Doctorate Degree" = 1,
         "Master's Degree" = 2,
         "Bachelor's Degree" = 3,
@@ -196,8 +210,8 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
         "Nursery School to 8th Grade" = 11,
         "No Schooling Completed" = 12))
       
-      churn$edu_num <- edu_num
-      glimpse(churn$edu_num)
+      churn$Edu_num <- Edu_num
+      glimpse(churn$Edu_num)
       
     #RENAME SURVEY RESPONSES
       names(churn)[45] <- "Timely_response"
@@ -258,15 +272,16 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
                Bandwidth_GB_year = as.numeric(Bandwidth_GB_year))
       
     #Rounding variables to 2 decimal points
-      churn$Tenure <- sprintf('%#.2f', churn$Tenure)
+      churn <- churn %>%
+        mutate(
+          Tenure = sprintf('%#.2f', Tenure),
+          MonthlyCharge = sprintf('%#.2f', MonthlyCharge),
+          Bandwidth_GB_Year = sprintf('%#.2f', Bandwidth_GB_Year),
+          Income = sprintf('%#.2f', Income),
+          Outage_sec_perweek = sprintf('%#.2f', Outage_sec_perweek)
+        )
       
-      churn$MonthlyCharge <- sprintf('%#.2f', churn$MonthlyCharge)
       
-      churn$Bandwidth_GB_Year <- sprintf('%#.2f', churn$Bandwidth_GB_Year)
-      
-      churn$Income <- sprintf('%#.2f', churn$Income)
-      
-      churn$Outage_sec_perweek <- sprintf('%#.2f', churn$Outage_sec_perweek)
       
     #Creating Age and Income Bins
       #Age
@@ -327,9 +342,22 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       levels(churn$Income_groups)
       
+    #Survey Data- adding a sum of scores column to determine total approval ratings
+      churn$Sum_survey_scores <- rowSums(churn[,44:51]) #selecting the survey responses and adding the sum of each row to a new column named Sum_survey_scores
       
-      names(churn)
+      
+      summary(churn$Sum_survey_scores)
+      glimpse(churn)
+      
+      hist(churn$Sum_survey_scores)
+      
+      class(churn$Sum_survey_scores)
+      
+      
+      
+      
     #Renaming columns to have similar naming conventions
+      names(churn)
       churn <- churn %>%
         dplyr::rename(Internet_service = InternetService,
                Online_security = OnlineSecurity,
@@ -347,26 +375,26 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
                Streaming_movies = StreamingMovies)
       #REMOVING column "...1" because it was auto generated as a row name column
       churn <- churn[-1]
-      
       names(churn)
-      glimpse(churn)
+
+      
+      
+      
 #PCA----------------------------------------------------------------------------
-    #PCA SOURCE - https://www.youtube.com/watch?v=jFN4qkSOd4I
+    #(WGU Courseware, 2024)
       
-      names(churn)
+      glimpse(churn) #checking which variables will be appropriate for PCA
+      names(churn) #Looking for the index of each column I will use. 
     #options for the pca
-      class(churn$Lat) #8
-      class(churn$Lng) #9
-      class(churn$Age) #15
-      class(churn$Income) #18
-      class(churn$Outage_sec_per_week) #22
-      class(churn$Tenure) # 41
-      class(churn$Monthly_charge) #42
-      class(churn$Bandwidth_GB_year) #43
-      
-      glimpse(churn)
-#------------------------------------------------------------------    
-      
+      # class(churn$Lat) #8
+      # class(churn$Lng) #9
+      # class(churn$Age) #15
+      # class(churn$Income) #18
+      # class(churn$Outage_sec_per_week) #22
+      # class(churn$Tenure) # 41
+      # class(churn$Monthly_charge) #42
+      # class(churn$Bandwidth_GB_year) #43
+
       churn_num <- churn %>% select_if(is.numeric)
       names(churn_num)
       churn_pca_data <- churn_num[, 2:14]
@@ -388,6 +416,10 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE)
       
       pca$rotation
+      
+      
+      
+      
       
 #------------------------------------------------------------------    
       
