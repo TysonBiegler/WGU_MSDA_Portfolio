@@ -4,11 +4,12 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
   install.packages("ggplot2")
   install.packages('tidyverse')
   install.packages("factoextra") # For PCA
+  install.packages("dplyr")
   
   library(ggplot2)
   library(tidyverse)
-  library(dplyr)
   library(plyr)
+  library(dplyr)
   library(stringr)
   library(factoextra)
   library(stats)
@@ -160,113 +161,7 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
     
     
 #Other Data Quality Issues------------------------------------------------------
-  #Ordinal encoding:
-    #Phone revalue Yes, and NO to 1 and 0
-      churn$Phone <- revalue(x = churn$Phone, replace = c( 
-        "Yes" = 1,
-        "No" = 0
-      ))
-      summary(churn$Phone)
-      unique(churn$Phone)
-      
-    #TechSupport revalue Yes, and NO to 1 and 0
-      churn$TechSupport <- revalue(x = churn$TechSupport, replace = c( 
-        "Yes" = 1,
-        "No" = 0
-      ))
-      summary(churn$TechSupport)
-      unique(churn$TechSupport)
-      
-    #Churn revalue Yes, and NO to 1 and 0
-      unique(churn$Churn)
-      summary(churn$Churn)
-      churn$Churn <- revalue(x = churn$Churn, replace = c( 
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$Churn)
-      
-    #Techie revalue Yes, and No, to 1 and 0
-      churn$Techie <- revalue(x = churn$Techie, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      summary(churn$Techie)
-      unique(churn$Techie)
-      
-    #PORT_MODEM revalue Yes, and NO to 1 and 0
-      unique(churn$Port_modem)
-      churn$Port_modem <- revalue(x = churn$Port_modem, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$Port_modem)
-      
-    #Ordinal encoding to revalue Yes, and NO to 1 and 0
-      churn$Tablet <- revalue(x = churn$Tablet, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$Tablet)
-      
-    #MULTIPLE
-      unique(churn$Multiple)
-      #Ordinal encoding to revalue Yes, and NO to 1 and 0
-      churn$Multiple <- revalue(x = churn$Multiple, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$Multiple)
-      
-    #ONLINE BACKUP
-      unique(churn$OnlineBackup)
-      #Ordinal encoding to revalue Yes, and NO to 1 and 0
-      churn$OnlineBackup <- revalue(x = churn$OnlineBackup, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$OnlineBackup)
-      
-    #ONLINE SECURITY revalue Yes, and NO to 1 and 0
-      unique(churn$OnlineSecurity)
-      churn$OnlineSecurity <- revalue(x = churn$OnlineSecurity, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$OnlineSecurity)
-      
-    #DEVICE PROTECTION revalue Yes, and NO to 1 and 0
-      unique(churn$DeviceProtection)
-      churn$DeviceProtection <- revalue(x = churn$DeviceProtection, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$DeviceProtection)
-      
-    #STREAMING MOVIES revalue Yes, and NO to 1 and 0
-      unique(churn$StreamingMovies)
-      churn$StreamingMovies <- revalue(x = churn$StreamingMovies, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$StreamingMovies)
-      
-    #STREAMING TV revalue Yes, and NO to 1 and 0
-      unique(churn$StreamingTV)
-      churn$StreamingTV <- revalue(x = churn$StreamingTV, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$StreamingTV)
-      
-    #PAPERLESS BILLING revalue Yes, and NO to 1 and 0
-      unique(churn$PaperlessBilling)
-      churn$PaperlessBilling <- revalue(x = churn$PaperlessBilling, replace = c(
-        "Yes" = 1,
-        "No" = 0
-      ))
-      unique(churn$PaperlessBilling)
-      
+  
     #ZIP converting to 5 digits 
       class(churn$Zip)
       sum(is.na(churn$Zip))
@@ -305,40 +200,48 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       glimpse(churn$edu_num)
       
     #RENAME SURVEY RESPONSES
-      names(churn)[44] <- "Timely_response"
-      names(churn)[45] <- "Timely_fixes"
-      names(churn)[46] <- "Timely_replacements"
-      names(churn)[47] <- "Reliability"
-      names(churn)[48] <- "Options"
-      names(churn)[49] <- "Rrespectful"
-      names(churn)[50] <- "Courteous"
-      names(churn)[51] <- "Active_listening"
+      names(churn)[45] <- "Timely_response"
+      names(churn)[46] <- "Timely_fixes"
+      names(churn)[47] <- "Timely_replacements"
+      names(churn)[48] <- "Reliability"
+      names(churn)[49] <- "Options"
+      names(churn)[50] <- "Respectful"
+      names(churn)[51] <- "Courteous"
+      names(churn)[52] <- "Active_listening"
       names(churn)
       
     #TYPE CONVERSIONS
-      churn$Employment <- as.factor(churn$Employment) #changing employment to a factor
-      levels(churn$Employment)
+      churn <- churn %>%
+        mutate(Employment = as.factor(Employment),
+               Contract = as.factor(Contract),
+               Internet_service = as.factor(Internet_service),
+               Area = as.factor(Area),
+               Timezone = as.factor(Timezone),
+               Marital = as.factor(Marital),
+               State = as.factor(State))
       
-      churn$Contract <- as.factor(churn$Contract) #changing Contract to a factor
+      levels(churn$Employment)
       levels(churn$Contract)
-      
-      churn$InternetService <- as.factor(churn$InternetService) #changing InternetService to a factor
-      levels(churn$InternetService)
-      
-      churn$InternetService <- as.factor(churn$InternetService) #changing InternetService to a factor
-      levels(churn$InternetService)
-      
-      churn$Area <- as.factor(churn$Area)
-      levels(churn$InternetService)
-      
-      churn$Timezone <- as.factor(churn$Timezone)
+      levels(churn$Internet_service)
+      levels(churn$Area)
       levels(churn$Timezone)
-      
-      churn$Employment <- as.factor(churn$Employment)
-      levels(churn$Employment)
-      
-      churn$Marital <- as.factor((churn$Marital))
       levels(churn$Marital)
+      levels(churn$State)
+      
+      churn <- churn %>%
+        mutate(Churn = factor(Churn, levels = c("0", "1"), labels = c("No", "Yes")),
+               Techie = factor(Techie, levels = c("0", "1"), labels = c("No", "Yes")),
+               Port_modem = factor(Port_modem, levels = c("0", "1"), labels = c("No", "Yes")),
+               Tablet = factor(Tablet, levels = c("0", "1"), labels = c("No", "Yes")),
+               Phone = factor(Phone, levels = c("0", "1"), labels = c("No", "Yes")),
+               Multiple = factor(Multiple, levels = c("0", "1"), labels = c("No", "Yes")),
+               Online_security = factor(Online_security, levels = c("0", "1"), labels = c("No", "Yes")),
+               Online_backup = factor(Online_backup, levels = c("0", "1"), labels = c("No", "Yes")),
+               Device_protection = factor(Device_protection, levels = c("0", "1"), labels = c("No", "Yes")),
+               Tech_support = factor(Tech_support, levels = c("0", "1"), labels = c("No", "Yes")),
+               Streaming_TV = factor(Streaming_TV, levels = c("0", "1"), labels = c("No", "Yes")),
+               Streaming_movies = factor(Streaming_movies, levels = c("0", "1"), labels = c("No", "Yes")),
+               Paperless_billing = factor(Paperless_billing, levels = c("0", "1"), labels = c("No", "Yes")))
       
       churn$PaymentMethod <- tolower(churn$PaymentMethod) #making lower case to match data dictionary
       churn$PaymentMethod <- as.factor(churn$PaymentMethod)
@@ -347,8 +250,12 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
         mutate(PaymentMethod = recode(PaymentMethod,
                                       "bank transfer(automatic)" = "bank (automatic bank transfer)"))
       
-      churn$State <- as.factor(churn$State)
-      levels(churn$State)
+      
+      churn <- churn %>%
+        mutate(Outage_sec_per_week = as.numeric(Outage_sec_per_week),
+               Tenure = as.numeric(Tenure),
+               Monthly_charge = as.numeric(Monthly_charge),
+               Bandwidth_GB_year = as.numeric(Bandwidth_GB_year))
       
     #Rounding variables to 2 decimal points
       churn$Tenure <- sprintf('%#.2f', churn$Tenure)
@@ -420,12 +327,36 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       levels(churn$Income_groups)
       
-#PCA----------------------------------------------------------------------------
-
-      #PCA SOURCE ---https://www.youtube.com/watch?v=jFN4qkSOd4I----------------------
       
       names(churn)
-      #options for the pca
+    #Renaming columns to have similar naming conventions
+      churn <- churn %>%
+        dplyr::rename(Internet_service = InternetService,
+               Online_security = OnlineSecurity,
+               Tech_support = TechSupport,
+               Paperless_billing = PaperlessBilling,
+               Monthly_charge = MonthlyCharge,
+               Index = CaseOrder,
+               Outage_sec_per_week = Outage_sec_perweek,
+               Online_backup = OnlineBackup,
+               Streaming_TV = StreamingTV,
+               Payment_method = PaymentMethod,
+               Bandwidth_GB_year = Bandwidth_GB_Year,
+               Customer_ID = Customer_id,
+               Device_protection = DeviceProtection,
+               Streaming_movies = StreamingMovies)
+      #REMOVING column "...1" because it was auto generated as a row name column
+      churn <- churn[-1]
+      
+      names(churn)
+      glimpse(churn)
+#PCA----------------------------------------------------------------------------
+    #PCA SOURCE - https://www.youtube.com/watch?v=jFN4qkSOd4I
+      
+      names(churn)
+    #options for the pca
+      class(churn$Lat) #8
+      class(churn$Lng) #9
       class(churn$Age) #15
       class(churn$Income) #18
       class(churn$Outage_sec_per_week) #22
@@ -435,22 +366,22 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       glimpse(churn)
       
-      #Selecting the data for the PCA
-      PCA_selection = select(churn,c(44,45,46,47,48,49,50,51))
-      #15,18,22,41,42,43,
+    #Selecting the data for the PCA
+      PCA_selection = select(churn,c(8,9,15,18,22,41,42,43))
+      #8,9,15,18,22,41,42,43
       
-      #PCA eligibility
+    #PCA eligibility
       cor(PCA_selection)
       
-      #Getting the mean corelation
+    #Getting the mean corelation
       mean(cor(PCA_selection)) #high correlation 0.947
       
       summary(PCA_selection)
       
-      #Running PCA
+    #Running PCA
       PCA = princomp(PCA_selection)
       
-      #principal component loading matrix
+    #principal component loading matrix
       PCA$loadings
       
       pc = PCA$scores
