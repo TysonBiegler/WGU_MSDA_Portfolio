@@ -366,41 +366,17 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       glimpse(churn)
 #------------------------------------------------------------------    
-    #Selecting the data for the PCA
-      PCA_selection = select(churn,c(8,9,15,18,22,41,42,43))
-      #8,9,15,18,22,41,42,43
-      
-    #PCA eligibility
-      cor(PCA_selection)
-      
-    #Getting the mean corelation
-      mean(cor(PCA_selection)) #high correlation 0.947
-      
-      summary(PCA_selection)
-      
-    #Running PCA
-      PCA = princomp(PCA_selection)
-      
-    #principal component loading matrix
-      PCA$loadings
-      
-      pc = PCA$scores
-      View(pc)
-      
-      cor(pc)
-      
-      plot(PCA, type = "l")
-      
-#------------------------------------------------------------------    
-      names(churn_num)
-      #churn_num <- churn %>% select_if(is.numeric)
       
       churn_num <- churn %>% select_if(is.numeric)
-      churn_num <- churn_num[-1]
-      
-  #-------------
+      names(churn_num)
       churn_pca_data <- churn_num[, 2:14]
       
+      cor(churn_pca_data)
+      mean(cor(churn_pca_data))
+      summary(churn_pca_data)
+      
+      
+      names(churn_pca_data)    
       # Perform PCA
       pca <- prcomp(churn_pca_data, center = TRUE, scale. = TRUE)
       
@@ -409,19 +385,13 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
   
       plot(pca, type = 'l')
       
+      fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE)
       
-  #-------------
+      pca$rotation
       
-      churn_num <- churn %>% select(Population, Children, Tenure, Bandwidth_GB_year)
-      glimpse(churn_num)
-      cor(churn_num)
-      mean(cor(churn_num))
-      pca=prcomp(churn_num, center=TRUE, scale=TRUE)
-      pca$loadings
-      pc=pca$scores
-      cor(pc)
-      summary(pc)
-      plot(pca, type = 'l')
+#------------------------------------------------------------------    
+      
+
 
       
       # Improving Service Quality:
