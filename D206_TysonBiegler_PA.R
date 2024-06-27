@@ -365,7 +365,7 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       class(churn$Bandwidth_GB_year) #43
       
       glimpse(churn)
-      
+#------------------------------------------------------------------    
     #Selecting the data for the PCA
       PCA_selection = select(churn,c(8,9,15,18,22,41,42,43))
       #8,9,15,18,22,41,42,43
@@ -389,7 +389,40 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       cor(pc)
       
+      plot(PCA, type = "l")
       
+#------------------------------------------------------------------    
+      names(churn_num)
+      #churn_num <- churn %>% select_if(is.numeric)
+      
+      churn_num <- churn %>% select_if(is.numeric)
+      churn_num <- churn_num[-1]
+      
+  #-------------
+      churn_pca_data <- churn_num[, 2:14]
+      
+      # Perform PCA
+      pca <- prcomp(churn_pca_data, center = TRUE, scale. = TRUE)
+      
+      # Summary of PCA
+      summary(pca)
+  
+      plot(pca, type = 'l')
+      
+      
+  #-------------
+      
+      churn_num <- churn %>% select(Population, Children, Tenure, Bandwidth_GB_year)
+      glimpse(churn_num)
+      cor(churn_num)
+      mean(cor(churn_num))
+      pca=prcomp(churn_num, center=TRUE, scale=TRUE)
+      pca$loadings
+      pc=pca$scores
+      cor(pc)
+      summary(pc)
+      plot(pca, type = 'l')
+
       
       # Improving Service Quality:
       #   Example: The high positive loadings for attributes like SR_timely_response, SR_timely_fixes, and SR_respectful in Comp.1 indicate that these aspects significantly influence overall service quality.
