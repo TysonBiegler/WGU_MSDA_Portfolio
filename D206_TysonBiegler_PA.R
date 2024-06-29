@@ -13,22 +13,14 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
   library(stringr)
   library(factoextra)
   library(stats)
-
+ 
 #Loading data from csv##########################################################
   churn <- read_csv("C:/Users/tyson/WGU/R/D206/raw_data/churn_raw_data.csv")
   names(churn)
   glimpse(churn)
   
-  
-  
-  
-  
 #Dupilicates--------------------------------------------------------------------
   sum(duplicated(churn)) #Returns 0 duplicates
-  
-  
-  
-  
   
 #Missing Values-----------------------------------------------------------------
   #looking for the amount of NA in each column
@@ -150,10 +142,7 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       #verifiying that NA values are gone
       sum(is.na(churn$Techie))
       unique(churn$Techie)
-      
-      
-      
-      
+
       
 #Outliers-----------NOT DONE YET------------------------------------------------
     
@@ -169,11 +158,8 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
     
     #Bandwidth_GB_Year
     boxplot(churn$Bandwidth_GB_Year) #does not appear to be outliers present
-    
-    
-    
-    
-    
+  
+      
 #Other Data Quality Issues------------------------------------------------------
   
     #ZIP converting to 5 digits 
@@ -228,7 +214,7 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       churn <- churn %>%
         mutate(Employment = as.factor(Employment),
                Contract = as.factor(Contract),
-               Internet_service = as.factor(Internet_service),
+               InternetService = as.factor(InternetService),
                Area = as.factor(Area),
                Timezone = as.factor(Timezone),
                Marital = as.factor(Marital),
@@ -242,20 +228,76 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       levels(churn$Marital)
       levels(churn$State)
       
-      churn <- churn %>%
-        mutate(Churn = factor(Churn, levels = c("0", "1"), labels = c("No", "Yes")),
-               Techie = factor(Techie, levels = c("0", "1"), labels = c("No", "Yes")),
-               Port_modem = factor(Port_modem, levels = c("0", "1"), labels = c("No", "Yes")),
-               Tablet = factor(Tablet, levels = c("0", "1"), labels = c("No", "Yes")),
-               Phone = factor(Phone, levels = c("0", "1"), labels = c("No", "Yes")),
-               Multiple = factor(Multiple, levels = c("0", "1"), labels = c("No", "Yes")),
-               Online_security = factor(Online_security, levels = c("0", "1"), labels = c("No", "Yes")),
-               Online_backup = factor(Online_backup, levels = c("0", "1"), labels = c("No", "Yes")),
-               Device_protection = factor(Device_protection, levels = c("0", "1"), labels = c("No", "Yes")),
-               Tech_support = factor(Tech_support, levels = c("0", "1"), labels = c("No", "Yes")),
-               Streaming_TV = factor(Streaming_TV, levels = c("0", "1"), labels = c("No", "Yes")),
-               Streaming_movies = factor(Streaming_movies, levels = c("0", "1"), labels = c("No", "Yes")),
-               Paperless_billing = factor(Paperless_billing, levels = c("0", "1"), labels = c("No", "Yes")))
+    #Changing Yes and No to 1 and 0   
+      glimpse(churn)
+      churn$Churn <- revalue(x = churn$Churn, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$Techie <- revalue(x = churn$Techie, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$Port_modem <- revalue(x = churn$Port_modem, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$Tablet <- revalue(x = churn$Tablet, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$Phone <- revalue(x = churn$Phone, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$Multiple <- revalue(x = churn$Multiple, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$OnlineSecurity <- revalue(x = churn$OnlineSecurity, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$OnlineBackup <- revalue(x = churn$OnlineBackup, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$DeviceProtection <- revalue(x = churn$DeviceProtection, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$TechSupport <- revalue(x = churn$TechSupport, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$StreamingTV <- revalue(x = churn$StreamingTV, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$StreamingMovies <- revalue(x = churn$StreamingMovies, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+      
+      churn$PaperlessBilling <- revalue(x = churn$PaperlessBilling, replace = c(
+        "Yes" = 1,
+        "No" = 0
+      ))
+    
+      glimpse(churn)
+      colSums(is.na(churn))
+
       
       churn$PaymentMethod <- tolower(churn$PaymentMethod) #making lower case to match data dictionary
       churn$PaymentMethod <- as.factor(churn$PaymentMethod)
@@ -266,10 +308,10 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       
       churn <- churn %>%
-        mutate(Outage_sec_per_week = as.numeric(Outage_sec_per_week),
+        mutate(Outage_sec_perweek = as.numeric(Outage_sec_perweek),
                Tenure = as.numeric(Tenure),
-               Monthly_charge = as.numeric(Monthly_charge),
-               Bandwidth_GB_year = as.numeric(Bandwidth_GB_year))
+               MonthlyCharge = as.numeric(MonthlyCharge),
+               Bandwidth_GB_Year = as.numeric(Bandwidth_GB_Year))
       
     #Rounding variables to 2 decimal points
       churn <- churn %>%
@@ -280,8 +322,6 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
           Income = sprintf('%#.2f', Income),
           Outage_sec_perweek = sprintf('%#.2f', Outage_sec_perweek)
         )
-      
-      
       
     #Creating Age and Income Bins
       #Age
@@ -342,10 +382,14 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       levels(churn$Income_groups)
       
+    names(churn)
     #Survey Data- adding a sum of scores column to determine total approval ratings
-      churn$Sum_survey_scores <- rowSums(churn[,44:51]) #selecting the survey responses and adding the sum of each row to a new column named Sum_survey_scores
-      
-      
+     survey_var <- churn[(45:52)]
+     survey_var
+     
+     
+      churn$Sum_survey_scores <- rowSums(churn[(45:52)]) #selecting the survey responses and adding the sum of each row to a new column named Sum_survey_scores
+    
       summary(churn$Sum_survey_scores)
       glimpse(churn)
       
@@ -397,7 +441,7 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
 
       churn_num <- churn %>% select_if(is.numeric)
       names(churn_num)
-      churn_pca_data <- churn_num[, 2:14]
+      churn_pca_data <- churn_num[, 4:10]
       
       cor(churn_pca_data)
       mean(cor(churn_pca_data))
@@ -416,28 +460,5 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE)
       
       pca$rotation
-      
-      
-      
-      
-      
-#------------------------------------------------------------------    
-      
-
-
-      
-      # Improving Service Quality:
-      #   Example: The high positive loadings for attributes like SR_timely_response, SR_timely_fixes, and SR_respectful in Comp.1 indicate that these aspects significantly influence overall service quality.
-      # Benefit: By focusing on these attributes, your company can enhance customer satisfaction and loyalty.
-      # Addressing Reliability Issues:
-      #   Example: The strong negative loading for SR_reliability in Comp.2 suggests that reliability is inversely related to this component.
-      # Benefit: Your organization can prioritize reliability improvements to positively impact this component.
-      # Timely Replacements Strategy:
-      #   Example: The positive loading for SR_timely_replacements in Comp.3 highlights the importance of timely replacements.
-      # Benefit: Implement efficient replacement processes to enhance customer experience.
-      # Customization and Options:
-      #   Example: The positive loading for SR_options in Comp.5 indicates that customization options matter.
-      # Benefit: Offering more choices or personalized solutions can attract and retain customers.
-      # Active Listening Skills Training:
-      #   Example: The strong negative loading for SR_active_listening in Comp.8 suggests that active listening skills are crucial.
-      # Benefit: Invest in training programs to improve communication and understanding with customers.
+#Exporting to CSV---------------------------------------------------------------
+      write.csv(churn, "C:/Users/tyson/WGU/R/D206_PA/Cleaned/churn_cleaned_data.csv", row.names=FALSE)
