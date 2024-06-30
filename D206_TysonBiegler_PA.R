@@ -222,7 +222,7 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
       
       levels(churn$Employment)
       levels(churn$Contract)
-      levels(churn$Internet_service)
+      levels(churn$InternetService)
       levels(churn$Area)
       levels(churn$Timezone)
       levels(churn$Marital)
