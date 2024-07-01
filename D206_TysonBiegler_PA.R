@@ -29,14 +29,14 @@ sum(duplicated(churn)) #Returns 0 duplicates
 #looking for the amount of NA in each column
 colSums(is.na(churn)) 
 #Columns with NA values:
-# Children = NA 2495
-# Age = NA 2475
-# Income = NA 2490
-# Techie = NA 2477
-# Phone = NA 1026
-# TechSupport = NA 991
-# Tenure = NA 931
-# Bandwidth_GB_Year  = NA 1021
+    # Children = NA 2495
+    # Age = NA 2475
+    # Income = NA 2490
+    # Techie = NA 2477
+    # Phone = NA 1026
+    # TechSupport = NA 991
+    # Tenure = NA 931
+    # Bandwidth_GB_Year  = NA 1021
 
 #Dealing with NA values
 #CHILDREN dealing with NA values
