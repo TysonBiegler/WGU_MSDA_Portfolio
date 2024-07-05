@@ -1,165 +1,196 @@
 #Initial Setup--------------------------------------------------------------------------
-setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
-
-#Install and load packages
-install.packages("ggplot2")
-install.packages('tidyverse')
-install.packages("factoextra") # For PCA
-install.packages("dplyr")
-
-library(ggplot2)
-library(tidyverse)
-library(plyr)
-library(dplyr)
-library(stringr)
-library(factoextra)
-library(stats)
+  setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
+  
+  #Install and load packages
+    install.packages("ggplot2")
+    install.packages('tidyverse')
+    install.packages("factoextra") # For PCA
+    install.packages("dplyr")
+    
+    library(ggplot2)
+    library(tidyverse)
+    library(plyr)
+    library(dplyr)
+    library(stringr)
+    library(factoextra)
+    library(stats)
 
 #Loading data from csv##########################################################
 
-rm(churn, churn_num, churn_pca_data, pca, survey_var, Age_groups, col, columns_to_convert,Edu_num, Income_groups)
-
-churn <- read_csv("C:/Users/tyson/WGU/R/D206/raw_data/churn_raw_data.csv") #importing csv file
-glimpse(churn) #initial inspection of the data set
+  rm(list = ls())
+  
+  churn <- read_csv("C:/Users/tyson/WGU/R/D206/raw_data/churn_raw_data.csv") #importing csv file
+  glimpse(churn) #initial inspection of the data set
 
 #Dupilicates--------------------------------------------------------------------
-sum(duplicated(churn)) #Returns 0 duplicates
+  sum(duplicated(churn)) #Returns 0 duplicates
 
 #Missing Values-----------------------------------------------------------------
-#looking for the amount of NA in each column
-colSums(is.na(churn)) 
-#Columns with NA values:
-    # Children = NA 2495
-    # Age = NA 2475
-    # Income = NA 2490
-    # Techie = NA 2477
-    # Phone = NA 1026
-    # TechSupport = NA 991
-    # Tenure = NA 931
-    # Bandwidth_GB_Year  = NA 1021
-
-#Dealing with NA values
-#CHILDREN dealing with NA values
-hist(churn$Children)
-summary(churn$Children) #checking the median - 1.000
-#Its right skewed so im going to impute the median
-churn$Children[is.na(churn$Children)] <- median(churn$Children, na.rm = TRUE)
-summary(churn$Children) #Median remains the same
-#making sure NA values are dealt with
-sum(is.na(churn$Children)) #NA values are now 0
-#checking the new distribution after imputation
-hist(churn$Children)
-
-#AGE Dealing with NA values
-sum(is.na(churn$Age))
-hist(churn$Age)
-summary(churn$Age) #checking the mean - 53.28
-#Because of the uniform distribution I will impute with the mean
-churn$Age[is.na(churn$Age)] <- mean(churn$Age, na.rm = TRUE)
-hist(churn$Age)
-summary(churn$Age) #Mean remains the same
-
-#INCOME dealing with NA
-sum(is.na(churn$Income))
-class(churn$Income)
-summary(churn$Income) #checking the median value - 33186.8
-hist(churn$Income)
-#right skewed so Im going to impute the median. The min and max are significantly different
-churn$Income[is.na(churn$Income)] <- median(churn$Income, na.rm = TRUE)
-hist(churn$Income)
-#checking that the NA values are gone
-sum(is.na(churn$Income))
-summary(churn$Income) #Mean remains the same
-
-#Phone dealing with NA    
-sum(is.na(churn$Phone))
-class(churn$Phone) #Not numeric so I need to using encoding
-unique(churn$Phone)
-#Imputation using the mode due to this variable being categorical
-#ordinal encoding #citation -> https://wgu.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=bd7b8541-77ba-42e0-80a4-b059010bc790
-churn$Phone[is.na(churn$Phone)] <- (names(which.max(table(churn$Phone))))
-#verifiying that NA values are gone
-sum(is.na(churn$Phone))
-#viewing the new distribution
-churn %>% 
-ggplot(aes(Phone)) +
-geom_bar() +
-theme_bw()
-
-#TechSupport Dealing with NA
-unique(churn$TechSupport)
-class(churn$TechSupport)
-#Imputation using the mode due to this variable being categorical
-churn$TechSupport[is.na(churn$TechSupport)] <- (names(which.max(table(churn$TechSupport))))
-#verifiying that NA values are gone
-sum(is.na(churn$TechSupport))
-#checking the distribution after imputation
-churn %>% 
-ggplot(aes(TechSupport)) +
-geom_bar() +
-theme_bw()
-
-#TENURE Dealing with NA
-class(churn$Tenure)
-#looking at distribution
-hist(churn$Tenure)
-#Imputation using the median
-churn$Tenure[is.na(churn$Tenure)] <- median(churn$Tenure, na.rm = TRUE)
-#verifiying that NA values are gone
-sum(is.na(churn$Tenure))
-#checking the distribution after imputation
-hist(churn$Tenure)
-
-#BANDWIDTH_GB_YEAR Dealing with NA
-glimpse(churn$Bandwidth_GB_Year) #numeric class
-summary(churn$Bandwidth_GB_Year) #shows 1021 NA values 
-hist(churn$Bandwidth_GB_Year) #bi-modal distribution
-#Imputation using the median
-churn$Bandwidth_GB_Year[is.na(churn$Bandwidth_GB_Year)] <- median(churn$Bandwidth_GB_Year, na.rm = TRUE)
-#verifiying that NA values are gone
-sum(is.na(churn$Bandwidth_GB_Year))
-hist(churn$Bandwidth_GB_Year) #checking distribution after imputation
-sum(is.na(churn$Bandwidth_GB_Year)) #verifying that NA values are gone
-
-#TECHIE Dealing with Na  
-summary(churn$Techie) #Character type
-unique(churn$Techie) #Contains NA values
-#Imputation using the mode due to this variable being categorical
-churn$Techie[is.na(churn$Techie)] <- (names(which.max(table(churn$Techie))))
-#verifiying that NA values are gone
-sum(is.na(churn$Techie))
-unique(churn$Techie)
+  #looking for the amount of NA in each column
+    colSums(is.na(churn)) 
+    #Columns with NA values:
+        # Children = NA 2495
+        # Age = NA 2475
+        # Income = NA 2490
+        # Techie = NA 2477
+        # Phone = NA 1026
+        # TechSupport = NA 991
+        # Tenure = NA 931
+        # Bandwidth_GB_Year  = NA 1021
+  
+  #CHILDREN dealing with NA values
+    hist(churn$Children)
+    summary(churn$Children) #checking the median - 1.000
+    #Its right skewed so im going to impute the median
+    churn$Children[is.na(churn$Children)] <- median(churn$Children, na.rm = TRUE)
+    summary(churn$Children) #Median remains the same
+    #making sure NA values are dealt with
+    sum(is.na(churn$Children)) #NA values are now 0
+    #checking the new distribution after imputation
+  hist(churn$Children)
+  
+  #AGE Dealing with NA values
+    sum(is.na(churn$Age))
+    hist(churn$Age)
+    summary(churn$Age) #checking the mean - 53.28
+    #Because of the uniform distribution I will impute with the mean
+    churn$Age[is.na(churn$Age)] <- mean(churn$Age, na.rm = TRUE)
+    hist(churn$Age)
+    summary(churn$Age) #Mean remains the same
+  
+  #INCOME dealing with NA
+    sum(is.na(churn$Income))
+    class(churn$Income)
+    summary(churn$Income) #checking the median value - 33186.8
+    hist(churn$Income)
+    #right skewed so Im going to impute the median. The min and max are significantly different
+    churn$Income[is.na(churn$Income)] <- median(churn$Income, na.rm = TRUE)
+    hist(churn$Income)
+    #checking that the NA values are gone
+    sum(is.na(churn$Income))
+    summary(churn$Income) #Median remains the same
+    
+  #Phone dealing with NA    
+    sum(is.na(churn$Phone))
+    class(churn$Phone) #Not numeric so I need to using encoding
+    unique(churn$Phone)
+    #Imputation using the mode due to this variable being categorical
+    #ordinal encoding #citation -> https://wgu.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=bd7b8541-77ba-42e0-80a4-b059010bc790
+    churn$Phone[is.na(churn$Phone)] <- (names(which.max(table(churn$Phone))))
+    #verifiying that NA values are gone
+    sum(is.na(churn$Phone))
+    #viewing the new distribution
+    churn %>% 
+    ggplot(aes(Phone)) +
+    geom_bar() +
+    theme_bw()
+  
+  #TechSupport Dealing with NA
+    unique(churn$TechSupport)
+    class(churn$TechSupport)
+    #Imputation using the mode due to this variable being categorical
+    churn$TechSupport[is.na(churn$TechSupport)] <- (names(which.max(table(churn$TechSupport))))
+    #verifiying that NA values are gone
+    sum(is.na(churn$TechSupport))
+    #checking the distribution after imputation
+    churn %>% 
+    ggplot(aes(TechSupport)) +
+    geom_bar() +
+    theme_bw()
+  
+  #TENURE Dealing with NA
+    class(churn$Tenure)
+    #looking at distribution
+    hist(churn$Tenure)
+    #Imputation using the median
+    churn$Tenure[is.na(churn$Tenure)] <- median(churn$Tenure, na.rm = TRUE)
+    #verifiying that NA values are gone
+    sum(is.na(churn$Tenure))
+    #checking the distribution after imputation
+    hist(churn$Tenure)
+  
+  #BANDWIDTH_GB_YEAR Dealing with NA
+    glimpse(churn$Bandwidth_GB_Year) #numeric class
+    summary(churn$Bandwidth_GB_Year) #shows 1021 NA values 
+    hist(churn$Bandwidth_GB_Year) #bi-modal distribution
+    #Imputation using the median
+    churn$Bandwidth_GB_Year[is.na(churn$Bandwidth_GB_Year)] <- median(churn$Bandwidth_GB_Year, na.rm = TRUE)
+    #verifiying that NA values are gone
+    sum(is.na(churn$Bandwidth_GB_Year))
+    hist(churn$Bandwidth_GB_Year) #checking distribution after imputation
+    sum(is.na(churn$Bandwidth_GB_Year)) #verifying that NA values are gone
+  
+  #TECHIE Dealing with Na  
+    summary(churn$Techie) #Character type
+    unique(churn$Techie) #Contains NA values
+    #Imputation using the mode due to this variable being categorical
+    churn$Techie[is.na(churn$Techie)] <- (names(which.max(table(churn$Techie))))
+    #verifiying that NA values are gone
+    sum(is.na(churn$Techie))
+    unique(churn$Techie)
 
 
 #Outliers-----------------------------------------------------------------------
 
-#children
-class(churn$Children) #Numeric type
-hist(churn$Children) #looking at the distribution before imputation
-boxplot(churn$Children) #Any amount above 6 appears to be an outlier
-
-churn$Children[churn$Children > 6] <- NA #converting values above 6 to NA
-churn$Children[is.na(churn$Children)] <- median(churn$Children, na.rm = TRUE) #Imputing the mean to deal with the newly added NA values
-colSums(is.na(churn)) #checking that the NA values are gone
-
-#Income
-class(churn$Income) #Numeric type
-hist(churn$Income) #looking at distribution. Right skewed
-boxplot(churn$Income) #looking for outliers with a boxplot
-boxplot.stats(churn$Income) #looking for the value of the upper whisker
-sum(churn$Income > 78272.96) #Any value above 78272.96 is considered an outlier
-#758 of the 10000 total Income Values are above 78272.96 and are therefor considered to be outliers.
-#I will be retaining the ouliers becuase it seams reasonable that the income range of telecom users would be vastly different and the outliers only make up 7.58% of the total values.
-
-
-#Tenure
-class(churn$Tenure) #numeric type
-boxplot(churn$Tenure) #does not appear to be outliers present
-hist(churn$Tenure)
-
-#Bandwidth_GB_Year
-class(churn$Bandwidth_GB_Year) #Numeric type
-boxplot(churn$Bandwidth_GB_Year) #does not appear to be outliers present
+  #population
+    boxplot(churn$Population)
+    hist(churn$Population)
+    boxplot.stats(churn$Population) #looking for the value of the upper whisker
+    sum(churn$Population > 31795) # 9.37% are outliers. I will retain these outliers due to the high amount.
+    
+  #age
+    boxplot(churn$Age)
+    hist(churn$Age)
+    
+  #email
+    boxplot(churn$Email)
+    hist(churn$Email)
+    boxplot.stats(churn$Email) #looking for the value of the upper whisker
+    sum(churn$Email > 20 | churn$Email < 4) 
+    churn$Email[churn$Email < 4 | churn$Email > 20] <- NA
+    churn$Email[is.na(churn$Email)] <- mean(churn$Email, na.rm = TRUE)
+    boxplot(churn$Email)
+    
+  #contacts
+    boxplot(churn$Contacts)
+    hist(churn$Contacts)
+    boxplot.stats(churn$Contacts) #looking for the value of the upper whisker
+    sum(churn$Contacts > 5) 
+    churn$Contacts[churn$Contacts > 5 | churn$Contacts > 20] <- NA
+    churn$Contacts[is.na(churn$Contacts)] <- median(churn$Contacts, na.rm = TRUE)
+    
+  #yearly_equip_failure
+    boxplot(churn$Yearly_equip_failure)
+    hist(churn$Yearly_equip_failure)
+    boxplot.stats(churn$Yearly_equip_failure) #looking for the value of the upper whisker
+    sum(churn$Yearly_equip_failure > 2) 
+    churn$Yearly_equip_failure[churn$Yearly_equip_failure > 2] <- NA
+    churn$Yearly_equip_failure[is.na(churn$Yearly_equip_failure)] <- median(churn$Yearly_equip_failure, na.rm = TRUE)
+    
+  #children
+    class(churn$Children) #Numeric type
+    hist(churn$Children) #looking at the distribution before imputation
+    boxplot(churn$Children) #Any amount above 6 appears to be an outlier
+    sum(churn$Children > 6)
+    churn$Children[churn$Children > 6] <- NA #converting values above 6 to NA
+    churn$Children[is.na(churn$Children)] <- median(churn$Children, na.rm = TRUE) #Imputing the mean to deal with the newly added NA values
+  
+  #Income
+    class(churn$Income) #Numeric type
+    hist(churn$Income) #looking at distribution. Right skewed
+    boxplot(churn$Income) #looking for outliers with a boxplot
+    boxplot.stats(churn$Income) #looking for the value of the upper whisker
+    sum(churn$Income > 78272.96)
+    summary(churn$Income)
+  
+  #Tenure
+    class(churn$Tenure) #numeric type
+    boxplot(churn$Tenure) #does not appear to be outliers present
+    hist(churn$Tenure)
+    
+  #Bandwidth_GB_Year
+    class(churn$Bandwidth_GB_Year) #Numeric type
+    boxplot(churn$Bandwidth_GB_Year) #does not appear to be outliers present
 
 
 
@@ -219,76 +250,22 @@ names(churn)[52] <- "Active_listening"
 names(churn) #ensuring that all name changes were successful 
 
 
-#Changing Yes and No to 1 and 0   
-glimpse(churn)
-
-churn$Churn <- revalue(x = churn$Churn, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$Techie <- revalue(x = churn$Techie, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$Port_modem <- revalue(x = churn$Port_modem, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$Tablet <- revalue(x = churn$Tablet, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$Phone <- revalue(x = churn$Phone, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$Multiple <- revalue(x = churn$Multiple, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$OnlineSecurity <- revalue(x = churn$OnlineSecurity, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$OnlineBackup <- revalue(x = churn$OnlineBackup, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$DeviceProtection <- revalue(x = churn$DeviceProtection, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$TechSupport <- revalue(x = churn$TechSupport, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$StreamingTV <- revalue(x = churn$StreamingTV, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$StreamingMovies <- revalue(x = churn$StreamingMovies, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-churn$PaperlessBilling <- revalue(x = churn$PaperlessBilling, replace = c(
-"Yes" = 1,
-"No" = 0
-))
-
-glimpse(churn)
-names(churn)
+churn <- churn %>% #Converting to logical data type. 
+  mutate(
+    Churn = ifelse(trimws(tolower(Churn)) == 'Yes', TRUE, FALSE),
+    Techie = ifelse(trimws(tolower(Techie)) == 'Yes', TRUE, FALSE),
+    Port_modem = ifelse(trimws(tolower(Port_modem)) == 'Yes', TRUE, FALSE),
+    Tablet = ifelse(trimws(tolower(Tablet)) == 'Yes', TRUE, FALSE),
+    Phone = ifelse(trimws(tolower(Phone)) == 'Yes', TRUE, FALSE),
+    Multiple = ifelse(trimws(tolower(Multiple)) == 'Yes', TRUE, FALSE),
+    OnlineSecurity = ifelse(trimws(tolower(OnlineSecurity)) == 'Yes', TRUE, FALSE),
+    OnlineBackup = ifelse(trimws(tolower(OnlineBackup)) == 'Yes', TRUE, FALSE),
+    DeviceProtection = ifelse(trimws(tolower(DeviceProtection)) == 'Yes', TRUE, FALSE),
+    TechSupport = ifelse(trimws(tolower(TechSupport)) == 'Yes', TRUE, FALSE),
+    StreamingTV = ifelse(trimws(tolower(StreamingTV)) == 'Yes', TRUE, FALSE),
+    StreamingMovies = ifelse(trimws(tolower(StreamingMovies)) == 'Yes', TRUE, FALSE),
+    PaperlessBilling = ifelse(trimws(tolower(PaperlessBilling)) == 'Yes', TRUE, FALSE)
+  )
 
 churn$PaymentMethod <- tolower(churn$PaymentMethod) #making lower case to match data dictionary
 class(churn$PaymentMethod)
@@ -297,14 +274,17 @@ mutate(PaymentMethod = recode(PaymentMethod,
                       "bank transfer(automatic)" = "bank (automatic bank transfer)"))
 unique(churn$PaymentMethod) #ensuring that the name change was sucessful
 
+
+#############    ~~~~ LEFT OFF HERE ~~~~    ####################################
+
 #Rounding variables to 2 decimal points
 churn <- churn %>% #using spritf to round to 2 decimal places. Each of these will need to be converted back to numeric later
 mutate(
 Tenure = sprintf('%#.2f', Tenure),
 MonthlyCharge = sprintf('%#.2f', MonthlyCharge),
-Bandwidth_GB_Year = sprintf('%#.2f', Bandwidth_GB_Year),
+Bandwidth_GB_Year = sprintf('%#.0f', Bandwidth_GB_Year),
 Income = sprintf('%#.2f', Income),
-Outage_sec_perweek = sprintf('%#.2f', Outage_sec_perweek)
+Outage_sec_perweek = sprintf('%#.0f', Outage_sec_perweek)
 )
 
 
@@ -320,6 +300,11 @@ Age_groups <- cut(churn$Age, breaks = c(18, 25, 35, 45, 55, 65, Inf), #Adding ag
         right = TRUE,
         include.lowest = TRUE) #ensuring that the younger ages are included and not turned into NA values
 
+
+churn$Age_groups <- Age_groups
+
+churn$Age_groups <- as.factor(churn$Age_groups)
+
 sum(is.na(Age_groups))#Making sure that there are no NA values that didnt fit into these groups
 churn$Age_groups <- Age_groups #adding 'Age_groups' to churn as a column
 names(churn) #Making sure Age_groups was added successfully to churn
@@ -329,6 +314,7 @@ churn %>%#looking at the distribution of ages
 ggplot(aes(Age_groups)) +
 geom_bar() +
 theme_bw()
+glimpse(churn)
 
 #Incomme
 class(churn$Income)#character type
@@ -364,10 +350,9 @@ levels(churn$Income_groups) #making sure the levels are correct
 
 
 #Survey Data- adding a sum of scores column to determine total approval ratings
-survey_var <- churn[(45:52)]
 churn$Sum_survey_scores <- rowSums(churn[(45:52)]) #selecting the survey responses and adding the sum of each row to a new column named Sum_survey_scores
 hist(churn$Sum_survey_scores) #inspecting the distribution of survey score totals. 
-
+names(churn)
 
 #TYPE CONVERSIONS
 churn <- churn %>% #changing the following variables to factors 
@@ -392,26 +377,29 @@ levels(churn$PaymentMethod)
 
 churn <- churn %>% #converting the following variables to numeric
 mutate(Tenure = as.numeric(Tenure),
-Monthly_charge = as.numeric(MonthlyCharge),
-Bandwidth_GB_year = as.numeric(Bandwidth_GB_Year),
-Outage_sec_per_week = as.numeric(Outage_sec_perweek))
+       MonthlyCharge = as.numeric(MonthlyCharge),
+       Bandwidth_GB_Year = as.numeric(Bandwidth_GB_Year),
+       Outage_sec_perweek = as.numeric(Outage_sec_perweek))
 
 glimpse(churn) #checking if the types have been changed
 
 #Renaming columns to have similar naming conventions
 names(churn)
 churn <- churn %>% #I had to specify dplyr package for rename because it appeared to want to use another package and was causing errors
-dplyr::rename(Internet_service = InternetService, #source -> (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/ns-dblcolon)
-Online_security = OnlineSecurity,
-Tech_support = TechSupport,
-Paperless_billing = PaperlessBilling,
-Index = CaseOrder,
-Online_backup = OnlineBackup,
-Streaming_TV = StreamingTV,
-Payment_method = PaymentMethod,
-Customer_ID = Customer_id,
-Device_protection = DeviceProtection,
-Streaming_movies = StreamingMovies)
+  dplyr::rename(Internet_service = InternetService, #source -> (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/ns-dblcolon)
+                Online_security = OnlineSecurity,
+                Tech_support = TechSupport,
+                Paperless_billing = PaperlessBilling,
+                Index = CaseOrder,
+                Online_backup = OnlineBackup,
+                Streaming_TV = StreamingTV,
+                Payment_method = PaymentMethod,
+                Customer_ID = Customer_id,
+                Device_protection = DeviceProtection,
+                Streaming_movies = StreamingMovies,
+                Monthly_charge = MonthlyCharge,
+                Bandwidth_GB_year = Bandwidth_GB_Year,
+                Outage_sec_per_week = Outage_sec_perweek)
 
 names(churn)#confirming that the name changes were successful
 
@@ -434,6 +422,7 @@ glimpse(churn_num)
 
 churn_pca_data <- churn_num[,4:14] #storing these 11 variables in churn_pca_data
 
+names(churn_pca_data)
 glimpse(churn_pca_data) #making sure they are all there and they're data type is correct
 
 pca <- prcomp(churn_pca_data, center = TRUE, scale = TRUE) # Performing the PCA
@@ -448,3 +437,6 @@ pca$rotation # seeing the contribution from each variable
 summary(pca) # seeing the proportion of variance by each componant as well as the cumulative proportion of explained variance
 #Exporting to CSV---------------------------------------------------------------
 write.csv(churn, "C:/Users/tyson/WGU/R/D206_PA/Cleaned/churn_cleaned_data.csv", row.names=FALSE) #exporting the cleaned data to a CSV
+
+
+
