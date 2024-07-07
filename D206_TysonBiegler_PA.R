@@ -418,18 +418,26 @@ names(churn) #Looking for the index of each column I will use.
 
 churn_num <- churn %>% select_if(is.numeric) #getting all the numeric columns
 names(churn_num) #getting the index number of the ones I will be using
-glimpse(churn_num)
 
 churn_pca_data <- churn_num[,4:14] #storing these 11 variables in churn_pca_data
 
-names(churn_pca_data)
-glimpse(churn_pca_data) #making sure they are all there and they're data type is correct
+glimpse(churn_pca_data) #making sure they are all there and their data type is correct
 
 pca <- prcomp(churn_pca_data, center = TRUE, scale = TRUE) # Performing the PCA
 
 plot(pca, type = 'l') #Showing the variance in a line plot
 
-fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE) #creating a scree plot 
+eig_plot <- fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE, ncp = 11) #creating a scree plot 
+eig_plot + geom_hline(yintercept = 1, linetype = "dashed", color = "red") #distinguishing where 1 eigenvalue is
+
+summary(pca)
+
+# calculating the eigenvalues to show all the eigenvalues above 1. source: https://www.youtube.com/watch?v=FgakZw6K1QQ
+std_dev<-pca$sdev
+eigenvalues<-std_dev^2
+eigenvalues
+
+fviz_pca_biplot(pca, label = "var") #the biplot graph
 
 # PCA Loadings
 pca$rotation # seeing the contribution from each variable
