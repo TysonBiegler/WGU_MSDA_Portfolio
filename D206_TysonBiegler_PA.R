@@ -432,7 +432,8 @@ eig_plot + geom_hline(yintercept = 1, linetype = "dashed", color = "red") #disti
 
 summary(pca)
 
-# calculating the eigenvalues to show all the eigenvalues above 1. source: https://www.youtube.com/watch?v=FgakZw6K1QQ
+# calculating the eigenvalues to show all the eigenvalues above 1. source: (StatQuest with Josh Starmer, 2017)
+
 std_dev<-pca$sdev
 eigenvalues<-std_dev^2
 eigenvalues
