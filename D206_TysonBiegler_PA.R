@@ -443,9 +443,6 @@ fviz_pca_biplot(pca, label = "var") #the biplot graph
 # PCA Loadings
 pca$rotation # seeing the contribution from each variable
 
-summary(pca) # seeing the proportion of variance by each componant as well as the cumulative proportion of explained variance
+summary(pca) # seeing the proportion of variance by each component as well as the cumulative proportion of explained variance
 #Exporting to CSV---------------------------------------------------------------
 write.csv(churn, "C:/Users/tyson/WGU/R/D206_PA/Cleaned/churn_cleaned_data.csv", row.names=FALSE) #exporting the cleaned data to a CSV
-
-
-
