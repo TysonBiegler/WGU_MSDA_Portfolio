@@ -1,10 +1,11 @@
+#Student ID:
+#012170282
 #Initial Setup--------------------------------------------------------------------------
-  setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206')
-  
+  setwd('C:/Users/tyson/WGU/R/D206_PA/Cleaned')
   #Install and load packages
     install.packages("ggplot2")
     install.packages('tidyverse')
-    install.packages("factoextra") # For PCA
+    install.packages("factoextra")
     install.packages("dplyr")
     
     library(ggplot2)
@@ -16,9 +17,6 @@
     library(stats)
 
 #Loading data from csv##########################################################
-
-  rm(list = ls())
-  
   churn <- read_csv("C:/Users/tyson/WGU/R/D206/raw_data/churn_raw_data.csv") #importing csv file
   glimpse(churn) #initial inspection of the data set
 
@@ -47,7 +45,7 @@
     #making sure NA values are dealt with
     sum(is.na(churn$Children)) #NA values are now 0
     #checking the new distribution after imputation
-  hist(churn$Children)
+    hist(churn$Children)
   
   #AGE Dealing with NA values
     sum(is.na(churn$Age))
@@ -110,7 +108,7 @@
     hist(churn$Tenure)
   
   #BANDWIDTH_GB_YEAR Dealing with NA
-    glimpse(churn$Bandwidth_GB_Year) #numeric class
+    class(churn$Bandwidth_GB_Year) #numeric class
     summary(churn$Bandwidth_GB_Year) #shows 1021 NA values 
     hist(churn$Bandwidth_GB_Year) #bi-modal distribution
     #Imputation using the median
@@ -118,7 +116,6 @@
     #verifiying that NA values are gone
     sum(is.na(churn$Bandwidth_GB_Year))
     hist(churn$Bandwidth_GB_Year) #checking distribution after imputation
-    sum(is.na(churn$Bandwidth_GB_Year)) #verifying that NA values are gone
   
   #TECHIE Dealing with Na  
     summary(churn$Techie) #Character type
@@ -156,7 +153,7 @@
     hist(churn$Contacts)
     boxplot.stats(churn$Contacts) #looking for the value of the upper whisker
     sum(churn$Contacts > 5) 
-    churn$Contacts[churn$Contacts > 5 | churn$Contacts > 20] <- NA
+    churn$Contacts[churn$Contacts > 5] <- NA
     churn$Contacts[is.na(churn$Contacts)] <- median(churn$Contacts, na.rm = TRUE)
     
   #yearly_equip_failure
@@ -171,6 +168,7 @@
     class(churn$Children) #Numeric type
     hist(churn$Children) #looking at the distribution before imputation
     boxplot(churn$Children) #Any amount above 6 appears to be an outlier
+    boxplot.stats(churn$Children)
     sum(churn$Children > 6)
     churn$Children[churn$Children > 6] <- NA #converting values above 6 to NA
     churn$Children[is.na(churn$Children)] <- median(churn$Children, na.rm = TRUE) #Imputing the mean to deal with the newly added NA values
@@ -198,6 +196,7 @@
 
 #ZIP converting to 5 digits 
 class(churn$Zip) #Numeric Type
+churn$Zip
 sum(is.na(churn$Zip)) #No NA values
 churn$Zip <- as.character(churn$Zip) #Converting to character because trimws expects a character input
 #R documentation (https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/trimws)
@@ -237,7 +236,7 @@ churn$Education_num <- Edu_num #adding Edu_num to churn as a new column named Ed
 class(churn$Education_num) #confirming that Edu_num is still numeric
 hist(churn$Education_num) #inspecting the distribution of education levels
 
-
+names(churn)
 #RENAME SURVEY RESPONSES
 names(churn)[45] <- "Timely_response"
 names(churn)[46] <- "Timely_fixes"
@@ -249,7 +248,7 @@ names(churn)[51] <- "Courteous"
 names(churn)[52] <- "Active_listening"
 names(churn) #ensuring that all name changes were successful 
 
-
+glimpse(churn)
 churn <- churn %>% #Converting to logical data type. 
   mutate(
     Churn = ifelse(trimws(tolower(Churn)) == 'Yes', TRUE, FALSE),
@@ -273,9 +272,6 @@ churn <- churn %>% #change value to (bank (automatic bank transfer) to match dat
 mutate(PaymentMethod = recode(PaymentMethod,
                       "bank transfer(automatic)" = "bank (automatic bank transfer)"))
 unique(churn$PaymentMethod) #ensuring that the name change was sucessful
-
-
-#############    ~~~~ LEFT OFF HERE ~~~~    ####################################
 
 #Rounding variables to 2 decimal points
 churn <- churn %>% #using spritf to round to 2 decimal places. Each of these will need to be converted back to numeric later
@@ -356,14 +352,14 @@ names(churn)
 
 #TYPE CONVERSIONS
 churn <- churn %>% #changing the following variables to factors 
-mutate(Employment = as.factor(Employment),
-Contract = as.factor(Contract),
-InternetService = as.factor(InternetService),
-Area = as.factor(Area),
-Timezone = as.factor(Timezone),
-Marital = as.factor(Marital),
-State = as.factor(State),
-PaymentMethod = as.factor(PaymentMethod))
+  mutate(Employment = as.factor(Employment),
+  Contract = as.factor(Contract),
+  InternetService = as.factor(InternetService),
+  Area = as.factor(Area),
+  Timezone = as.factor(Timezone),
+  Marital = as.factor(Marital),
+  State = as.factor(State),
+  PaymentMethod = as.factor(PaymentMethod))
 
 #checking the levels of each of the following factor variables
 levels(churn$Employment)
