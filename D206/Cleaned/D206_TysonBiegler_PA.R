@@ -4,7 +4,7 @@
 
 #Initial Setup------------------------------------------------------------------
     # Setting Working Directory
-        setwd('C:/Users/tyson/WGU/R/D206_PA/Cleaned')
+        setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206/Working')
 
     # Install and load packages
         install.packages('tidyverse')
@@ -17,9 +17,9 @@
         library(stats)
 
     # Loading data from CSV
-        churn <- read_csv("C:/Users/tyson/WGU/R/D206/raw_data/churn_raw_data.csv")
+        churn <- read_csv("C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206/Raw/churn_raw_data.csv")
         glimpse(churn)#quick look at the data
-
+        
     # Checking for duplicates
         sum(duplicated(churn))
 
@@ -75,6 +75,7 @@
 
     # Email
         boxplot(churn$Email)
+        hist(churn$Email)
         boxplot.stats(churn$Email) #looking for the value of the upper whisker
         sum(churn$Email > 20 | churn$Email < 4)
         churn$Email[churn$Email < 4 | churn$Email > 20] <- NA
@@ -206,6 +207,13 @@
                              right = TRUE, include.lowest = TRUE),
             Age_groups = as.factor(Age_groups)
           )
+        
+        ggplot(data = churn, aes(x = Age_groups)) +
+          geom_bar(fill = "grey") +
+          theme_minimal() +
+          labs(title = "Distribution of Age Groups",
+               x = "Age Groups",
+               y = "Count")
 
     # Create Income Groups
     # SOURCE (cut, n.d)
@@ -229,6 +237,13 @@
                                 right = TRUE, include.lowest = TRUE),
             Income_groups = as.factor(Income_groups)
           )
+        
+        ggplot(data = churn, aes(x = Income_groups)) +
+          geom_bar(fill = "grey") +
+          theme_minimal() +
+          labs(title = "Distribution of Income Groups",
+               x = "Income Groups",
+               y = "Count")
 
     # Add Survey Scores Sum As Customer Satisfaction Scores
         churn$Sum_survey_scores <- rowSums(churn[(45:52)]) #selecting the survey responses and adding the sum of each row to a new column named Sum_survey_scores
@@ -279,9 +294,6 @@
 
 # PCA --------------------------------------------------------------------------
     #Selecting Numeric Columns
-      numeric_columns <- churn %>%
-        select_if(is.numeric)
-      glimpse(numeric_columns)
       names(numeric_columns)
 
     # Saving The Numerica Columns To 'churn_pca_data'
@@ -316,5 +328,6 @@
       pca$rotation
 
 # Export cleaned data to CSV ---------------------------------------------------
-      write.csv(churn, "C:/Users/tyson/WGU/R/D206_PA/Cleaned/churn_cleaned_data_final.csv", row.names = FALSE)
+      write.csv(churn, "C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206/Cleaned/churn_cleaned_data.csv", row.names = FALSE)
       glimpse(churn)
+      
