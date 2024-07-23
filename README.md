@@ -1,6 +1,9 @@
 # WGU MSDA Portfolio
 ## Tyson Biegler 2024
 
+![Static Badge](https://img.shields.io/badge/:badgeContent?style=social&logo=linkedin&logoColor=blue)
+
+
 - [Orientation - ORA1](Orientation%20-%20ORA1)
 - [The Data Analytics Journey - D204](The%20Data%20Analytics%20Journey%20-%20D204)
 - [Data Acquisition - D205](Data%20Acquisition%20-%20D205)
