@@ -4,7 +4,9 @@
 **`Data Analyst`** **`Grad Student`**
 <br>
 <br>
-I began learning about data analytics in 2020. I completed several certification programs rangind from the [Google data analytics professional certificate](https://www.coursera.org/account/accomplishments/professional-cert/PJYAPL3D7B2R) to [CS50](https://certificates.cs50.io/f6af04be-d727-4f4a-9236-4ef3e0989a83.pdf?size=letter) from Harvard University. I began my masters program in data analytics through Western govoners university in May 2024 and this is my portfolio of projects from that program. 
+I began learning about data analytics in 2020. I completed several certification programs ranging from the [Google data analytics professional certificate](https://www.coursera.org/account/accomplishments/professional-cert/PJYAPL3D7B2R) to [CS50](https://certificates.cs50.io/f6af04be-d727-4f4a-9236-4ef3e0989a83.pdf?size=letter) from Harvard University. 
+
+I began my masters program in data analytics through Western govoners university in May 2024 and this is my portfolio of projects from that program. 
 
 <p>
     <a href="https://www.linkedin.com/in/tysonbiegler/">
@@ -14,12 +16,6 @@ I began learning about data analytics in 2020. I completed several certification
         <img width="150px" src="https://github.com/user-attachments/assets/0de9d634-e15a-4015-945d-1c9d00e951f6" />
     </a>
 </p>
-
-
-
-
-
-
 
 ---
 
