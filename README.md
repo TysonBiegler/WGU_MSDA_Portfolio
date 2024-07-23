@@ -13,6 +13,7 @@ I began learning about data analytics in 2020. I completed several certification
 ---
 
 ### 🖥️ Languages and Tools
+
 <img align="left" alt="Git" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" />
 <img align="left" alt="HTML" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-plain.svg" />
 <img align="left" alt="CSS" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-plain.svg" />
@@ -22,13 +23,6 @@ I began learning about data analytics in 2020. I completed several certification
 <img align="left" alt="Jupyter Notebooks" width="30px" style="padding-right:10px;" src="https://logos-download.com/wp-content/uploads/2021/01/Jupyter_Logo.png" />
 <img align="left" alt="PostgreSQL" width="30px" style="padding-right:10px;" src="https://th.bing.com/th/id/R.c70f2deca63a20f47ba6dbc5e9f22af4?rik=DxXsa94FRFwm7w&pid=ImgRaw&r=0" />
 <img align="left" alt="Tableau" width="30px" style="padding-right:10px;" src="https://pnghq.com/wp-content/uploads/tableau-full-logo-transparent-png-85396-768x432.png" />
-
-
-
-
-
-
-
 
 <br />
 
@@ -68,7 +62,7 @@ I began learning about data analytics in 2020. I completed several certification
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=tysonbiegler&repo=WGU_MSDA_Portfolio" />
 </picture>
 
-
+<br>
 <picture>
   <source
     srcset="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true&theme=dracula"
