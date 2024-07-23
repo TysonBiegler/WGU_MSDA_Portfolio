@@ -14,9 +14,8 @@ install.packages("tidyverse")
 library(tidyverse)
 
 # Importing CSV
-churn <- read_csv("C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D207/Raw/churn_clean.csv")
+churn <- read_csv("C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D207/Raw/churn_clean.csv", header=TRUE)
 glimpse(churn)#quick look at the data
-
 
 # A1. ---- 
   #Which independent variables are associated with churn ----
@@ -42,9 +41,26 @@ glimpse(churn)#quick look at the data
 
 
 
+# HOW TO DO T-TESTS AND CHARTS #################################################
+churn <- read_csv("C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D207/Raw/churn_clean.csv", header=TRUE)
+
+churn
+
+mean.tenure <- mean(churn$Tenure)
+mean.nandwidth <- mean(churn$Bandwidth_GB_Year)
+
+mean.tenure
+mean.nandwidth
+
+t.test(churn$Tenure, churn$Bandwidth_GB_Year, var.equal=TRUE)
+plot(density(churn$Tenure, churn$Bandwidth_GB_Year))
 
 
-
+qqnorm(churn$Tenure, pch=1, frame=FALSE)
+qqline(churn$Tenure, col='steelblue', lwd=2)
+qqnorm(churn$Bandwidth_GB_Year, pch=1, frame=FALSE)
+qqline(churn$Bandwidth_GB_Year, col='steelblue', lwd=2)
+################################################################################
 
 
 
