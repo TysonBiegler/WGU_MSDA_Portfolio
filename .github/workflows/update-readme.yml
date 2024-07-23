@@ -23,7 +23,9 @@ jobs:
         run: npm install @octokit/rest
 
       - name: Generate README content
-        run: node generate-readme.js
+        run: |
+          echo "UPDATE_README=${{ secrets.UPDATE_README }}" > .env
+          node generate-readme.js
 
       - name: Commit changes
         run: |
