@@ -55,7 +55,19 @@ I began learning about data analytics in 2020. I completed several certification
 
 ### 📊 My Github Stats
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=tysonbiegler)](https://github.com/tysonbiegler/github-readme-stats)
+
+<picture>
+  <source
+    srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=tysonbiegler&theme=dracula&repo=WGU_MSDA_Portfolio"
+    media="(prefers-color-scheme: dark)"
+  />
+  <source
+    srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=tysonbiegler&repo=WGU_MSDA_Portfolio"
+    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+  />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=tysonbiegler&repo=WGU_MSDA_Portfolio" />
+</picture>
+
 
 <picture>
   <source
