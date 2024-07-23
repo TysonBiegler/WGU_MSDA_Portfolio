@@ -1,8 +1,9 @@
 const { Octokit } = require("@octokit/rest");
 const fs = require('fs');
+require('dotenv').config();
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
+  auth: process.env.UPDATE_README,
 });
 
 async function getRepoStats() {
@@ -77,19 +78,4 @@ I began learning about data analytics in 2020. I completed several certification
   />
   <source
     srcset="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true"
-    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
-  />
-  <img src="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true" />
-</picture>
-
-### Repository Language Stats
-
-\`\`\`
-${Object.entries(stats).map(([language, bytes]) => `${language}: ${bytes} bytes`).join('\n')}
-\`\`\`
-`;
-
-  fs.writeFileSync('README.md', readmeContent);
-}
-
-updateReadme();
+    media="(prefers-color-scheme: light), (prefers-color
