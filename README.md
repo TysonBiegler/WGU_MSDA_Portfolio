@@ -4,7 +4,7 @@
 **`Data Analyst`** **`Grad Student`**
 <br>
 <br>
-I began learning about data analytics in 2020. I completed several certification programs ranging from the [Google data analytics professional certificate](https://www.coursera.org/account/accomplishments/professional-cert/PJYAPL3D7B2R) to [CS50](https://certificates.cs50.io/f6af04be-d727-4f4a-9236-4ef3e0989a83.pdf?size=letter) from Harvard University. 
+I began learning web development in 2018 and decided I really enjoyed analytics after learning to use SQL in a web development bootcamp. So, I dove into data analytics in 2020. I completed several projects and certification programs ranging from the [Google data analytics professional certificate](https://www.coursera.org/account/accomplishments/professional-cert/PJYAPL3D7B2R) to [CS50](https://certificates.cs50.io/f6af04be-d727-4f4a-9236-4ef3e0989a83.pdf?size=letter) from Harvard University. 
 
 I began my masters program in data analytics through Western govoners university in May 2024 and this is my portfolio of projects from that program. 
 
