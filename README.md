@@ -8,6 +8,8 @@ I began learning about data analytics in 2020. I completed several certification
 
 I began my masters program in data analytics through Western govoners university in May 2024 and this is my portfolio of projects from that program. 
 
+Listed below is my linkedin profile and my portfolio hosted by Maven analytics. 
+
 <p>
     <a href="https://www.linkedin.com/in/tysonbiegler/">
         <img width="150px" src="https://freelogopng.com/images/1656939461linkedin-logo.png" />
