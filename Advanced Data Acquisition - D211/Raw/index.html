@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Churn Analysis Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f0f0;
+      }
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 20px;
+      }
+      .widget {
+        background-color: white;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .widget h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #333;
+      }
+      .kpi {
+        font-size: 24px;
+        font-weight: bold;
+        color: #0066cc;
+      }
+      .chart {
+        width: 100%;
+        height: 200px;
+        background-color: #e9e9e9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+      }
+      .full-width {
+        grid-column: 1 / -1;
+      }
+      .half-width {
+        grid-column: span 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="widget">
+        <h2>Overall Churn Rate</h2>
+        <div class="kpi">12.3%</div>
+      </div>
+      <div class="widget">
+        <h2>Avg. Customer Tenure</h2>
+        <div class="kpi">24 months</div>
+      </div>
+      <div class="widget">
+        <h2>Avg. Monthly Charge</h2>
+        <div class="kpi">$78.50</div>
+      </div>
+      <div class="widget full-width">
+        <h2>Churn Rate vs. State Population</h2>
+        <div class="chart">
+          [Scatter Plot: X-axis State Population, Y-axis Churn Rate]
+        </div>
+      </div>
+      <div class="widget half-width">
+        <h2>Churn by Customer Segments</h2>
+        <div class="chart">
+          [Stacked Bar Chart: Age, Income, Job categories]
+        </div>
+      </div>
+      <div class="widget">
+        <h2>Contract Type Impact</h2>
+        <div class="chart">[Bar Chart: Churn Rate by Contract Type]</div>
+      </div>
+      <div class="widget half-width">
+        <h2>Service Usage and Churn</h2>
+        <div class="chart">
+          [Grouped Bar Chart: InternetService, Phone, Multiple Lines]
+        </div>
+      </div>
+      <div class="widget">
+        <h2>Top Churn Factors</h2>
+        <div class="chart">
+          [Horizontal Bar Chart: Outage_sec_perweek, Yearly_equip_failure, etc.]
+        </div>
+      </div>
+      <div class="widget full-width">
+        <h2>Geographic Churn Analysis</h2>
+        <div class="chart">
+          [US Map: States colored by churn rate, sized by customer base]
+        </div>
+      </div>
+      <div class="widget">
+        <h2>Payment Method Analysis</h2>
+        <div class="chart">
+          [Pie Chart: Distribution of PaymentMethod among churned customers]
+        </div>
+      </div>
+      <div class="widget">
+        <h2>Bandwidth Usage vs Churn</h2>
+        <div class="chart">
+          [Box Plot: Bandwidth_GB_Year for churned vs retained]
+        </div>
+      </div>
+      <div class="widget">
+        <h2>Market Penetration</h2>
+        <div class="chart">
+          [Bar Chart: Top 10 states by customer to population ratio]
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
