@@ -48,8 +48,8 @@ Feel free to connect with me and follow along with my progress.
 - [Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207)
 - [Predictive Modeling - D208](Predictive%20Modeling%20-%20D208) *Coming Soon*
 - [Data Mining 1 - D209](Data%20Mining%201%20-%20D209) *Coming Soon*
-- [Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210) *Coming Soon*
-- [Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *Coming Soon*
+- [Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210)
+- [Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211)
 - [Data Mining 2 - D212](Data%20Mining%202%20-%20D212) *Coming Soon*
 - [Advanced Data Analytics - D213](Advanced%20Data%20Analytics%20-%20D213) *Coming Soon*
 - [Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214) *Coming Soon*
