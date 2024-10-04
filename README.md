@@ -1,5 +1,5 @@
 # WGU MSDA Portfolio
-## Tyson Biegler
+## Hi! I'm Tyson Biegler
 
 **`Data Analyst`** **`Grad Student`**
 <br>
