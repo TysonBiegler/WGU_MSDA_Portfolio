@@ -1,32 +1,25 @@
 
 # Initial Setup -----------------------------------------------------------
+install.packages("tidyverse")
+install.packages("MASS")# For stepwise regression (stepAIC)
+install.packages("car") # For VIF calculation (detecting multicollinearity)
+install.packages("ggeffects") # For visualizing model predictions
+install.packages("ggfortify") # For visualizing model diagnostic plots
+install.packages("gridExtra") # For arranging multiple ggplot graphs in a grid
+install.packages("performance") # For checking model assumptions
 
-install.packages("gridExtra")
-install.packages("janitor")
-
-library(tidyverse)
-library(MASS)
-library(car)
-
-
-
-library(performance)
-library(ggeffects)
-library(sjPlot)
-library(gtsummary)
-library(flextable)
-
-library(gridExtra)
-
-#look into ggpairs from ggally package
-
-
+library(tidyverse) # Includes ggplot2, dplyr, readr, and more for data manipulation and visualization
+library(MASS)           # For stepwise model selection using stepAIC()
+library(car)            # For calculating VIF (Variance Inflation Factor)
+library(ggeffects)      # For creating prediction plots from regression models
+library(ggfortify)      # For diagnostic plots of linear models
+library(gridExtra)      # For arranging multiple plots in a grid
+library(performance)    # For checking model assumptions visually (check_model)
 
 tidyverse_packages(include_self = TRUE)
 
 # Set wd ------------------------------------------------------------------
-setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/R/Raw')
-
+setwd('C:/Users/tyson/OneDrive/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/R/Raw')
 
 # Get data ----------------------------------------------------------------
 churn <- read_csv("churn_clean.csv")
@@ -91,14 +84,6 @@ churn <- churn %>%
                  Contract,
                  InternetService,
                  PaymentMethod, 
-                 Timely_response, 
-                 Timely_fixes, 
-                 Timely_replacements, 
-                 Reliability, 
-                 Options, 
-                 Respectful, 
-                 Courteous, 
-                 Active_listening,
                  Churn,
                  Techie,
                  Port_modem,
@@ -122,13 +107,22 @@ churn <- churn %>%
   mutate_at(vars(Tenure,
                  MonthlyCharge,
                  Bandwidth_GB_Year,
-                 Outage_sec_perweek),
+                 Outage_sec_perweek
+                 ),
             as.numeric)
 
 churn <- churn %>% 
   mutate_at(vars(Children,
                  Age,
-                 Population),
+                 Population,
+                 Timely_response,
+                 Timely_fixes,
+                 Timely_replacements,
+                 Reliability,
+                 Options,
+                 Respectful,
+                 Courteous,
+                 Active_listening),
             as.integer)
 
 
@@ -149,18 +143,17 @@ churn <- churn[, !(names(churn) %in% c("CaseOrder",
                                        "Area", 
                                        "TimeZone", 
                                        "Job",
-                                       "Timely_response",
-                                       "Timely_fixes",
-                                       "Timely_replacements",
-                                       "Reliability",
-                                       "Options",
-                                       "Respectful",
-                                       "Courteous",
-                                       "Active_listening",
                                        "City",
                                        "State"
                                        ))]
-
+#"Timely_response",
+#"Timely_fixes",
+#"Timely_replacements",
+#"Reliability",
+#"Options",
+#"Respectful",
+#"Courteous",
+#"Active_listening",
 #"Marital",
 #"Contract",
 #"InternetService",
@@ -172,49 +165,40 @@ str(churn)
 
 # Select Variables --------------------------------------------------------
 
-model <- lm(Tenure ~ ., data = churn)
+Initial_model <- lm(Tenure ~ ., data = churn)
 
-summary(model)
+summary(Initial_model)
 
-stepwiseModel <- stepAIC(object = model)
+reduced_model <- stepAIC(object = Initial_model)
 
-stepwiseModel
+reduced_model
 
-summary(stepwiseModel) #(Larose & Larose, 2019)
+summary(reduced_model) #(Larose & Larose, 2019)
+plot(reduced_model)
 
 reduced_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
-                      Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                      TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
-                      MonthlyCharge + Bandwidth_GB_Year, data = churn)
+     Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+     TechSupport + StreamingTV + StreamingMovies + MonthlyCharge + Bandwidth_GB_Year, data = churn)
+plot(reduced_model)
 
-
-#Trying to figure out how to normalize the data
-dataNorm <- churn
-dataNorm[,-5] <- scale(churn[,-5])
-
-
-#model2 <- lm(formula = Tenure ~ Population + Children + Age + Income + Outage_sec_perweek + Email + Contacts + Yearly_equip_failure + MonthlyCharge + Bandwidth_GB_Year, data = churn)
-
-#model3 <- lm(formula = Tenure ~ Children + MonthlyCharge + Bandwidth_GB_Year, data = churn)
-
-#summary(model3)
-
-# Reduce model ------------------------------------------------------------
 summary(reduced_model)
 
-par(mfrow = c(2, 2))  # Arrange plots in a 2x2 grid
-plot(reduced_model)
+reduced_model2 <- lm(formula = Tenure ~ Children + Age + Bandwidth_GB_Year + Gender + 
+                       Churn + Techie + Contract + Tablet + InternetService + Multiple + 
+                       OnlineSecurity + OnlineBackup + DeviceProtection + PaperlessBilling, data = churn)
+plot(reduced_model2)
+
+# Reduce model ------------------------------------------------------------
+
+par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
+plot(reduced_model2)
+
 
 vif_values <- vif(reduced_model)
 vif_values
 
-reduced_model2 <- lm(formula = Tenure ~ Children + Age + Bandwidth_GB_Year + Gender + Churn + Techie + Contract + Tablet + InternetService + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + PaperlessBilling, data = churn)
-plot(reduced_model2)
-
 vif_values <- vif(reduced_model2)
 vif_values
-
-
 
 # Checking assumptions with visuals
 check_model(reduced_model2)
@@ -224,12 +208,8 @@ ggeffect(reduced_model2)
 
 summary(reduced_model2)
 
-install.packages("ggfortify")
-library(ggfortify)
-
 autoplot(reduced_model, which = 1:6, ncol = 2, label.size = 3)
 autoplot(reduced_model2, which = 1:6, ncol = 2, label.size = 3)
-autoplot(model3, which = 1:6, ncol = 2, label.size = 3)
 
 # Analysis ----------------------------------------------------------------
 
