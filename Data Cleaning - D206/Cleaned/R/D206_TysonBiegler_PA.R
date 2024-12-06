@@ -17,7 +17,7 @@
         library(stats)
 
     # Loading data from CSV
-        churn <- read_csv("C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/D206/Raw/churn_raw_data.csv")
+        churn <- read_csv("C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data Cleaning - D206/Raw/churn_raw_data.csv")
         glimpse(churn)#quick look at the data
         
     # Checking for duplicates
