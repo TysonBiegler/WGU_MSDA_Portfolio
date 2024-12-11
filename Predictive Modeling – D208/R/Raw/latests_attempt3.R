@@ -10,6 +10,7 @@ install.packages("performance") # For checking model assumptions
 install.packages("caret") # For data splitting into training and testing subsets 
 
 library(tidyverse) # Includes ggplot2, dplyr, readr, and more for data manipulation and visualization
+library(ggplot2)
 library(MASS) # For stepwise model selection using stepAIC()
 library(car) # For calculating VIF (Variance Inflation Factor)
 library(ggeffects) # For creating prediction plots from regression models
@@ -17,6 +18,9 @@ library(ggfortify) # For diagnostic plots of linear models
 library(gridExtra) # For arranging multiple plots in a grid
 library(performance) # For checking model assumptions visually (check_model)
 library(caret)
+library(sjPlot)
+library(gtsummary)
+library(flextable)
 
 tidyverse_packages(include_self = TRUE)
 
@@ -113,7 +117,10 @@ churn <- churn %>%
 churn <- churn %>% 
   mutate_at(vars(Children,
                  Age,
-                 Population),
+                 Population,
+                 Email,
+                 Contacts,
+                 Yearly_equip_failure),
             as.integer)
 
 
@@ -138,9 +145,10 @@ churn <- churn[, !(names(churn) %in% c("CaseOrder",
                                        "State"
                                        ))]
 
-
+summary(churn)
 
 str(churn)
+
 
 # Select Variables --------------------------------------------------------
 
@@ -162,6 +170,7 @@ stepwise_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetServic
 
 par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
 plot(stepwise_model)
+
 summary(stepwise_model)
 
 # Reduce model ------------------------------------------------------------
@@ -187,6 +196,7 @@ updated_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService
 vif_values <- vif(updated_model)
 vif_values #Looking for VIF values above 5. 
 
+par(mfrow = c(2, 2))
 plot(updated_model)
 summary(updated_model)
 
@@ -197,10 +207,39 @@ check_model(updated_model)
 ggeffect(updated_model)
 
 summary(updated_model)
-
-autoplot(updated_model, which = 1:6, ncol = 2, label.size = 3)
-
 updated_model
+
+
+
+
+
+#Creating a fancy plot
+fancy_plot <- ggeffect(updated_model) %>% 
+  plot() %>% 
+  sjPlot::plot_grid()
+
+fancy_plot
+
+#creating a fancy table to check statistical significance
+fancy_table <- tbl_regression(
+  updated_model,
+  add_pairwise_contrasts = TRUE,
+  pvalue_fun = ~style_pvalue(.x, digits = 3)) %>% 
+  bold_p()
+
+
+fancy_table
+
+
+
+
+
+
+
+
+
+
+
 
 # univariate plots --------------------------------------------------------
 # Continuous variables
@@ -220,98 +259,110 @@ univariate4 <- ggplot(churn, aes(x = Bandwidth_GB_Year)) +
   geom_histogram(bins = 20, fill = "#e28743", alpha = 0.8) + 
   ggtitle("Bandwidth_GB_Year")
 
+univariate5 <- ggplot(churn, aes(x = Gender)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("Gender")
+
+univariate6 <- ggplot(churn, aes(x =  InternetService)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle(" InternetService")
+
+univariate7 <- ggplot(churn, aes(x = Multiple)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("Multiple")
+
+univariate8 <- ggplot(churn, aes(x = OnlineSecurity)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("OnlineSecurity")
+
+univariate9 <- ggplot(churn, aes(x = OnlineBackup)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("OnlineBackup")
+
+univariate10 <- ggplot(churn, aes(x = DeviceProtection)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("DeviceProtection")
+
+
 # Arrange all plots into a grid
 gridExtra::grid.arrange(
   univariate1, univariate2, 
   univariate3, univariate4,
+  univariate5, univariate6, 
+  univariate7, univariate8,
+  univariate9, univariate10,
   ncol = 2
 )
 
 
 
-
 # bivariate plots ---------------------------------------------------------
 # Categorical variables
-bivariate1 <- ggplot(churn, aes(x = MonthlyCharge, y = Tenure)) + 
-  geom_point(color = "#154c79", alpha = 1/10) +
-  geom_smooth(method = "lm", se = FALSE, color = "#e28743") +
-  ggtitle("Tenure vs MonthlyCharge") +
-  xlab("MonthlyCharge") +
-  ylab("Tenure")
 
-bivariate2 <- ggplot(churn, aes(x = Bandwidth_GB_Year, y = Tenure)) + 
+bivariate1 <- ggplot(churn, aes(x = Bandwidth_GB_Year, y = Tenure)) + 
   geom_point(color = "#154c79", alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "#e28743") +
   ggtitle("Tenure vs Bandwidth_GB_Year") +
   xlab("Bandwidth_GB_Year") +
   ylab("Tenure")
 
-bivariate3 <- ggplot(churn, aes(x = Children, y = Tenure)) +
+bivariate2 <- ggplot(churn, aes(x = Children, y = Tenure)) +
   geom_point(color = "#154c79", alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "#e28743") +
   ggtitle("Tenure vs Children") +
   xlab("Number of Children") +
   ylab("Tenure")
 
-bivariate4 <- ggplot(churn, aes(x = as.factor(Churn), y = Tenure)) +
-  geom_boxplot(fill = "#e28743", alpha = 0.7) +
-  ggtitle("Tenure vs Churn") +
-  xlab("Churn (0 = No, 1 = Yes)") +
+bivariate3 <- ggplot(churn, aes(x = Age, y = Tenure)) +
+  geom_point(color = "#154c79", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "#e28743") +
+  ggtitle("Tenure vs Age") +
+  xlab("Age") +
   ylab("Tenure")
 
-bivariate5 <- ggplot(churn, aes(x = as.factor(Multiple), y = Tenure)) +
+bivariate4 <- ggplot(churn, aes(x = as.factor(Gender), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs Gender") +
+  xlab("Gender") +
+  ylab("Tenure")
+
+bivariate5 <- ggplot(churn, aes(x = as.factor(InternetService), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs InternetService") +
+  xlab("InternetService (0 = No, 1 = Yes)") +
+  ylab("Tenure")
+
+bivariate6 <- ggplot(churn, aes(x = as.factor(Multiple), y = Tenure)) +
   geom_boxplot(fill = "#e28743", alpha = 0.7) +
   ggtitle("Tenure vs Multiple") +
   xlab("Multiple (0 = No, 1 = Yes)") +
   ylab("Tenure")
 
-bivariate6 <- ggplot(churn, aes(x = as.factor(OnlineSecurity), y = Tenure)) +
+bivariate7 <- ggplot(churn, aes(x = as.factor(OnlineSecurity), y = Tenure)) +
   geom_boxplot(fill = "#e28743", alpha = 0.7) +
   ggtitle("Tenure vs OnlineSecurity") +
   xlab("OnlineSecurity (0 = No, 1 = Yes)") +
   ylab("Tenure")
 
-bivariate7 <- ggplot(churn, aes(x = as.factor(OnlineBackup), y = Tenure)) +
+bivariate8 <- ggplot(churn, aes(x = as.factor(OnlineBackup), y = Tenure)) +
   geom_boxplot(fill = "#e28743", alpha = 0.7) +
   ggtitle("Tenure vs OnlineBackup") +
   xlab("OnlineBackup (0 = No, 1 = Yes)") +
   ylab("Tenure")
 
-bivariate8 <- ggplot(churn, aes(x = as.factor(DeviceProtection), y = Tenure)) +
+bivariate9 <- ggplot(churn, aes(x = as.factor(DeviceProtection), y = Tenure)) +
   geom_boxplot(fill = "#e28743", alpha = 0.7) +
   ggtitle("Tenure vs DeviceProtection") +
   xlab("DeviceProtection (0 = No, 1 = Yes)") +
   ylab("Tenure")
 
-bivariate9 <- ggplot(churn, aes(x = as.factor(TechSupport), y = Tenure)) +
-  geom_boxplot(fill = "#e28743", alpha = 0.7) +
-  ggtitle("Tenure vs TechSupport") +
-  xlab("TechSupport (0 = No, 1 = Yes)") +
-  ylab("Tenure")
 
-bivariate10 <- ggplot(churn, aes(x = as.factor(StreamingTV), y = Tenure)) +
-  geom_boxplot(fill = "#e28743", alpha = 0.7) +
-  ggtitle("Tenure vs StreamingTV") +
-  xlab("StreamingTV (0 = No, 1 = Yes)") +
-  ylab("Tenure")
 
-bivariate11 <- ggplot(churn, aes(x = as.factor(StreamingMovies), y = Tenure)) +
-  geom_boxplot(fill = "#e28743", alpha = 0.7) +
-  ggtitle("Tenure vs StreamingMovies") +
-  xlab("StreamingMovies (0 = No, 1 = Yes)") +
-  ylab("Tenure")
-
-bivariate12 <- ggplot(churn, aes(x = as.factor(PaperlessBilling), y = Tenure)) +
-  geom_boxplot(fill = "#e28743", alpha = 0.7) +
-  ggtitle("Tenure vs PaperlessBilling") +
-  xlab("PaperlessBilling (0 = No, 1 = Yes)") +
-  ylab("Tenure")
 
 # Arrange all plots into a grid
 gridExtra::grid.arrange(
   bivariate1, bivariate2, bivariate3,
   bivariate4, bivariate5, bivariate6,
   bivariate7, bivariate8, bivariate9,
-  bivariate10, bivariate11, bivariate12,
   ncol = 3
 )
