@@ -25,15 +25,11 @@ library(flextable)
 tidyverse_packages(include_self = TRUE)
 
 # Set wd ------------------------------------------------------------------
-setwd('C:/Users/tyson/OneDrive/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/R/Raw')
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/R/Raw')
 
 # Get data ----------------------------------------------------------------
 churn <- read_csv("churn_clean.csv")
 theme_set(theme_minimal())
-
-
-set.seed(0)
-
 
 # Explore Data ------------------------------------------------------------
 str(churn)
@@ -64,11 +60,21 @@ churn <- churn %>%
 names(churn)
 
 
-# Converting to Logical Data Type
+# Convert Specific Columns to binary/factor
 churn <- churn %>%
-  mutate(across(c(Churn, Techie, Port_modem, Tablet, Phone, Multiple,
-                  OnlineSecurity, OnlineBackup, DeviceProtection, TechSupport,
-                  StreamingTV, StreamingMovies, PaperlessBilling),
+  mutate(across(c(Churn, 
+                  Techie, 
+                  Port_modem, 
+                  Tablet, 
+                  Phone, 
+                  Multiple,
+                  OnlineSecurity, 
+                  OnlineBackup, 
+                  DeviceProtection, 
+                  TechSupport,
+                  StreamingTV, 
+                  StreamingMovies, 
+                  PaperlessBilling),
                 ~ as.factor(ifelse(trimws(.) == 'Yes', 1, 0))))
 
 # Convert Specific Columns to Factors
@@ -79,29 +85,8 @@ churn <- churn %>%
                  Contract,
                  InternetService,
                  PaymentMethod, 
-                 Churn,
-                 Techie,
-                 Port_modem,
-                 Tablet,
-                 Phone,
-                 Multiple,
-                 OnlineSecurity,
-                 OnlineBackup,
-                 DeviceProtection,
-                 TechSupport,
-                 StreamingTV,
-                 StreamingMovies,
-                 PaperlessBilling,
                  City,
                  State,
-                 Timely_response,
-                 Timely_fixes,
-                 Timely_replacements,
-                 Reliability,
-                 Options,
-                 Respectful,
-                 Courteous,
-                 Active_listening
                  ),
             as.factor)
 
@@ -114,6 +99,7 @@ churn <- churn %>%
                  ),
             as.numeric)
 
+# Convert Specific Columns to Integer
 churn <- churn %>% 
   mutate_at(vars(Children,
                  Age,
@@ -123,13 +109,11 @@ churn <- churn %>%
                  Yearly_equip_failure),
             as.integer)
 
-
-
-
 glimpse(churn)
 str(churn)
 
-#removing columns im not going to use
+
+#Removing columns im not going to use
 churn <- churn[, !(names(churn) %in% c("CaseOrder", 
                                        "Customer_id", 
                                        "Interaction",
@@ -141,14 +125,14 @@ churn <- churn[, !(names(churn) %in% c("CaseOrder",
                                        "Area", 
                                        "TimeZone", 
                                        "Job",
-                                       "City",
+                                       "City", 
                                        "State"
                                        ))]
 
 summary(churn)
-
 str(churn)
 
+write.csv(churn, "CLEANED_churn.csv")
 
 # Select Variables --------------------------------------------------------
 
@@ -158,7 +142,7 @@ summary(Initial_model)
 
 stepwise_model <- stepAIC(object = Initial_model, direction = "backward") #(Larose & Larose, 2019)
 
-stepwise_model
+summary(stepwise_model)
 
 summary(stepwise_model) #(Larose & Larose, 2019)
 plot(stepwise_model)
@@ -188,10 +172,8 @@ vif_values #Looking for VIF values above 5.
 plot(vif_model)
 summary(vif_model)
 
-#removing StreamingTV, StreamingMovies, and MonthlyCharge because of a VIF above 5
-updated_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
-                      Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                      Bandwidth_GB_Year, data = churn)
+updated_model <- stepAIC(object = vif_model, direction = "backward")
+summary(updated_model)
 
 vif_values <- vif(updated_model)
 vif_values #Looking for VIF values above 5. 
