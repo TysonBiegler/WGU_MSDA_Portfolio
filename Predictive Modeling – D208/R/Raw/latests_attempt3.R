@@ -7,7 +7,8 @@ install.packages("ggeffects") # For visualizing model predictions
 install.packages("ggfortify") # For visualizing model diagnostic plots
 install.packages("gridExtra") # For arranging multiple ggplot graphs in a grid
 install.packages("performance") # For checking model assumptions
-install.packages("caret") # For data splitting into training and testing subsets 
+install.packages("caret") # For data splitting into training and testing subsets
+install.packages("caTools")
 
 library(tidyverse) # Includes ggplot2, dplyr, readr, and more for data manipulation and visualization
 library(ggplot2)
@@ -21,8 +22,8 @@ library(caret)
 library(sjPlot)
 library(gtsummary)
 library(flextable)
+library(caTools)
 
-tidyverse_packages(include_self = TRUE)
 
 # Set wd ------------------------------------------------------------------
 setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling â€“ D208/R/Raw')
@@ -31,34 +32,19 @@ setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling â€
 churn <- read_csv("churn_clean.csv")
 theme_set(theme_minimal())
 
-# Explore Data ------------------------------------------------------------
-str(churn)
-summary(churn)
-sum(is.na(churn))
-sum(duplicated(churn))
-
 # Research Question -------------------------------------------------------
 
 #"What factors impact customer tenure?"
 
+# Exploring the Data ------------------------------------------------------
+#getting a general understanding of the data
+glimpse(churn)
 
+#checking for na and duplicates
+sum(is.na(churn))
+sum(duplicated(churn))
 
 # Clearn/Prepare Data -----------------------------------------------------
-churn <- churn %>%
-  mutate_at(vars(43:50), as.factor) %>%
-  rename_at(vars(43:50), ~ c(
-    "Timely_response",
-    "Timely_fixes",
-    "Timely_replacements",
-    "Reliability",
-    "Options",
-    "Respectful",
-    "Courteous",
-    "Active_listening"
-  ))
-
-names(churn)
-
 
 # Convert Specific Columns to binary/factor
 churn <- churn %>%
@@ -74,21 +60,25 @@ churn <- churn %>%
                   TechSupport,
                   StreamingTV, 
                   StreamingMovies, 
-                  PaperlessBilling),
+                  PaperlessBilling
+                  ),
                 ~ as.factor(ifelse(trimws(.) == 'Yes', 1, 0))))
+
 
 # Convert Specific Columns to Factors
 churn <- churn %>%
-  mutate_at(vars(Area, 
-                 Marital, 
-                 Gender,
-                 Contract,
-                 InternetService,
-                 PaymentMethod, 
-                 City,
+  mutate_at(vars(City,
                  State,
-                 ),
-            as.factor)
+                 Zip,
+                 Gender,
+                 Marital,
+                 Contract,
+                 Area,
+                 County,
+                 PaymentMethod,
+                 InternetService
+  ),
+  as.factor)
 
 # Convert Specific Columns to Numeric
 churn <- churn %>%
@@ -96,8 +86,8 @@ churn <- churn %>%
                  MonthlyCharge,
                  Bandwidth_GB_Year,
                  Outage_sec_perweek
-                 ),
-            as.numeric)
+  ),
+  as.numeric)
 
 # Convert Specific Columns to Integer
 churn <- churn %>% 
@@ -113,6 +103,21 @@ glimpse(churn)
 str(churn)
 
 
+#renaming the survey response columns to be more intuitive
+churn <- churn %>%
+  mutate_at(vars(43:50), as.factor) %>%
+  rename_at(vars(43:50), ~ c(
+    "Timely_response",
+    "Timely_fixes",
+    "Timely_replacements",
+    "Reliability",
+    "Options",
+    "Respectful",
+    "Courteous",
+    "Active_listening"
+  ))
+
+
 #Removing columns im not going to use
 churn <- churn[, !(names(churn) %in% c("CaseOrder", 
                                        "Customer_id", 
@@ -120,107 +125,93 @@ churn <- churn[, !(names(churn) %in% c("CaseOrder",
                                        "UID",
                                        "Lat", 
                                        "Lng",
-                                       "County", 
-                                       "Zip",
-                                       "Area", 
+                                       "County",
                                        "TimeZone", 
                                        "Job",
-                                       "City", 
-                                       "State"
-                                       ))]
+                                       "City",
+                                       "State",
+                                       "Zip"
+))]
 
-summary(churn)
 str(churn)
 
 write.csv(churn, "CLEANED_churn.csv")
 
-# Select Variables --------------------------------------------------------
 
-Initial_model <- lm(Tenure ~ ., data = churn)
+# Create Test and Train sets ----------------------------------------------
+
+set.seed(123)
+split <- sample.split(churn$Tenure, SplitRatio = 0.7)
+training_set <- subset(churn, split == TRUE)
+test_set <- subset(churn, split == FALSE)
+
+
+
+# Initial model --------------------------------------------------------
+
+Initial_model <- lm(Tenure ~ ., data = training_set)
 
 summary(Initial_model)
 
-stepwise_model <- stepAIC(object = Initial_model, direction = "backward") #(Larose & Larose, 2019)
+Initial_model <- stepAIC(object = Initial_model, direction = "both") #(Larose & Larose, 2019)
 
-summary(stepwise_model)
-
-summary(stepwise_model) #(Larose & Larose, 2019)
-plot(stepwise_model)
-
-stepwise_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
-     Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-     TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
-     MonthlyCharge + Bandwidth_GB_Year, data = churn)
+summary(Initial_model)
 
 par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
-plot(stepwise_model)
+plot(Initial_model)
 
-summary(stepwise_model)
+summary(Initial_model)
 
-# Reduce model ------------------------------------------------------------
-vif_values <- vif(stepwise_model)
+# Reduced model ------------------------------------------------------------
+vif_values <- vif(Initial_model)
 vif_values #Looking for VIF values above 5. 
 
-# Removed StreamingTV, StreamingMovies, and MonthlyCharge
-vif_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
+# Removed MonthlyCharge since it was such a high VIF and then i will check VIF again to see if the others are ok
+reduced_model <- lm(formula = Tenure ~ Area + Children + Age + Gender + InternetService + 
                       Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                      TechSupport + PaperlessBilling + Bandwidth_GB_Year, data = churn)
+                      TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
+                      Bandwidth_GB_Year, data = churn)
 
-vif_values <- vif(vif_model)
-vif_values #Looking for VIF values above 5. 
+#checking to make sure all high VIF values have been removed
+vif_values <- vif(reduced_model)
+vif_values #Looking for VIF values above 5 again. 
 
-plot(vif_model)
-summary(vif_model)
+summary(reduced_model)
 
-updated_model <- stepAIC(object = vif_model, direction = "backward")
-summary(updated_model)
+reduced_model <- stepAIC(object = reduced_model, direction = "backward")
 
-vif_values <- vif(updated_model)
-vif_values #Looking for VIF values above 5. 
+reduced_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
+                      Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+                      TechSupport + StreamingTV + StreamingMovies + Bandwidth_GB_Year, data = churn)
 
+#plotting the reduced model
 par(mfrow = c(2, 2))
-plot(updated_model)
-summary(updated_model)
+plot(reduced_model)
 
-# Checking assumptions with visuals
-check_model(updated_model)
+summary(reduced_model)
 
-# Visualize model predictions
-ggeffect(updated_model)
-
-summary(updated_model)
-updated_model
+#Getting the predicted values with the test data
+y_pred = predict(reduced_model, newdata = test_set)
+#print the predicted values
+y_pred
 
 
+# Comparing models --------------------------------------------------------
 
+#Using non-parametric test due to normality assumption being violated
+# Geting the residuals from both models
+residuals_initial <- resid(Initial_model)
+residuals_reduced <- resid(reduced_model)
 
+# Combining the residuals into one data frame
+residuals_df <- data.frame(
+  Residuals = c(residuals_initial, residuals_reduced),
+  Model = rep(c("Initial_model", "Reduced_model"), 
+              times = c(length(residuals_initial), length(residuals_reduced)))
+)
 
-#Creating a fancy plot
-fancy_plot <- ggeffect(updated_model) %>% 
-  plot() %>% 
-  sjPlot::plot_grid()
-
-fancy_plot
-
-#creating a fancy table to check statistical significance
-fancy_table <- tbl_regression(
-  updated_model,
-  add_pairwise_contrasts = TRUE,
-  pvalue_fun = ~style_pvalue(.x, digits = 3)) %>% 
-  bold_p()
-
-
-fancy_table
-
-
-
-
-
-
-
-
-
-
+# comparing the residuals of each model.  Anova assumes normal dist. So im using a non parametric test instead. 
+kruskal.test(Residuals ~ Model, data = residuals_df)
 
 
 # univariate plots --------------------------------------------------------
