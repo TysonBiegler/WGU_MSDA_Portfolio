@@ -1,0 +1,496 @@
+---
+title: "D208 Predictive Modeling"
+author: "Tyson Biegler"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+subtitle: College of Information Technology, Western Governors University
+---
+
+```{r include=FALSE, echo=FALSE, warning=FALSE}
+
+# Set wd ------------------------------------------------------------------
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/R/Raw')
+
+# Initial Setup -----------------------------------------------------------
+#install.packages("tidyverse")
+#install.packages("MASS")# For stepwise regression (stepAIC)
+#install.packages("car") # For VIF calculation (detecting multicollinearity)
+#install.packages("ggeffects") # For visualizing model predictions
+#install.packages("ggfortify") # For visualizing model diagnostic plots
+#install.packages("gridExtra") # For arranging multiple ggplot graphs in a grid
+#install.packages("performance") # For checking model assumptions
+#install.packages("caret") # For data splitting into training and testing subsets
+#install.packages("caTools")
+
+library(tidyverse) # Includes ggplot2, dplyr, readr, and more for data manipulation and visualization
+library(ggplot2)
+library(MASS) # For stepwise model selection using stepAIC()
+library(car) # For calculating VIF (Variance Inflation Factor)
+library(ggeffects) # For creating prediction plots from regression models
+library(ggfortify) # For diagnostic plots of linear models
+library(gridExtra) # For arranging multiple plots in a grid
+library(performance) # For checking model assumptions visually (check_model)
+library(caret)
+library(sjPlot)
+library(gtsummary)
+library(flextable)
+library(caTools)
+
+
+
+
+# Get data ----------------------------------------------------------------
+churn <- read_csv("churn_clean.csv")
+theme_set(theme_minimal())
+```
+
+# Part I: Research Question
+
+"What factors impact customer tenure?"
+
+**A1.** The average customer Tenure is 35.5 months or 2.88 years I will investigate the factors that impact customer tenure since letting a customer go rather than retaining them can be a significant detriment to the company's profit, as noted by Amy Gallo of Harvard Business Review: “...acquiring a new customer is anywhere from five to 25 times more expensive than retaining an existing one” **(Gallo, 2014)**.
+
+**A2.** This analysis aims to create a multiple linear regression model that will assist in predicting customer tenure. Knowing the factors that increase or decrease the customer’s tenure will help the executives make data-informed decisions that will benefit the company and keep the customer happy.
+
+# Part II: Method Justification
+
+**B1.** There are four assumptions of linear regression **(Z. Bobbit, 2020)**.
+
+1.  A linear relationship exists between the dependent and independent variables.
+
+2.  The variance of the residuals follows a normal distribution.
+
+3.  The residuals are homoscedastic. In other words, the residual plot should not show any signs of a pattern.
+
+4.  The residuals are independent. The residuals cannot be dependent on the surrounding points. While there are only four assumptions to a linear model, other factors must be considered **(G. Martin, n.d.)**.
+
+    1.  Multi-collinearity should be minimized so that multiple variables do not tell the same story. Multi-collinearity occurs when the independent variables are correlated with each other.
+
+    2.  Outliers of residuals. Residuals can have high leverage and outside of 2 standard deviations, meaning that they have a large impact on the coefficients of the data and are outliers. Just like any other outlier, these outliers should be investigated further to determine if they should be removed or retained.
+
+**B2.** I will be using R within R-Studio to perform this analysis. While Python can perform this same statistical analysis, it was not explicitly designed for this purpose. R, on the other hand, was specifically designed for statistical analysis **(Ihaka, n.d., p. 12)**. Due to this, R is the more logical choice for performing statistical tasks. Secondly, I have more experience using R than I do with python. Ive used R to complete previous courses and I feel that it is more intuitive than python. 
+
+**B3.** Tenure is a continuous variable representing the months a customer has been with the company, making it a valuable metric for understanding customer retention. Tenure can be influenced by numerous numeric and categorical variables simultaneously making multiple regression a viable option to consider assuming all of the assumptions in B1 are met. 
+
+# Part III: Data Preparation
+
+```{r echo=FALSE, include=FALSE}
+# Research Question -------------------------------------------------------
+
+#"What factors impact customer tenure?"
+
+# Exploring the Data ------------------------------------------------------
+#getting a general understanding of the data
+glimpse(churn)
+
+#checking for na and duplicates
+sum(is.na(churn))
+sum(duplicated(churn))
+
+# Clearn/Prepare Data -----------------------------------------------------
+
+# Convert Specific Columns to binary/factor
+churn <- churn %>%
+  mutate(across(c(Churn, 
+                  Techie, 
+                  Port_modem, 
+                  Tablet, 
+                  Phone, 
+                  Multiple,
+                  OnlineSecurity, 
+                  OnlineBackup, 
+                  DeviceProtection, 
+                  TechSupport,
+                  StreamingTV, 
+                  StreamingMovies, 
+                  PaperlessBilling
+                  ),
+                ~ as.factor(ifelse(trimws(.) == 'Yes', 1, 0))))
+
+
+# Convert Specific Columns to Factors
+churn <- churn %>%
+  mutate_at(vars(City,
+                 State,
+                 Zip,
+                 Gender,
+                 Marital,
+                 Contract,
+                 Area,
+                 County,
+                 PaymentMethod,
+                 InternetService
+  ),
+  as.factor)
+
+# Convert Specific Columns to Numeric
+churn <- churn %>%
+  mutate_at(vars(Tenure,
+                 MonthlyCharge,
+                 Bandwidth_GB_Year,
+                 Outage_sec_perweek
+  ),
+  as.numeric)
+
+# Convert Specific Columns to Integer
+churn <- churn %>% 
+  mutate_at(vars(Children,
+                 Age,
+                 Population,
+                 Email,
+                 Contacts,
+                 Yearly_equip_failure),
+            as.integer)
+
+glimpse(churn)
+str(churn)
+
+
+#renaming the survey response columns to be more intuitive
+churn <- churn %>%
+  mutate_at(vars(43:50), as.factor) %>%
+  rename_at(vars(43:50), ~ c(
+    "Timely_response",
+    "Timely_fixes",
+    "Timely_replacements",
+    "Reliability",
+    "Options",
+    "Respectful",
+    "Courteous",
+    "Active_listening"
+  ))
+
+
+#Removing columns im not going to use
+churn <- churn[, !(names(churn) %in% c("CaseOrder", 
+                                       "Customer_id", 
+                                       "Interaction",
+                                       "UID",
+                                       "Lat", 
+                                       "Lng",
+                                       "County",
+                                       "TimeZone", 
+                                       "Job",
+                                       "City",
+                                       "State",
+                                       "Zip"
+))]
+
+str(churn)
+
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Cleaned')
+
+write.csv(churn, "CLEANED_churn.csv")
+```
+
+**C1.** I need to remove irrelevant columns such as customer_id, CaseOrder, and some other columns that have data not relevant to my question.  Secondly I have to update the data types. The Categorical variables will be converted to factors and the remaining quantitative variables will be converted to integer or numeric depending on the values.  Once I have all the data cleaned and prepared Ill be ready to feed it into an initial linear model. 
+
+**C2.** The dependent variable I'm explaining is 'Tenure.' After I removed several columns of data that had to many unique entries or contained irrelevant information, such as customer id, or lat and lng, I was left with around 70 independent variables, including the automatically generated dummy variables. 
+
+The numeric and integer types all include a min, 1st Qu, Median, Mean, 3rd Qu, and Max values whereas the factors include just the count for each level. The summary statistics below show all of the variables including the dependant variable, that I will be using in my linear model. I will explain how I ended up with these variables in the next few sections.
+
+```{r}
+summary(churn)
+```
+
+**C3.** After running stepwise model selection based on the Akaike Information Criterion (AIC) and Backward elimination, I was left with far fewer variables than the initial model that included over 70 variables. I eliminated more using VIF(), which I will explain later. The following charts are the distributions of the variables I included in the final “updated_model.”
+
+#### Univariate Distribution Plots:
+
+```{r echo=FALSE, message=FALSE}
+
+# univariate plots --------------------------------------------------------
+# Continuous variables
+univariate1 <- ggplot(churn, aes(x = Tenure)) + 
+  geom_histogram(bins = 20, fill = "#e28743", alpha = 0.8) + 
+  ggtitle("Tenure")
+
+univariate2 <- ggplot(churn, aes(x = Children)) + 
+  geom_histogram(bins =11, fill = "#e28743", alpha = 0.8) + 
+  ggtitle("Children")
+
+univariate3 <- ggplot(churn, aes(x = Age)) + 
+  geom_histogram(bins = 20, fill = "#e28743", alpha = 0.8) + 
+  ggtitle("Age")
+
+univariate4 <- ggplot(churn, aes(x = Bandwidth_GB_Year)) + 
+  geom_histogram(bins = 20, fill = "#e28743", alpha = 0.8) + 
+  ggtitle("Bandwidth_GB_Year")
+
+univariate5 <- ggplot(churn, aes(x = Gender)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("Gender")
+
+univariate6 <- ggplot(churn, aes(x =  InternetService)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle(" InternetService")
+
+univariate7 <- ggplot(churn, aes(x = Multiple)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("Multiple")
+
+univariate8 <- ggplot(churn, aes(x = OnlineSecurity)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("OnlineSecurity")
+
+univariate9 <- ggplot(churn, aes(x = OnlineBackup)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("OnlineBackup")
+
+univariate10 <- ggplot(churn, aes(x = DeviceProtection)) +
+  geom_bar(fill = "#e28743", alpha = 0.8) +
+  ggtitle("DeviceProtection")
+
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  univariate1, univariate2, 
+  univariate3, univariate4,
+  univariate5, univariate6, 
+  univariate7, univariate8,
+  univariate9, univariate10,
+  ncol = 2
+)
+```
+
+#### Bivariate Distribution Plots:
+
+```{r echo=FALSE, message=FALSE}
+
+# bivariate plots ---------------------------------------------------------
+# Categorical variables
+
+bivariate1 <- ggplot(churn, aes(x = Bandwidth_GB_Year, y = Tenure)) + 
+  geom_point(color = "#154c79", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "#e28743") +
+  ggtitle("Tenure vs Bandwidth_GB_Year") +
+  xlab("Bandwidth_GB_Year") +
+  ylab("Tenure")
+
+bivariate2 <- ggplot(churn, aes(x = Children, y = Tenure)) +
+  geom_point(color = "#154c79", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "#e28743") +
+  ggtitle("Tenure vs Children") +
+  xlab("Number of Children") +
+  ylab("Tenure")
+
+bivariate3 <- ggplot(churn, aes(x = Age, y = Tenure)) +
+  geom_point(color = "#154c79", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "#e28743") +
+  ggtitle("Tenure vs Age") +
+  xlab("Age") +
+  ylab("Tenure")
+
+bivariate4 <- ggplot(churn, aes(x = as.factor(Gender), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs Gender") +
+  xlab("Gender") +
+  ylab("Tenure")
+
+bivariate5 <- ggplot(churn, aes(x = as.factor(InternetService), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs InternetService") +
+  xlab("InternetService (0 = No, 1 = Yes)") +
+  ylab("Tenure")
+
+bivariate6 <- ggplot(churn, aes(x = as.factor(Multiple), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs Multiple") +
+  xlab("Multiple (0 = No, 1 = Yes)") +
+  ylab("Tenure")
+
+bivariate7 <- ggplot(churn, aes(x = as.factor(OnlineSecurity), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs OnlineSecurity") +
+  xlab("OnlineSecurity (0 = No, 1 = Yes)") +
+  ylab("Tenure")
+
+bivariate8 <- ggplot(churn, aes(x = as.factor(OnlineBackup), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs OnlineBackup") +
+  xlab("OnlineBackup (0 = No, 1 = Yes)") +
+  ylab("Tenure")
+
+bivariate9 <- ggplot(churn, aes(x = as.factor(DeviceProtection), y = Tenure)) +
+  geom_boxplot(fill = "#e28743", alpha = 0.7) +
+  ggtitle("Tenure vs DeviceProtection") +
+  xlab("DeviceProtection (0 = No, 1 = Yes)") +
+  ylab("Tenure")
+
+
+
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  bivariate1, bivariate2, bivariate3,
+  bivariate4, bivariate5, bivariate6,
+  bivariate7, bivariate8, bivariate9,
+  ncol = 3
+)
+```
+
+**C4.** To begin with I will check for na values and duplicates. For linear regression to work properly I neeed to make sure all the data is the appropriate type. To do this I will be converting the survey responses to ‘factor’ while changing the names of the survey columns to be more intuitive.  Next I will convert the remaining categorical columns to factors and the quantitative columns will be converted to integer or numeric depending on the values.  
+
+I need to drop irrelevant columns and convert data types to more appropriate ones to prepare the data. Some categorical variables have more than 8000 unique entries, which will also be dropped. I will not create any dummy variables because R automatically creates dummy variables or indicator variables in the linear model when a categorical variable is passed into the left of the “\~”, so long as the categorical variable is a factor datatype **(Çetinkaya-Rundel et al., 2021)**.\
+\
+
+**C5.** The prepared data set will be included in the uploaded documents. I have named it “CLEANED_churn.csv.”\
+Part IV: Model Comparison and Analysis
+
+# Part IV: Model Comparison and Analysis
+
+**D1.**  I created an initial model using all the variables mentioned in C2 by using the “\~ ., data = churn” method. Using a “.” to the right of the tilda will include all variables in the data set. 
+
+```{r echo=FALSE, include=FALSE}
+# Create Test and Train sets ----------------------------------------------
+
+set.seed(123)
+split <- sample.split(churn$Tenure, SplitRatio = 0.7)
+training_set <- subset(churn, split == TRUE)
+test_set <- subset(churn, split == FALSE)
+
+
+
+# Initial model --------------------------------------------------------
+
+Initial_model <- lm(Tenure ~ ., data = training_set)
+```
+
+```{r}
+summary(Initial_model)
+```
+
+**D2.** After running the initial linear model from the training set (“Initial_model”) it became apparent that there were several values that were not statistically significant as noted by the lack of the ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXe5VNjtMQSILD2pI0shhZtLtH-9os-62mspk6YayIYbUurztTNQUyfDP2EmJ2m7opZnO7gK8RrpsRGNV0X26vtSuR9NOBJ-d609ViFOYEhBXcD74x4CWnmGkHASh3iQqP5szgZmww?key=SXQIj9I0Eg3DnjP4XZcTs35-)marking that indicates that the values are statistically significant. I've chosen to use backward stepwise selection **(Larose & Larose, 2019)**, and created a model named “stepwise_model”, because I have a large amount of variables and backward elimination will remove each insignificant variable until only those values that have a meaningful contribution will remain. 
+
+The following table shows that this dimension reduction technique successfully decreased the amount of variables that would be included in the final model. However, *"PaymentMethodElectronic Check"*, *"PaymentMethodCredit Card (automatic)"*, and *"AreaUrban"* all have p-values that are greater than 0.05 indicating that these are not contributing significantly to the model. So, I looked at the Variance Inflation Factor (VIF) values of the stepwise model to check multicollinearity. 
+
+```{r echo=FALSE, include=FALSE}
+Initial_model <- stepAIC(object = Initial_model, direction = "both")
+```
+
+```{r warning=FALSE}
+summary(Initial_model)
+```
+
+According to Zach Bobbitt from statology, “A value greater than 5 indicates potentially severe correlation between a given predictor variable and other predictor variables in the model. In this case, the coefficient estimates and p-values in the regression output are likely unreliable. **(Z. Bobbitt, 2019)**.”  So, I looked for all VIF values above 5.
+
+```{r}
+vif_values <- vif(Initial_model)
+vif_values #Looking for VIF values above 5. 
+```
+
+As you can see, StreamingTV, StreamingMovies, and MonthlyCharge all had VIF values above 5.  Because MonthlyCharge was so much higher than the rest, I decided to remove it first and see if that made the others acceptable.
+
+```{r}
+vif_values <- vif(Initial_model)
+vif_values #Looking for VIF values above 5. 
+
+# Removed MonthlyCharge since it was such a high VIF and then i will check VIF again to see if the others are ok
+reduced_model <- lm(formula = Tenure ~ Area + Children + Age + Gender + InternetService + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + Bandwidth_GB_Year, data = churn)
+
+summary(reduced_model)
+```
+
+I found that after removing MonthlyCharge with a VIF of 23.87, the model returned "AreaSuburban", "AreaUrban", "PaperlessBilling1," "PaymentMethodCredit Card (automatic)," "PaymentMethodElectronic Check," "PaymentMethodMailed Check" to all have values that were not statistically significant. The following table is the result of the second stepwise elimination. I checked the VIF values for the updated model and found all values around 1.
+
+```{r echo=FALSE, include=FALSE}
+reduced_model <- stepAIC(object = reduced_model, direction = "both")
+
+reduced_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
+    Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+    TechSupport + StreamingTV + StreamingMovies + Bandwidth_GB_Year, 
+    data = churn)
+```
+
+```{r}
+summary(reduced_model)
+```
+
+**D3.** The updated model (reduced_model), includes Tenure (dependant variable), Children, Age, GenderMale, GenderNonbinary, InternetServiceFiber Optic, InternetServiceNone, Multiple1, OnlineSecurity1, OnlineBackup1, DeviceProtection1, TechSupport1, StreamingTV1, StreamingMovies1, and Bandwidth_GB_Year. 
+
+The reduced_model shows an adjusted R-squared value of 0.9998, meaning that the model accounts for 99.98% of variance in Tenure. The models f-statistic is 4.649e+06 and the p-value is 2.2e-16 which indicates that the model works and is highly significant. The Residuals range from -0.4536 to 0.4400 with a median of 0.1829. In this new model, all of the preidictor variabels are statistically significant.
+
+**E1**. To compare the initial model and the reduced model, I used a kruskal-wallis test as opposed to an ANOVA becuase ANOVA assumes a normal distribution. Because the residuals are not normally distributed I used a non-parametric alternative to the ANOVA, known as the Kruskal-wallis test.\
+
+```{r echo=FALSE, include=FALSE}
+# Comparing models --------------------------------------------------------
+
+#Using non-parametric test due to normality assumption being violated
+# Geting the residuals from both models
+residuals_initial <- resid(Initial_model)
+residuals_reduced <- resid(reduced_model)
+
+# Combining the residuals into one data frame
+residuals_df <- data.frame(
+  Residuals = c(residuals_initial, residuals_reduced),
+  Model = rep(c("Initial_model", "Reduced_model"), 
+              times = c(length(residuals_initial), length(residuals_reduced)))
+)
+
+```
+
+```{r}
+
+# comparing the residuals of each model.
+kruskal.test(Residuals ~ Model, data = residuals_df)
+```
+
+The Kruskal-Wallis test compares the distributions of residuals between two models and tests whether their medians are the same. The test statistic (chi-squared = 1.2851) with 1 degree of freedom returned a p-value of 0.2569, indicating no significant difference between the residual distributions of the models. This suggests that the residuals from both models are similar in distribution. Because the p-value is greater than 0.05, I fail to reject the null hypothesis that there is no difference between the distribution of the residuals in each model.
+
+**E2.** I will include the full code file in my assessment uploads.
+
+The reduced model has a residual standard error of 0.3277 and a adjusted r-squared value of 0.9998. This suggests that the model has very good fit. In terms of predictive power, this residual standard error indicates that the reduced model provides very precise predictions.
+
+```{r echo=FALSE}
+#plotting the reduced model
+par(mfrow = c(2, 2))
+plot(reduced_model)
+```
+
+The **residuals vs leverage** (bottom right) plot shows that there are no high leverage point or outliers based on 'cooks distance.'
+
+The **Q-Q residuals** plot (top right) show that the residuals do not stick to the diagonal line expecially on the tails indicating that the residuals are not normally distributed.
+
+The r**esiduals vs fitted** (top left)plot show that the horizontal red line is reasonably flat but the residuals show horizontal lines rather than randomness suggesting heteroscadasticity rather than the assumption of homoscedasticity.
+
+The **scale-location** (bottom left) plot checks for homoscedasticity. Once again the residuals show horizontal lines. Ideally these values should be evenly spread across the plot.
+
+# Part V: Data Summary and Implications
+
+**F1.** In this model, the Y-intercept is not particularly meaningful because many of the variables do not have practical interpretations when equal to zero. For example, an age of zero would imply the presence of customers who are newborns, which is unrealistic. Additionally, some variables are binary, where a value of zero represents "No." In other words, when all predictors are zero, the expected value of tenure would be -6.787 months, which dosen't make sense. So the Y-intercept in this context is not meaningful.
+
+The model has a statistically significant p-value meaning that I can reject the null hypothesis that the predictors have no effect on tenure. In this particular model, InternetServiceFiber Optic and InternetServiceNone have the highest positive coefficients (5.055 and 5.054) meaning that the customers with fiber optic service or no internet service are associated with higher tenure. in contrast, it appeas that the two variables with the most negative coeefficients, StreamingTV1 and StreamingMovies1 (-2.783 and -2.564) are both associated with customers who have lower tenure.
+
+**F2.** This model can identify discrepancies between predicted and actual customer tenure, which is critical for mitigating churn. For example, if the model predicts a customer's tenure to be 18 months, but their actual tenure reaches 24 months, it could signal imminent churn. In such cases, the company should take proactive measures such as offering service upgrades, discounts, or addressing potential dissatisfaction to retain the customer. Similarly, if a customer is predicted to stay for 24 months, but by 18 months their usage declines or their customer service calls increase, this could indicate early signs of churn that require prompt intervention.
+
+Additionally, the model can predict expected tenure for new customers based on demographics and service usage patterns. Insights from key predictors, such as the positive impact of "*InternetServiceFiber Optic"* and the negative impact of "*StreamingTV*," enable the company to tailor offerings. For example, promoting fiber-optic services or improving streaming-related issues could enhance retention among customers with a higher risk of shorter tenure.
+
+# Part VI: Demonstration
+
+**G.** A link to the panopto demonstration video will be included in the uploaded documents.
+
+**H:** Web Sources:
+
+1.  **Bobbitt, Z. (2019, March 10).** Multicollinearity in regression. Statology. Retrieved November 17, 2024, from <https://www.statology.org/multicollinearity-regression/>
+
+2.  **Bobbitt, Z. (2020, January 8).** The four assumptions of linear regression. Statology. Retrieved November 17, 2024, from <https://www.statology.org/linear-regression-assumptions/>
+
+<!-- -->
+
+4.  **Çetinkaya-Rundel, M., Hardin, J., & Horton, N. J. (2021).** Dummy variables and interactions. Modern Statistics with R. Retrieved December 4, 2024, from <https://www.modernstatisticswithr.com/regression.html#dummy>
+
+<!-- -->
+
+5.  **Gallo, A. (2014, October 29).** The value of keeping the right customers. Harvard Business Review. Retrieved November 17, 2024, from <https://hbr.org/2014/10/the-value-of-keeping-the-right-customers>
+
+<!-- -->
+
+6.  **Ihaka, R. (n.d.).** The R Project: A brief history and thoughts about the future (p. 12). The University of Auckland. Retrieved November 17, 2024, from <https://www.stat.auckland.ac.nz/~ihaka/downloads/Otago.pdf>
+
+<!-- -->
+
+7.  **Larose, C. D., & Larose, D. T. (2019).** Data science using Python and R. Wiley. Retrieved from [https://eds.p.ebscohost.com/eds/ebookviewer/ebook/bmxlYmtfXzIwOTEzNzFfX0FO0?sid=04ef9475-3bed-4dbe-8317-a1c5eb6da3cb\@redis&vid=0&format=EB&lpid=lp_151&rid=0](https://eds.p.ebscohost.com/eds/ebookviewer/ebook/bmxlYmtfXzIwOTEzNzFfX0FO0?sid=04ef9475-3bed-4dbe-8317-a1c5eb6da3cb@redis&vid=0&format=EB&lpid=lp_151&rid=0)
+
+<!-- -->
+
+8.  **Martin, G.** [R Programming 101]. (n.d.). Multiple regression - Making sure that your assumptions are met [Video]. YouTube. <https://www.youtube.com/watch?v=1lwvNLDSu0s&t=1092s>

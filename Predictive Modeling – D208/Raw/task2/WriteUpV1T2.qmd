@@ -1,0 +1,139 @@
+---
+title: "Untitled"
+author: "Tyson Biegler"
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#install.packages("tidyverse")
+
+library(tidyverse)
+
+# Set wd ------------------------------------------------------------------
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Raw/task2')
+
+# Get data ----------------------------------------------------------------
+churn <- read_csv("churn_clean.csv")
+theme_set(theme_minimal())
+
+```
+
+## Part I: Research Question
+
+Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.
+
+A.  Describe the purpose of this data analysis by doing the following in a document file:
+
+<!-- -->
+
+1.  Summarize one research question that is relevant to a real-world organizational situation captured in the data set you have selected and that you will answer using logistic regression.
+
+2.  Define the goals of the data analysis.
+
+Note: Ensure that your goals are within the scope of your research question and are represented in the available data.
+
+## Part II: Method Justification
+
+Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.
+
+B.  Describe logistic regression methods by doing the following in a document file:
+
+<!-- -->
+
+1.  Summarize four assumptions of a logistic regression model.
+
+2.  Describe two benefits of using Python or R in support of various phases of the analysis.
+
+3.  Explain why logistic regression is an appropriate technique to analyze the research question summarized in part I.
+
+## Part III: Data Preparation
+
+Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.
+
+C.  Summarize the data preparation process for logistic regression by doing the following in a document file:
+
+<!-- -->
+
+1.  Describe your data cleaning goals and the steps used to clean the data to achieve the goals that align with your research question, including the annotated code.
+
+2.  Describe the dependent variable and all independent variables using summary statistics that are required to answer the research question, including a screenshot of the summary statistics output for each of these variables.
+
+3.  Generate univariate and bivariate visualizations of the distributions of the dependent and independent variables, including the dependent variable in your bivariate visualizations.
+
+4.  Describe your data transformation goals that align with your research question and the steps used to transform the data to achieve the goals, including the annotated code.
+
+5.  Provide the prepared data set as a CSV file.
+
+## Part IV: Model Comparison and Analysis
+
+Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.
+
+D.  Compare an initial and a reduced logistic regression model by doing the following in a document file:
+
+<!-- -->
+
+1.  Construct an initial logistic regression model from all independent variables that were identified in part C2.
+
+2.  Justify a statistically based feature selection procedure or a model evaluation metric to reduce the initial model in a way that aligns with the research question.
+
+3.  Provide a reduced logistic regression model that follows the feature selection or model evaluation process in part D2, including a screenshot of the output for each model.
+
+<!-- -->
+
+E.  Analyze the data set using your reduced logistic regression model by doing the following in a document file:
+
+<!-- -->
+
+1.  Explain your data analysis process by comparing the initial logistic regression model and reduced logistic regression model, including the following element:
+
+• a model evaluation metric
+
+2.  Provide the output and all calculations of the analysis you performed, including the following elements for your reduced logistic regression model:
+
+• confusion matrix
+
+• accuracy calculation
+
+3.  Provide an executable, error-free copy of the code used to support the implementation of the logistic regression models using a Python or R file.
+
+## Part V: Data Summary and Implications
+
+Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.
+
+F.  Summarize your findings and assumptions by doing the following in a document file:
+
+<!-- -->
+
+1.  Discuss the results of your data analysis, including the following elements:
+
+• a regression equation for the reduced model
+
+• an interpretation of the coefficients of the reduced model
+
+• the statistical and practical significance of the reduced model
+
+• the limitations of the data analysis
+
+2.  Recommend a course of action based on your results.
+
+## Part VI: Demonstration
+
+G.  Provide a Panopto video recording that includes the presenter and a vocalized demonstration of the functionality of the code used for the analysis of the programming environment, including the following elements:
+
+• an identification of the version of the programming environment
+
+• a comparison of the initial logistic regression model you used and the reduced logistic regression model you used in your analysis
+
+• an interpretation of the coefficients of the reduced model
+
+Note: The audiovisual recording should feature you visibly presenting the material (i.e., not in voiceover or embedded video) and should simultaneously capture both you and your multimedia presentation.
+
+Note: For instructions on how to access and use Panopto, use the "Panopto How-To Videos" web link provided below. To access Panopto's website, navigate to the web link titled "Panopto Access," and then choose to log in using the “WGU” option. If prompted, log in using your WGU student portal credentials, and then it will forward you to Panopto’s website.
+
+To submit your recording, upload it to the Panopto drop box titled “Regression Modeling – NBMx \| D208.” Once the recording has been uploaded and processed in Panopto's system, retrieve the URL of the recording from Panopto and copy and paste it into the Links option. Upload the remaining task requirements using the Attachments option.
+
+H.  List the web sources used to acquire data or segments of third-party code to support the application. Ensure the web sources are reliable.
+
+I.  Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.

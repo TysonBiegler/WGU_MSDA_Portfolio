@@ -1,14 +1,14 @@
 
 # Initial Setup -----------------------------------------------------------
-install.packages("tidyverse")
-install.packages("MASS")# For stepwise regression (stepAIC)
-install.packages("car") # For VIF calculation (detecting multicollinearity)
-install.packages("ggeffects") # For visualizing model predictions
-install.packages("ggfortify") # For visualizing model diagnostic plots
-install.packages("gridExtra") # For arranging multiple ggplot graphs in a grid
-install.packages("performance") # For checking model assumptions
-install.packages("caret") # For data splitting into training and testing subsets
-install.packages("caTools")
+#install.packages("tidyverse")
+#install.packages("MASS")# For stepwise regression (stepAIC)
+#install.packages("car") # For VIF calculation (detecting multicollinearity)
+#install.packages("ggeffects") # For visualizing model predictions
+#install.packages("ggfortify") # For visualizing model diagnostic plots
+#install.packages("gridExtra") # For arranging multiple ggplot graphs in a grid
+#install.packages("performance") # For checking model assumptions
+#install.packages("caret") # For data splitting into training and testing subsets
+#install.packages("caTools")
 
 library(tidyverse) # Includes ggplot2, dplyr, readr, and more for data manipulation and visualization
 library(ggplot2)
@@ -26,10 +26,12 @@ library(caTools)
 
 
 # Set wd ------------------------------------------------------------------
-setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/R/Raw')
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Raw')
 
 # Get data ----------------------------------------------------------------
 churn <- read_csv("churn_clean.csv")
+
+
 theme_set(theme_minimal())
 
 # Research Question -------------------------------------------------------
@@ -61,8 +63,8 @@ churn <- churn %>%
                   StreamingTV, 
                   StreamingMovies, 
                   PaperlessBilling
-                  ),
-                ~ as.factor(ifelse(trimws(.) == 'Yes', 1, 0))))
+  ),
+  ~ as.factor(ifelse(trimws(.) == 'Yes', 1, 0))))
 
 
 # Convert Specific Columns to Factors
@@ -135,8 +137,9 @@ churn <- churn[, !(names(churn) %in% c("CaseOrder",
 
 str(churn)
 
-write.csv(churn, "CLEANED_churn.csv")
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Cleaned')
 
+write.csv(churn, "CLEANED_churn.csv")
 
 # Create Test and Train sets ----------------------------------------------
 
@@ -160,17 +163,15 @@ summary(Initial_model)
 par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
 plot(Initial_model)
 
-summary(Initial_model)
 
 # Reduced model ------------------------------------------------------------
 vif_values <- vif(Initial_model)
 vif_values #Looking for VIF values above 5. 
 
 # Removed MonthlyCharge since it was such a high VIF and then i will check VIF again to see if the others are ok
-reduced_model <- lm(formula = Tenure ~ Area + Children + Age + Gender + InternetService + 
-                      Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                      TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
-                      Bandwidth_GB_Year, data = churn)
+reduced_model <- lm(formula = Tenure ~ Area + Children + Age + Gender + InternetService + Multiple + OnlineSecurity + 
+                      OnlineBackup + DeviceProtection + TechSupport + StreamingTV + StreamingMovies + 
+                      PaperlessBilling + PaymentMethod + Bandwidth_GB_Year, data = churn)
 
 #checking to make sure all high VIF values have been removed
 vif_values <- vif(reduced_model)
@@ -178,11 +179,12 @@ vif_values #Looking for VIF values above 5 again.
 
 summary(reduced_model)
 
-reduced_model <- stepAIC(object = reduced_model, direction = "backward")
+reduced_model <- stepAIC(object = reduced_model, direction = "both")
 
 reduced_model <- lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
                       Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                      TechSupport + StreamingTV + StreamingMovies + Bandwidth_GB_Year, data = churn)
+                      TechSupport + StreamingTV + StreamingMovies + Bandwidth_GB_Year, 
+                    data = churn)
 
 #plotting the reduced model
 par(mfrow = c(2, 2))
