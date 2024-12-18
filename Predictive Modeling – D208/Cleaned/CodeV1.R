@@ -1,27 +1,24 @@
+#Tyson Biegler
+#D208 Task1
+#Student ID: 012170282
+
 
 # Initial Setup -----------------------------------------------------------
 #install.packages("tidyverse")
 #install.packages("MASS")# For stepwise regression (stepAIC)
 #install.packages("car") # For VIF calculation (detecting multicollinearity)
-#install.packages("ggeffects") # For visualizing model predictions
-#install.packages("ggfortify") # For visualizing model diagnostic plots
-#install.packages("gridExtra") # For arranging multiple ggplot graphs in a grid
-#install.packages("performance") # For checking model assumptions
-#install.packages("caret") # For data splitting into training and testing subsets
+#install.packages("ggfortify")# For visualizing model diagnostic plots
+#install.packages("gridExtra")# For arranging multiple ggplot graphs in a grid
+#install.packages("performance")# For checking model assumptions
 #install.packages("caTools")
 
 library(tidyverse) # Includes ggplot2, dplyr, readr, and more for data manipulation and visualization
 library(ggplot2)
 library(MASS) # For stepwise model selection using stepAIC()
 library(car) # For calculating VIF (Variance Inflation Factor)
-library(ggeffects) # For creating prediction plots from regression models
 library(ggfortify) # For diagnostic plots of linear models
 library(gridExtra) # For arranging multiple plots in a grid
 library(performance) # For checking model assumptions visually (check_model)
-library(caret)
-library(sjPlot)
-library(gtsummary)
-library(flextable)
 library(caTools)
 
 
@@ -196,7 +193,7 @@ summary(reduced_model)
 y_pred = predict(reduced_model, newdata = test_set)
 #print the predicted values
 y_pred
-
+view(test_set)
 
 # Comparing models --------------------------------------------------------
 
