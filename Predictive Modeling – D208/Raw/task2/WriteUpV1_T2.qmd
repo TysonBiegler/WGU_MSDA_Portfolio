@@ -1,0 +1,504 @@
+---
+title: "D208 Task 2"
+author: "Tyson Biegler"
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+# PREPARING THE DATA
+
+#install.packages("tidyverse")
+
+library(tidyverse)
+library(tidymodels)
+library(MASS)
+library(car)
+
+# Set wd ------------------------------------------------------------------
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Raw/task2')
+
+# Get data ----------------------------------------------------------------
+churn <- read_csv("churn_clean.csv")
+theme_set(theme_minimal())
+
+
+# Research Question -------------------------------------------------------
+
+# What variabales contribute most to Churn?
+
+# Exploring the Data ------------------------------------------------------
+#getting a general understanding of the data
+
+glimpse(churn)
+
+#checking for na and duplicates
+sum(is.na(churn))
+sum(duplicated(churn))
+
+# Clearn/Prepare Data -----------------------------------------------------
+
+# Convert Specific Columns to Binary Factor with levels 1 and 0
+churn <- churn %>%
+  mutate(across(c(Churn, 
+                  Techie, 
+                  Port_modem, 
+                  Tablet, 
+                  Phone, 
+                  Multiple,
+                  OnlineSecurity, 
+                  OnlineBackup, 
+                  DeviceProtection, 
+                  TechSupport,
+                  StreamingTV, 
+                  StreamingMovies, 
+                  PaperlessBilling),
+                ~ factor(. == 'Yes', levels = c(FALSE, TRUE), labels = c(0, 1))))
+
+
+# Convert Specific Columns to Factors
+churn <- churn %>%
+  mutate_at(vars(City,
+                 State,
+                 Zip,
+                 Gender,
+                 Marital,
+                 Contract,
+                 Area,
+                 County,
+                 PaymentMethod,
+                 InternetService
+  ),
+  as.factor)
+
+# Convert Specific Columns to Numeric
+churn <- churn %>%
+  mutate_at(vars(Tenure,
+                 MonthlyCharge,
+                 Bandwidth_GB_Year,
+                 Outage_sec_perweek
+  ),
+  as.numeric)
+
+# Convert Specific Columns to Integer
+churn <- churn %>% 
+  mutate_at(vars(Children,
+                 Age,
+                 Population,
+                 Email,
+                 Contacts,
+                 Yearly_equip_failure),
+            as.integer)
+
+#renaming the survey response columns to be more intuitive
+churn <- churn %>%
+  mutate_at(vars(43:50), as.factor) %>%
+  rename_at(vars(43:50), ~ c(
+    "Timely_response",
+    "Timely_fixes",
+    "Timely_replacements",
+    "Reliability",
+    "Options",
+    "Respectful",
+    "Courteous",
+    "Active_listening"
+  ))
+
+glimpse(churn)
+str(churn)
+
+
+#Removing columns im not going to use
+churn <- churn[, !(names(churn) %in% c("CaseOrder", 
+                                       "Customer_id", 
+                                       "Interaction",
+                                       "UID",
+                                       "Lat", 
+                                       "Lng",
+                                       "County",
+                                       "TimeZone", 
+                                       "Job",
+                                       "City",
+                                       "State",
+                                       "Zip"
+))]
+
+str(churn)
+```
+
+## **Part I: Research Question**
+
+**A1.**  What variables have the biggest impact on customer churn?
+
+**A2.** This analysis aims to create a multiple logistic regression model to accurately predict customer churn. Company executives can use this model's data to accurately address customer churn.
+
+## **Part II: Method Justification**
+
+**B1**.  According to Zach Bobbitt from statology.org, there are 6 logistic regression assumptions. **(Z. Bobbit 2020)**\
+
+1.  The Response variable needs to be binary. I will be using a binary factor type in this analysis.
+
+2.  The observations need to be independent because they do not represent the same individual. For example, time series data about the height of an individual would violate this assumption because the observations are all repeated measurements unique to an individual.
+
+3.  multi-colinearity needs to be minimized among variables. Multicolinearity occurs when there is a high correlation between variables. Multi-colinearity is a problem because the highly correlated variables essentially tell the same story and do not add any unique information.
+
+4.  Outliers have been appropriately managed.
+
+5.  The relationship between the explanatory variables and the logit of the response variable is linear.
+
+6.  Lastly, linear regression assumes that the sample size is large enough to ensure reliable and meaningful conclusions from the fitted model.
+
+**B2**.  I will use R within R-Studio to perform this analysis. While Python can perform this same statistical analysis, it was not explicitly designed for this purpose. R, on the other hand, was specifically designed for statistical analysis (**Ihaka, n.d., p. 12**). Due to this, R is the more logical choice for performing statistical tasks. Secondly, I have more experience using R than I do with Python. I've used R to complete previous courses, and I feel that it is more intuitive than Python.
+
+**B3**.  Logistic regression is the appropriate technique for this analysis because the dependent variable is binary (Yes = 1, No = 0). Additionally, the predictor variables include a mix of categorical and continuous types, making logistic regression a good choice. Lastly, logistic regression ranks customers based on their odds of churning, enabling the company to identify and address at-risk customers promptly.
+
+## **Part III: Data Preparation**
+
+**C1**. I need to remove irrelevant columns such as `customer_id`, `CaseOrder`, and some other columns with irrelevant data to my question. Secondly, I have to update the data types. The categorical variables will be converted to factors, and the remaining quantitative variables will be converted to integers or numerics, depending on the values. Once I have all the data cleaned and prepared, I'll be ready to feed it into an initial linear model.
+
+**C2**. The dependent variable I’m explaining is ‘`Churn`.’ After removing several columns of data that had too many unique entries or contained irrelevant information, such as customer_id, `lat` and `lng`, I was left with around 70 independent variables, including the automatically generated dummy variables. The numeric and integer types all include a min, 1st Qu, Median, Mean, 3rd Qu, and Max values, whereas the factors include just the count for each level. The summary statistics below show all the variables, including the dependant variable, that I will use in my linear model. I will explain how I ended up with these variables in the next few sections.
+
+```{r}
+summary(churn)
+```
+
+**C3**.  After running step-wise model selection based on the Akaike Information Criterion (AIC) and Backward elimination, I was left with far fewer variables than the initial model that included nearly 50 variables. I eliminated more using `VIF()`, which I will explain later. The following charts are the distributions of the variables I included in the final “reduced_model.”
+
+# GO OVER THESE PLOTS TO MAKE SURE IM STILL USING THESE VARIABLES
+
+**Univariate plots**
+
+```{r echo=FALSE}
+
+univariate1 <- ggplot(churn, aes(x = Age)) + 
+  geom_histogram(bins = 30, fill = "#e28743") + 
+  ggtitle("Age")
+
+univariate2 <- ggplot(churn, aes(x = Techie)) + 
+  geom_bar(fill = "#e28743") + 
+  ggtitle("Techie")
+
+univariate3 <- ggplot(churn, aes(x = Contract)) +
+  geom_bar(fill = "#e28743") +
+  ggtitle("Contract")
+
+univariate4 <- ggplot(churn, aes(x = Multiple)) +
+  geom_bar(fill = "#e28743") +
+  ggtitle("Multiple")
+
+univariate5 <- ggplot(churn, aes(x = OnlineSecurity)) +
+  geom_bar(fill = "#e28743") +
+  ggtitle("OnlineSecurity")
+
+univariate6 <- ggplot(churn, aes(x = StreamingTV)) +
+  geom_bar(fill = "#e28743") +
+  ggtitle("StreamingTV")
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  univariate1, univariate2, 
+  univariate3, univariate4,
+  univariate5, univariate6,
+  ncol = 2
+)
+
+
+```
+
+```{r echo=FALSE}
+univariate7 <- ggplot(churn, aes(x = StreamingMovies)) +
+  geom_bar(fill = "#e28743") +
+  ggtitle("StreamingMovies")
+
+univariate8 <- ggplot(churn, aes(x = PaymentMethod)) +
+  geom_bar(fill = "#e28743") +
+  ggtitle("PaymentMethod")
+
+univariate9 <- ggplot(churn, aes(x = MonthlyCharge)) +
+  geom_histogram(bins = 30, fill = "#e28743") + 
+  ggtitle("MonthlyCharge")
+
+univariate10 <- ggplot(churn, aes(x = Churn)) + 
+  geom_bar(fill = "#e28743") + 
+  ggtitle("Churn")
+
+univariate10 <- ggplot(churn, aes(x = Churn)) + 
+  geom_bar(fill = "#e28743") + 
+  ggtitle("Churn")
+
+univariate11 <- ggplot(churn, aes(x = Children)) + 
+  geom_histogram(bins = 30, fill = "#e28743") + 
+  ggtitle("Children")
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  univariate7, univariate8,
+  univariate9, univariate10,
+  univariate11,
+  ncol = 2
+)
+
+```
+
+**Bivariate plots**
+
+```{r echo=FALSE}
+bivariate1 <- ggplot(churn, aes(x = Children, fill = Churn)) +
+  geom_histogram(alpha = 0.8, position = "identity", bins = 30) +
+  ggtitle("Children by Churn") +
+  xlab("Number of Children") +
+  ylab("Count") +
+  scale_fill_manual(values = c("0" = "#D55E00", "1" = "#0072B2"), name = "Churn")
+
+
+bivariate2 <- ggplot(churn, aes(x = Age, fill = Churn)) +
+  geom_histogram(alpha = 0.8, position = "identity", bins = 30) +
+  ggtitle("Age by Churn") +
+  xlab("Age") +
+  ylab("Count") +
+  scale_fill_manual(values = c("0" = "#D55E00", "1" = "#0072B2"), name = "Churn")
+
+
+bivariate3 <- ggplot(churn, aes(x = Techie, fill = Churn)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Techie") +
+  xlab("Techie") +
+  ylab("Count of Customers") +
+  scale_fill_manual(values = c("0" = "#0072B2", "1" = "#D55E00"), name = "Churn") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+bivariate4 <- ggplot(churn, aes(x = Contract, fill = Churn)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Contract") +
+  xlab("Contract") +
+  ylab("Count of Customers") +
+  scale_fill_manual(values = c("0" = "#0072B2", "1" = "#D55E00"), name = "Churn")
+
+
+bivariate5 <- ggplot(churn, aes(x = Churn, fill = Multiple)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Multiple") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_manual(values = c("#0072B2", "#D55E00"), name = "Churn")
+
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  bivariate1, bivariate2, bivariate3,
+  bivariate4, bivariate5,
+  ncol = 2
+)
+```
+
+```{r echo=FALSE}
+
+bivariate6 <- ggplot(churn, aes(x = Churn, fill = OnlineSecurity)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by OnlineSecurity") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_manual(values = c("#0072B2", "#D55E00"), name = "Churn")
+
+
+bivariate7 <- ggplot(churn, aes(x = Churn, fill = StreamingTV)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by StreamingTV") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_manual(values = c("#0072B2", "#D55E00"), name = "Churn")
+
+
+bivariate8 <- ggplot(churn, aes(x = Churn, fill = StreamingMovies)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by StreamingMovies") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_manual(values = c("#0072B2", "#D55E00"), name = "Churn")
+
+
+bivariate9 <- ggplot(churn, aes(x = PaymentMethod, fill = Churn)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Payment Method") +
+  xlab("Payment Method") +
+  ylab("Proportion") +
+  scale_fill_manual(values = c("0" = "#0072B2", "1" = "#D55E00"), name = "Churn")
+
+
+bivariate10 <- ggplot(churn, aes(x = Churn, y = MonthlyCharge, fill = Churn)) +
+  geom_boxplot(alpha = 0.7) +
+  ggtitle("Monthly Charge by Churn Status") +
+  xlab("Churn") +
+  ylab("Monthly Charge") +
+  scale_fill_manual(values = c("0" = "#0072B2", "1" = "#D55E00"), name = "Churn")
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  bivariate6, bivariate7, bivariate8, bivariate9,
+  bivariate10,
+  ncol = 2
+)
+
+```
+
+**C4**. renamed the survey response variables to improve clarity and converted them to factors. R automatically generates dummy variables for each unique value in these factor variables. Additionally, I applied scaling to some of the larger quantitative variables using the built-in `scale()` function in R **(R Core Team, 2019)**. This process, known as standardization or z-score normalization, is described in an article from GeeksforGeeks titled '*Logistic Regression and the Feature Scaling Ensemble.*
+
+**C5**. The prepared data set will be included in my submission files.\
+ 
+
+## **Part IV: Model Comparison and Analysis**
+
+*Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.*
+
+**D1.** To set up my initial model i first started by separating in the data in to training and test sets with a 80/20 split. The initial model will attempt to explain `Churn` by all the remaining variables in the data set that were not removed in the data cleaning step.\
+\
+I begin by creating a logistic regression model using `glm()` because I need to use the statistical family "binomial' for logistic regression. I based the model on the training set of data, `churn_train`.
+
+```{r echo=FALSE, include=FALSE}
+# The initial model -------------------------------------------------------
+
+set.seed(123)
+
+split <- initial_split(churn,
+                       prop = .80,
+                       strata = Churn)
+
+churn_train <- training(split)
+churn_test <- testing(split)
+```
+
+```{r}
+initial_model <- glm(Churn ~. , data = churn_train, family = 'binomial')
+summary(initial_model)
+```
+
+The summary of the initial model shows that there are several variables whose coefficients do not add any statistically significant information to the model. I'll address these in the next step.
+
+The null deviance is 9251.6 on 7999 degrees of freedom, meaning that my response variable, `Churn`, shows a lot of variability without predictors and could be explained by adding predictor variables. The residual deviance of 3419.4 on 7910 degrees of freedom indicates that the predictor variables do indeed provide an effective explanation of the variability in `Churn`.
+
+The AIC for this model is 3599.4. I will reference this number again when comparing the reduced model.
+
+```{r warning=FALSE, echo=FALSE}
+par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
+plot(initial_model)
+```
+
+**D2**. I’ve chosen to use backward stepwise selection **(Larose & Larose, 2019)**, because I have a large amount of variables and backward elimination will remove each insignificant variable until only those values that have a meaningful contribution will remain.
+
+**D3**. After backward elimination I was left with the following model.
+
+```{r warning=FALSE}
+initial_model <- stepAIC(object = initial_model, direction = "backward", trace = FALSE)
+summary(initial_model)
+
+```
+
+I checked for multicoliniarity using `vif()` by checking for values above 5. This model returned a few that were exceptionally high. `Bandwidth_GB_Year` was the highest with a vif value of 2656.593644. I manually removed this variable from the model and checked vif again to find that the other variables were less than 5 aside from `MonthlyCharge` whose value was 16.889045. Once these two variables were removed from the model all the vif values were under 5.
+
+```{r warning=FALSE}
+
+vif_values <- vif(initial_model)
+vif_values #Looking for VIF values above 5. 
+
+# Removed Bandwidth_GB_Year because of a VIF of 2656.593644 and MonthlyCharge with 16.889045
+initial_model <- glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
+                       Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+                       StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
+                       Tenure, family = "binomial", 
+                     data = churn_train)
+
+summary(initial_model)
+```
+
+Lastly I needed to remove the values from the model that were not adding any value. `Children`, `Age`, `PaperlessBilling1`, and `OnlineSecurity1` all have coefficients that were not statistically significant. The following is the reduced model.
+
+```{r warning=FALSE}
+
+# Removed values that did not have a statistically significant coefficient
+reduced_model <- glm(formula = Churn ~ Techie + Contract + InternetService + 
+                       Phone + Multiple + OnlineBackup + DeviceProtection + 
+                       StreamingTV + StreamingMovies + PaymentMethod + 
+                       Tenure, family = "binomial", 
+                     data = churn_train)
+summary(reduced_model)
+
+par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
+plot(reduced_model)
+```
+
+The coefficients in the reduced model include variables whose coefficient is statistically significant at the 0.001 level. `Phone1` was kept because it showed a very minor significance, 0.1, but because of the vast number of variables that had no significance I decided to keep `Phone1`. `PaymentMethodCredit Card (automatic)` and `PaymentMethodMaild Check` were also kept in the model despite having an insignificant coefficient value. These dummy variables were retained because `PaymentMethod` is the variable and these 2 mentioned above are 2 of the levels. Because `PaymentMethodMailed Check` has a high significance at 0.001 I have decided to keep the variable `PaymentMethod` in the model.
+
+# LEFT OFF HERE \<\<\>\>\>\<\<\<\>\>\>\<\<\<\>\>\>
+
+E.  Analyze the data set using your reduced logistic regression model by doing the following in a document file:
+
+1.  Explain your data analysis process by comparing the initial logistic regression model and reduced logistic regression model, including the following element:
+
+•  a model evaluation metric
+
+2.  Provide the output and *all* calculations of the analysis you performed, including the following elements for your reduced logistic regression model:
+
+•  confusion matrix
+
+•  accuracy calculation
+
+3.  Provide an executable, error-free copy of the code used to support the implementation of the logistic regression models using a Python or R file.\
+ 
+
+## **Part V: Data Summary and Implications**
+
+*Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.*\
+ 
+
+F.  Summarize your findings and assumptions by doing the following in a document file:
+
+1.  Discuss the results of your data analysis, including the following elements:
+
+•  a regression equation for the reduced model
+
+•  an interpretation of the coefficients of the reduced model
+
+•  the statistical and practical significance of the reduced model
+
+•  the limitations of the data analysis
+
+2.  Recommend a course of action based on your results.\
+ 
+
+## **Part VI: Demonstration**
+
+G.  Provide a Panopto video recording that includes the presenter and a vocalized demonstration of the functionality of the code used for the analysis of the programming environment, including the following elements:
+
+•  an identification of the version of the programming environment
+
+•  a comparison of the initial logistic regression model you used and the reduced logistic regression model you used in your analysis
+
+•  an interpretation of the coefficients of the reduced model\
+ 
+
+*Note: The audiovisual recording should feature you visibly presenting the material (i.e., not in voiceover or embedded video) and should simultaneously capture both you and your multimedia presentation.\
+\
+ Note: For instructions on how to access and use Panopto, use the "Panopto How-To Videos" web link provided below. To access Panopto's website, navigate to the web link titled "Panopto Access," and then choose to log in using the “WGU” option. If prompted, log in using your WGU student portal credentials, and then it will forward you to Panopto’s website.\
+\
+ To submit your recording, upload it to the Panopto drop box titled “Regression Modeling – NBMx \| D208.” Once the recording has been uploaded and processed in Panopto's system, retrieve the URL of the recording from Panopto and copy and paste it into the Links option. Upload the remaining task requirements using the Attachments option.*\
+ 
+
+H.  List the web sources used to acquire data or segments of third-party code to support the application. Ensure the web sources are reliable.\
+ 
+
+I.  Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
+
+1.  **Bobbitt, Z.** (2020, October 13).The 6 Assumptions of Logistic Regression (With Examples). Statology. Retrieved December 29, 2024, from https://www.statology.org/assumptions-of-logistic-regression/)
+
+2.  **GeeksforGeeks.** (2021, June 17). *Logistic Regression and the Feature Scaling Ensemble*. GeeksforGeeks. Retrieved January 2, 2025, from https://www.geeksforgeeks.org/logistic-regression-and-the-feature-scaling-ensemble/#
+
+3.  **Ihaka, R. (n.d.).** The R Project: A brief history and thoughts about the future (p. 12). The University of Auckland. Retrieved November 17, 2024, from https://www.stat.auckland.ac.nz/\~ihaka/downloads/Otago.pdf (https://www.stat.auckland.ac.nz/\~ihaka/downloads/Otago.pdf)
+
+4.  **Larose, C. D., & Larose, D. T. (2019)**. Data science using Python and R. Wiley. Retrieved from https://eds.p.ebscohost.com/eds/ebookviewer/ebook/bmxlYmtfXzIwOTEzNzFfX0FO0?sid=04ef9475-3bed 4dbe-8317-a1c5eb6da3cb\@redis&vid=0&format=EB&lpid=lp_151&rid=0
+
+5.  **R Core Team.** (2019). *scale* function. *R Documentation*. Retrieved January 1, 2025 from https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/scale\
+     
+
+J.  Demonstrate professional communication in the content and presentation of your submission.

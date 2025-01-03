@@ -197,6 +197,10 @@ y_pred = predict(reduced_model, newdata = test_set)
 y_pred
 view(test_set)
 
+#Saving the preidcted values to a csv
+write.csv(y_pred, "Predicted_Values.csv")
+
+
 # Comparing models --------------------------------------------------------
 
 #Using non-parametric test due to normality assumption being violated

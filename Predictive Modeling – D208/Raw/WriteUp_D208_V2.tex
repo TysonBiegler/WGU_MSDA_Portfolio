@@ -1,0 +1,2148 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={WriteUp\_D208\_V2},
+  pdfauthor={Tyson Biegler},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{WriteUp\_D208\_V2}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{College of Information Technology, Western Governors
+University}
+\author{Tyson Biegler}
+\date{December 22, 2024}
+
+\begin{document}
+\maketitle
+
+\section{Part I: Research Question}\label{part-i-research-question}
+
+``What factors impact customer tenure?''
+
+\textbf{A1.} The average customer Tenure is 35.5 months or 2.88 years I
+will investigate the factors that impact customer tenure since letting a
+customer go rather than retaining them can be a significant detriment to
+the company's profit, as noted by Amy Gallo of Harvard Business Review:
+``\ldots acquiring a new customer is anywhere from five to 25 times more
+expensive than retaining an existing one'' \textbf{(Gallo, 2014)}.
+
+\textbf{A2.} This analysis aims to create a multiple linear regression
+model that will assist in predicting customer tenure. Knowing the
+factors that increase or decrease the customer's tenure will help the
+executives make data-informed decisions that will benefit the company
+and keep the customer happy.
+
+\section{Part II: Method
+Justification}\label{part-ii-method-justification}
+
+\textbf{B1.} There are four assumptions of linear regression \textbf{(Z.
+Bobbit, 2020)}.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  A linear relationship exists between the dependent and independent
+  variables.
+\item
+  The residuals follow a normal distribution.
+\item
+  The residuals are homoscedastic. In other words, the residual plot
+  should not show any signs of a pattern.
+\item
+  The residuals are independent. The residuals cannot be dependent on
+  the surrounding points. While there are only four assumptions to a
+  linear model, other factors must be considered \textbf{(G. Martin,
+  n.d.)}.
+
+  \begin{enumerate}
+  \def\labelenumii{\arabic{enumii}.}
+  \item
+    Multi-collinearity should be minimized so that multiple variables do
+    not tell the same story. Multi-collinearity occurs when the
+    independent variables are correlated with each other.
+  \item
+    Outliers of residuals. Residuals can have high leverage and outside
+    of 2 standard deviations, meaning that they have a large impact on
+    the coefficients of the data and are outliers. Just like any other
+    outlier, these outliers should be investigated further to determine
+    if they should be removed or retained.
+  \end{enumerate}
+\end{enumerate}
+
+\textbf{B2.} I will be using R within R-Studio to perform this analysis.
+While Python can perform this same statistical analysis, it was not
+explicitly designed for this purpose. R, on the other hand, was
+specifically designed for statistical analysis \textbf{(Ihaka, n.d.,
+p.~12)}. Due to this, R is the more logical choice for performing
+statistical tasks. Secondly, I have more experience using R than I do
+with python. Ive used R to complete previous courses and I feel that it
+is more intuitive than python.~
+
+\textbf{B3.} Tenure is a continuous variable representing the months a
+customer has been with the company, making it a valuable metric for
+understanding customer retention. Tenure can be influenced by numerous
+numeric and categorical variables simultaneously making multiple
+regression a viable option to consider assuming all of the assumptions
+in B1 are met.~
+
+\section{Part III: Data Preparation}\label{part-iii-data-preparation}
+
+\textbf{C1.} I need to remove irrelevant columns such as customer\_id,
+CaseOrder, and some other columns that have data not relevant to my
+question.~ Secondly I have to update the data types. The Categorical
+variables will be converted to factors and the remaining quantitative
+variables will be converted to integer or numeric depending on the
+values.~ Once I have all the data cleaned and prepared Ill be ready to
+feed it into an initial linear model.~
+
+\textbf{C2.} The dependent variable I'm explaining is `Tenure.' After I
+removed several columns of data that had to many unique entries or
+contained irrelevant information, such as customer id, or lat and lng, I
+was left with around 70 independent variables, including the
+automatically generated dummy variables.~
+
+The numeric and integer types all include a min, 1st Qu, Median, Mean,
+3rd Qu, and Max values whereas the factors include just the count for
+each level. The summary statistics below show all of the variables
+including the dependant variable, that I will be using in my linear
+model. I will explain how I ended up with these variables in the next
+few sections.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(churn)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Population           Area         Children           Age       
+##  Min.   :     0   Rural   :3327   Min.   : 0.000   Min.   :18.00  
+##  1st Qu.:   738   Suburban:3346   1st Qu.: 0.000   1st Qu.:35.00  
+##  Median :  2910   Urban   :3327   Median : 1.000   Median :53.00  
+##  Mean   :  9757                   Mean   : 2.088   Mean   :53.08  
+##  3rd Qu.: 13168                   3rd Qu.: 3.000   3rd Qu.:71.00  
+##  Max.   :111850                   Max.   :10.000   Max.   :89.00  
+##                                                                   
+##      Income                  Marital           Gender     Churn   
+##  Min.   :   348.7   Divorced     :2092   Female   :5025   0:7350  
+##  1st Qu.: 19224.7   Married      :1911   Male     :4744   1:2650  
+##  Median : 33170.6   Never Married:1956   Nonbinary: 231           
+##  Mean   : 39806.9   Separated    :2014                            
+##  3rd Qu.: 53246.2   Widowed      :2027                            
+##  Max.   :258900.7                                                 
+##                                                                   
+##  Outage_sec_perweek     Email          Contacts      Yearly_equip_failure
+##  Min.   : 0.09975   Min.   : 1.00   Min.   :0.0000   Min.   :0.000       
+##  1st Qu.: 8.01821   1st Qu.:10.00   1st Qu.:0.0000   1st Qu.:0.000       
+##  Median :10.01856   Median :12.00   Median :1.0000   Median :0.000       
+##  Mean   :10.00185   Mean   :12.02   Mean   :0.9942   Mean   :0.398       
+##  3rd Qu.:11.96949   3rd Qu.:14.00   3rd Qu.:2.0000   3rd Qu.:1.000       
+##  Max.   :21.20723   Max.   :23.00   Max.   :7.0000   Max.   :6.000       
+##                                                                          
+##  Techie             Contract    Port_modem Tablet      InternetService Phone   
+##  0:8321   Month-to-month:5456   0:5166     0:7009   DSL        :3463   0: 933  
+##  1:1679   One year      :2102   1:4834     1:2991   Fiber Optic:4408   1:9067  
+##           Two Year      :2442                       None       :2129           
+##                                                                                
+##                                                                                
+##                                                                                
+##                                                                                
+##  Multiple OnlineSecurity OnlineBackup DeviceProtection TechSupport StreamingTV
+##  0:5392   0:6424         0:5494       0:5614           0:6250      0:5071     
+##  1:4608   1:3576         1:4506       1:4386           1:3750      1:4929     
+##                                                                               
+##                                                                               
+##                                                                               
+##                                                                               
+##                                                                               
+##  StreamingMovies PaperlessBilling                  PaymentMethod 
+##  0:5110          0:4118           Bank Transfer(automatic):2229  
+##  1:4890          1:5882           Credit Card (automatic) :2083  
+##                                   Electronic Check        :3398  
+##                                   Mailed Check            :2290  
+##                                                                  
+##                                                                  
+##                                                                  
+##      Tenure       MonthlyCharge    Bandwidth_GB_Year Timely_response
+##  Min.   : 1.000   Min.   : 79.98   Min.   : 155.5    1: 224         
+##  1st Qu.: 7.918   1st Qu.:139.98   1st Qu.:1236.5    2:1393         
+##  Median :35.431   Median :167.48   Median :3279.5    3:3448         
+##  Mean   :34.526   Mean   :172.62   Mean   :3392.3    4:3358         
+##  3rd Qu.:61.480   3rd Qu.:200.73   3rd Qu.:5586.1    5:1359         
+##  Max.   :71.999   Max.   :290.16   Max.   :7159.0    6: 199         
+##                                                      7:  19         
+##  Timely_fixes Timely_replacements Reliability Options    Respectful   Courteous
+##  1: 217       3      :3435        1: 221      1: 206   3      :3445   1: 219   
+##  2:1360       4      :3410        2:1350      2:1378   4      :3333   2:1309   
+##  3:3415       2      :1424        3:3430      3:3462   2      :1427   3:3446   
+##  4:3412       5      :1313        4:3452      4:3417   5      :1382   4:3456   
+##  5:1368       6      : 203        5:1335      5:1321   6      : 210   5:1335   
+##  6: 215       1      : 202        6: 203      6: 204   1      : 190   6: 224   
+##  7:  13       (Other):  13        7:   9      7:  12   (Other):  13   7:  11   
+##  Active_listening
+##  3      :3461    
+##  4      :3400    
+##  2      :1378    
+##  5      :1335    
+##  1      : 206    
+##  6      : 205    
+##  (Other):  15
+\end{verbatim}
+
+\textbf{C3.} After running stepwise model selection based on the Akaike
+Information Criterion (AIC) and Backward elimination, I was left with
+far fewer variables than the initial model that included over 70
+variables. I eliminated more using VIF(), which I will explain later.
+The following charts are the distributions of the variables I included
+in the final ``updated\_model.''
+
+\paragraph{Univariate Distribution
+Plots:}\label{univariate-distribution-plots}
+
+\pandocbounded{\includegraphics[keepaspectratio]{WriteUp_D208_V2_files/figure-latex/unnamed-chunk-4-1.pdf}}
+
+\paragraph{Bivariate Distribution
+Plots:}\label{bivariate-distribution-plots}
+
+\pandocbounded{\includegraphics[keepaspectratio]{WriteUp_D208_V2_files/figure-latex/unnamed-chunk-5-1.pdf}}
+
+\textbf{C4.} To begin with I will check for na values and duplicates.
+For linear regression to work properly I neeed to make sure all the data
+is the appropriate type. To do this I will be converting the survey
+responses to `factor' while changing the names of the survey columns to
+be more intuitive.~ Next I will convert the remaining categorical
+columns to factors and the quantitative columns will be converted to
+integer or numeric depending on the values.~~
+
+I need to drop irrelevant columns and convert data types to more
+appropriate ones to prepare the data. Some categorical variables have
+more than 8000 unique entries, which will also be dropped. I will not
+create any dummy variables because R automatically creates dummy
+variables or indicator variables in the linear model when a categorical
+variable is passed into the left of the ``\textasciitilde{}'', so long
+as the categorical variable is a factor datatype
+\textbf{(Çetinkaya-Rundel et al., 2021)}.\\
+\strut \\
+
+\textbf{C5.} The prepared data set will be included in the uploaded
+documents. I have named it ``CLEANED\_churn.csv.''\\
+Part IV: Model Comparison and Analysis
+
+\section{Part IV: Model Comparison and
+Analysis}\label{part-iv-model-comparison-and-analysis}
+
+\textbf{D1.}~ I created an initial model using all the variables
+mentioned in C2 by using the ``\textasciitilde{} ., data = churn''
+method. Using a ``.'' to the right of the tilda will include all
+variables in the data set.~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(Initial\_model1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Tenure ~ ., data = training_set)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.15449 -0.10738  0.07453  0.10508  0.16148 
+## 
+## Coefficients:
+##                                        Estimate Std. Error   t value Pr(>|t|)
+## (Intercept)                          -3.836e+00  2.854e-02  -134.392  < 2e-16
+## Population                           -2.747e-09  8.908e-08    -0.031  0.97540
+## AreaSuburban                         -9.197e-03  3.169e-03    -2.903  0.00371
+## AreaUrban                            -4.122e-03  3.156e-03    -1.306  0.19157
+## Children                             -3.760e-01  6.012e-04  -625.330  < 2e-16
+## Age                                   3.997e-02  6.196e-05   645.016  < 2e-16
+## Income                                2.536e-08  4.610e-08     0.550  0.58225
+## MaritalMarried                       -3.994e-03  4.106e-03    -0.973  0.33074
+## MaritalNever Married                 -4.323e-04  4.050e-03    -0.107  0.91499
+## MaritalSeparated                      4.931e-04  4.021e-03     0.123  0.90241
+## MaritalWidowed                       -1.961e-03  4.008e-03    -0.489  0.62458
+## GenderMale                           -7.917e-01  2.620e-03  -302.139  < 2e-16
+## GenderNonbinary                       2.659e-01  8.691e-03    30.595  < 2e-16
+## Churn1                                1.785e-03  4.128e-03     0.432  0.66541
+## Outage_sec_perweek                    1.670e-04  4.330e-04     0.386  0.69969
+## Email                                -3.520e-04  4.265e-04    -0.825  0.40919
+## Contacts                              2.299e-04  1.296e-03     0.177  0.85921
+## Yearly_equip_failure                  4.083e-04  2.035e-03     0.201  0.84097
+## Techie1                              -1.266e-03  3.441e-03    -0.368  0.71296
+## ContractOne year                      3.730e-03  3.474e-03     1.074  0.28300
+## ContractTwo Year                      4.570e-03  3.294e-03     1.387  0.16534
+## Port_modem1                          -5.566e-04  2.585e-03    -0.215  0.82952
+## Tablet1                               2.625e-03  2.814e-03     0.933  0.35102
+## InternetServiceFiber Optic            5.752e+00  4.262e-03  1349.615  < 2e-16
+## InternetServiceNone                   4.600e+00  4.061e-03  1132.949  < 2e-16
+## Phone1                               -3.347e-04  4.428e-03    -0.076  0.93975
+## Multiple1                             2.672e-01  5.462e-03    48.912  < 2e-16
+## OnlineSecurity1                      -8.315e-01  2.726e-03  -305.026  < 2e-16
+## OnlineBackup1                        -3.566e-01  4.215e-03   -84.606  < 2e-16
+## DeviceProtection1                    -5.956e-01  3.189e-03  -186.737  < 2e-16
+## TechSupport1                          3.827e-01  3.280e-03   116.681  < 2e-16
+## StreamingTV1                         -1.303e+00  6.703e-03  -194.425  < 2e-16
+## StreamingMovies1                     -7.270e-01  8.119e-03   -89.536  < 2e-16
+## PaperlessBilling1                    -5.597e-03  2.622e-03    -2.135  0.03281
+## PaymentMethodCredit Card (automatic)  3.892e-03  3.935e-03     0.989  0.32275
+## PaymentMethodElectronic Check         5.075e-03  3.522e-03     1.441  0.14967
+## PaymentMethodMailed Check             1.171e-02  3.847e-03     3.045  0.00234
+## MonthlyCharge                        -3.513e-02  1.486e-04  -236.363  < 2e-16
+## Bandwidth_GB_Year                     1.221e-02  7.199e-07 16953.219  < 2e-16
+## Timely_response2                      9.895e-03  9.963e-03     0.993  0.32066
+## Timely_response3                      1.445e-02  1.010e-02     1.431  0.15252
+## Timely_response4                      1.366e-02  1.050e-02     1.301  0.19321
+## Timely_response5                      1.611e-02  1.124e-02     1.433  0.15182
+## Timely_response6                      2.188e-02  1.485e-02     1.474  0.14056
+## Timely_response7                      4.769e-02  3.151e-02     1.513  0.13025
+## Timely_fixes2                        -7.977e-03  1.046e-02    -0.762  0.44591
+## Timely_fixes3                        -8.362e-03  1.054e-02    -0.794  0.42751
+## Timely_fixes4                        -1.041e-02  1.081e-02    -0.963  0.33565
+## Timely_fixes5                        -8.773e-03  1.139e-02    -0.770  0.44126
+## Timely_fixes6                        -9.267e-03  1.454e-02    -0.637  0.52405
+## Timely_fixes7                        -4.466e-03  3.843e-02    -0.116  0.90750
+## Timely_replacements2                  1.336e-03  9.985e-03     0.134  0.89360
+## Timely_replacements3                 -3.354e-05  9.893e-03    -0.003  0.99729
+## Timely_replacements4                 -8.901e-04  1.009e-02    -0.088  0.92970
+## Timely_replacements5                 -1.341e-03  1.067e-02    -0.126  0.90004
+## Timely_replacements6                  1.615e-02  1.400e-02     1.154  0.24856
+## Timely_replacements7                 -1.270e-02  4.019e-02    -0.316  0.75201
+## Timely_replacements8                 -1.265e-01  1.173e-01    -1.078  0.28095
+## Reliability2                          5.398e-03  9.471e-03     0.570  0.56871
+## Reliability3                          8.658e-03  9.171e-03     0.944  0.34514
+## Reliability4                          8.070e-03  9.280e-03     0.870  0.38455
+## Reliability5                          1.014e-02  9.807e-03     1.034  0.30129
+## Reliability6                          1.247e-02  1.291e-02     0.966  0.33414
+## Reliability7                         -5.801e-02  4.926e-02    -1.178  0.23895
+## Options2                             -5.206e-03  1.001e-02    -0.520  0.60313
+## Options3                             -1.358e-04  9.795e-03    -0.014  0.98894
+## Options4                             -2.938e-03  9.917e-03    -0.296  0.76702
+## Options5                             -6.652e-03  1.049e-02    -0.634  0.52604
+## Options6                             -5.246e-04  1.347e-02    -0.039  0.96895
+## Options7                             -1.273e-02  4.212e-02    -0.302  0.76256
+## Respectful2                           1.785e-02  1.038e-02     1.720  0.08549
+## Respectful3                           1.147e-02  1.024e-02     1.121  0.26250
+## Respectful4                           7.977e-03  1.043e-02     0.765  0.44448
+## Respectful5                           1.212e-02  1.096e-02     1.106  0.26870
+## Respectful6                           1.680e-02  1.396e-02     1.203  0.22891
+## Respectful7                           2.612e-02  4.600e-02     0.568  0.57020
+## Courteous2                           -4.706e-05  9.430e-03    -0.005  0.99602
+## Courteous3                           -4.863e-03  9.125e-03    -0.533  0.59411
+## Courteous4                           -6.409e-03  9.235e-03    -0.694  0.48775
+## Courteous5                           -2.742e-03  9.775e-03    -0.281  0.77909
+## Courteous6                           -4.428e-03  1.283e-02    -0.345  0.73006
+## Courteous7                           -3.093e-02  3.743e-02    -0.826  0.40869
+## Active_listening2                    -2.888e-02  9.648e-03    -2.993  0.00277
+## Active_listening3                    -2.234e-02  9.309e-03    -2.400  0.01643
+## Active_listening4                    -2.334e-02  9.385e-03    -2.487  0.01292
+## Active_listening5                    -2.514e-02  9.869e-03    -2.548  0.01087
+## Active_listening6                    -1.507e-02  1.304e-02    -1.155  0.24795
+## Active_listening7                     2.600e-03  3.412e-02     0.076  0.93926
+## Active_listening8                    -1.562e-01  1.097e-01    -1.424  0.15455
+##                                         
+## (Intercept)                          ***
+## Population                              
+## AreaSuburban                         ** 
+## AreaUrban                               
+## Children                             ***
+## Age                                  ***
+## Income                                  
+## MaritalMarried                          
+## MaritalNever Married                    
+## MaritalSeparated                        
+## MaritalWidowed                          
+## GenderMale                           ***
+## GenderNonbinary                      ***
+## Churn1                                  
+## Outage_sec_perweek                      
+## Email                                   
+## Contacts                                
+## Yearly_equip_failure                    
+## Techie1                                 
+## ContractOne year                        
+## ContractTwo Year                        
+## Port_modem1                             
+## Tablet1                                 
+## InternetServiceFiber Optic           ***
+## InternetServiceNone                  ***
+## Phone1                                  
+## Multiple1                            ***
+## OnlineSecurity1                      ***
+## OnlineBackup1                        ***
+## DeviceProtection1                    ***
+## TechSupport1                         ***
+## StreamingTV1                         ***
+## StreamingMovies1                     ***
+## PaperlessBilling1                    *  
+## PaymentMethodCredit Card (automatic)    
+## PaymentMethodElectronic Check           
+## PaymentMethodMailed Check            ** 
+## MonthlyCharge                        ***
+## Bandwidth_GB_Year                    ***
+## Timely_response2                        
+## Timely_response3                        
+## Timely_response4                        
+## Timely_response5                        
+## Timely_response6                        
+## Timely_response7                        
+## Timely_fixes2                           
+## Timely_fixes3                           
+## Timely_fixes4                           
+## Timely_fixes5                           
+## Timely_fixes6                           
+## Timely_fixes7                           
+## Timely_replacements2                    
+## Timely_replacements3                    
+## Timely_replacements4                    
+## Timely_replacements5                    
+## Timely_replacements6                    
+## Timely_replacements7                    
+## Timely_replacements8                    
+## Reliability2                            
+## Reliability3                            
+## Reliability4                            
+## Reliability5                            
+## Reliability6                            
+## Reliability7                            
+## Options2                                
+## Options3                                
+## Options4                                
+## Options5                                
+## Options6                                
+## Options7                                
+## Respectful2                          .  
+## Respectful3                             
+## Respectful4                             
+## Respectful5                             
+## Respectful6                             
+## Respectful7                             
+## Courteous2                              
+## Courteous3                              
+## Courteous4                              
+## Courteous5                              
+## Courteous6                              
+## Courteous7                              
+## Active_listening2                    ** 
+## Active_listening3                    *  
+## Active_listening4                    *  
+## Active_listening5                    *  
+## Active_listening6                       
+## Active_listening7                       
+## Active_listening8                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1075 on 6911 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 4.799e+06 on 88 and 6911 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\textbf{D2.} After running the initial linear model from the training
+set (``Initial\_model'')~it became apparent that there were several
+values that were not statistically significant as noted by the lack of
+the
+\pandocbounded{\includegraphics[keepaspectratio]{https://lh7-rt.googleusercontent.com/docsz/AD_4nXe5VNjtMQSILD2pI0shhZtLtH-9os-62mspk6YayIYbUurztTNQUyfDP2EmJ2m7opZnO7gK8RrpsRGNV0X26vtSuR9NOBJ-d609ViFOYEhBXcD74x4CWnmGkHASh3iQqP5szgZmww?key=SXQIj9I0Eg3DnjP4XZcTs35-}}marking
+that indicates that the values are statistically significant. I've
+chosen to use backward stepwise selection \textbf{(Larose \& Larose,
+2019)}, and created a model named ``stepwise\_model'', because I have a
+large amount of variables and backward elimination will remove each
+insignificant variable until only those values that have a meaningful
+contribution will remain.~
+
+The following table shows that this dimension reduction technique
+successfully decreased the amount of variables that would be included in
+the final model. However, \emph{``PaymentMethodElectronic Check''},
+\emph{``PaymentMethodCredit Card (automatic)''}, and
+\emph{``AreaUrban''} all have p-values that are greater than 0.05
+indicating that these are not contributing significantly to the model.
+So, I looked at the Variance Inflation Factor (VIF) values of the
+stepwise model to check multicollinearity.~
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(Initial\_model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Tenure ~ Area + Children + Age + Gender + InternetService + 
+##     Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+##     TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
+##     PaymentMethod + MonthlyCharge + Bandwidth_GB_Year, data = training_set)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.13667 -0.10827  0.08645  0.10502  0.13507 
+## 
+## Coefficients:
+##                                        Estimate Std. Error   t value Pr(>|t|)
+## (Intercept)                          -3.841e+00  1.390e-02  -276.328  < 2e-16
+## AreaSuburban                         -9.128e-03  3.150e-03    -2.898  0.00377
+## AreaUrban                            -4.160e-03  3.137e-03    -1.326  0.18491
+## Children                             -3.759e-01  5.974e-04  -629.244  < 2e-16
+## Age                                   3.996e-02  6.160e-05   648.726  < 2e-16
+## GenderMale                           -7.921e-01  2.600e-03  -304.618  < 2e-16
+## GenderNonbinary                       2.646e-01  8.636e-03    30.635  < 2e-16
+## InternetServiceFiber Optic            5.752e+00  4.124e-03  1394.903  < 2e-16
+## InternetServiceNone                   4.600e+00  4.021e-03  1144.221  < 2e-16
+## Multiple1                             2.679e-01  5.417e-03    49.451  < 2e-16
+## OnlineSecurity1                      -8.314e-01  2.709e-03  -306.867  < 2e-16
+## OnlineBackup1                        -3.564e-01  4.178e-03   -85.302  < 2e-16
+## DeviceProtection1                    -5.953e-01  3.170e-03  -187.808  < 2e-16
+## TechSupport1                          3.830e-01  3.247e-03   117.938  < 2e-16
+## StreamingTV1                         -1.302e+00  6.659e-03  -195.546  < 2e-16
+## StreamingMovies1                     -7.261e-01  8.067e-03   -90.003  < 2e-16
+## PaperlessBilling1                    -5.113e-03  2.604e-03    -1.963  0.04964
+## PaymentMethodCredit Card (automatic)  3.828e-03  3.910e-03     0.979  0.32763
+## PaymentMethodElectronic Check         5.123e-03  3.496e-03     1.466  0.14282
+## PaymentMethodMailed Check             1.138e-02  3.820e-03     2.979  0.00290
+## MonthlyCharge                        -3.514e-02  1.460e-04  -240.680  < 2e-16
+## Bandwidth_GB_Year                     1.220e-02  5.940e-07 20546.755  < 2e-16
+##                                         
+## (Intercept)                          ***
+## AreaSuburban                         ** 
+## AreaUrban                               
+## Children                             ***
+## Age                                  ***
+## GenderMale                           ***
+## GenderNonbinary                      ***
+## InternetServiceFiber Optic           ***
+## InternetServiceNone                  ***
+## Multiple1                            ***
+## OnlineSecurity1                      ***
+## OnlineBackup1                        ***
+## DeviceProtection1                    ***
+## TechSupport1                         ***
+## StreamingTV1                         ***
+## StreamingMovies1                     ***
+## PaperlessBilling1                    *  
+## PaymentMethodCredit Card (automatic)    
+## PaymentMethodElectronic Check           
+## PaymentMethodMailed Check            ** 
+## MonthlyCharge                        ***
+## Bandwidth_GB_Year                    ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1073 on 6978 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 2.017e+07 on 21 and 6978 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+According to Zach Bobbitt from statology, ``A value greater than 5
+indicates potentially severe correlation between a given predictor
+variable and other predictor variables in the model. In this case, the
+coefficient estimates and p-values in the regression output are likely
+unreliable. \textbf{(Z. Bobbitt, 2019)}.''~ So, I looked for all VIF
+values above 5.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vif\_values }\OtherTok{\textless{}{-}} \FunctionTok{vif}\NormalTok{(Initial\_model)}
+\NormalTok{vif\_values }\CommentTok{\#Looking for VIF values above 5. }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                        GVIF Df GVIF^(1/(2*Df))
+## Area               1.004114  2        1.001027
+## Children           1.002341  1        1.001170
+## Age                1.003046  1        1.001522
+## Gender             1.006402  2        1.001597
+## InternetService    3.285748  2        1.346352
+## Multiple           4.427459  1        2.104153
+## OnlineSecurity     1.025144  1        1.012494
+## OnlineBackup       2.623569  1        1.619743
+## DeviceProtection   1.503409  1        1.226136
+## TechSupport        1.492439  1        1.221654
+## StreamingTV        6.737752  1        2.595718
+## StreamingMovies    9.882268  1        3.143607
+## PaperlessBilling   1.002978  1        1.001488
+## PaymentMethod      1.005897  3        1.000980
+## MonthlyCharge     23.873153  1        4.886016
+## Bandwidth_GB_Year  1.022208  1        1.011043
+\end{verbatim}
+
+As you can see, StreamingTV, StreamingMovies, and MonthlyCharge all had
+VIF values above 5.~ Because MonthlyCharge was so much higher than the
+rest, I decided to remove it first and see if that made the others
+acceptable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vif\_values }\OtherTok{\textless{}{-}} \FunctionTok{vif}\NormalTok{(Initial\_model)}
+\NormalTok{vif\_values }\CommentTok{\#Looking for VIF values above 5. }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                        GVIF Df GVIF^(1/(2*Df))
+## Area               1.004114  2        1.001027
+## Children           1.002341  1        1.001170
+## Age                1.003046  1        1.001522
+## Gender             1.006402  2        1.001597
+## InternetService    3.285748  2        1.346352
+## Multiple           4.427459  1        2.104153
+## OnlineSecurity     1.025144  1        1.012494
+## OnlineBackup       2.623569  1        1.619743
+## DeviceProtection   1.503409  1        1.226136
+## TechSupport        1.492439  1        1.221654
+## StreamingTV        6.737752  1        2.595718
+## StreamingMovies    9.882268  1        3.143607
+## PaperlessBilling   1.002978  1        1.001488
+## PaymentMethod      1.005897  3        1.000980
+## MonthlyCharge     23.873153  1        4.886016
+## Bandwidth_GB_Year  1.022208  1        1.011043
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Removed MonthlyCharge since it was such a high VIF and then i will check VIF again to see if the others are ok}
+\NormalTok{reduced\_model }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(}\AttributeTok{formula =}\NormalTok{ Tenure }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Area }\SpecialCharTok{+}\NormalTok{ Children }\SpecialCharTok{+}\NormalTok{ Age }\SpecialCharTok{+}\NormalTok{ Gender }\SpecialCharTok{+}\NormalTok{ InternetService }\SpecialCharTok{+}\NormalTok{ Multiple }\SpecialCharTok{+}\NormalTok{ OnlineSecurity }\SpecialCharTok{+}\NormalTok{ OnlineBackup }\SpecialCharTok{+}\NormalTok{ DeviceProtection }\SpecialCharTok{+}\NormalTok{ TechSupport }\SpecialCharTok{+}\NormalTok{ StreamingTV }\SpecialCharTok{+}\NormalTok{ StreamingMovies }\SpecialCharTok{+}\NormalTok{ PaperlessBilling }\SpecialCharTok{+}\NormalTok{ PaymentMethod }\SpecialCharTok{+}\NormalTok{ Bandwidth\_GB\_Year, }\AttributeTok{data =}\NormalTok{ churn)}
+
+\FunctionTok{summary}\NormalTok{(reduced\_model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Tenure ~ Area + Children + Age + Gender + InternetService + 
+##     Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+##     TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
+##     PaymentMethod + Bandwidth_GB_Year, data = churn)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.4652 -0.2355  0.1757  0.3843  0.4479 
+## 
+## Coefficients:
+##                                        Estimate Std. Error  t value Pr(>|t|)
+## (Intercept)                          -6.783e+00  1.685e-02 -402.603   <2e-16
+## AreaSuburban                         -9.006e-03  8.028e-03   -1.122    0.262
+## AreaUrban                            -3.601e-03  8.042e-03   -0.448    0.654
+## Children                             -3.759e-01  1.528e-03 -245.924   <2e-16
+## Age                                   3.987e-02  1.586e-04  251.398   <2e-16
+## GenderMale                           -7.834e-01  6.642e-03 -117.958   <2e-16
+## GenderNonbinary                       2.913e-01  2.208e-02   13.194   <2e-16
+## InternetServiceFiber Optic            5.055e+00  7.483e-03  675.584   <2e-16
+## InternetServiceNone                   5.054e+00  9.063e-03  557.615   <2e-16
+## Multiple1                            -8.790e-01  6.580e-03 -133.576   <2e-16
+## OnlineSecurity1                      -9.253e-01  6.846e-03 -135.168   <2e-16
+## OnlineBackup1                        -1.150e+00  6.599e-03 -174.196   <2e-16
+## DeviceProtection1                    -1.038e+00  6.612e-03 -156.950   <2e-16
+## TechSupport1                         -5.701e-02  6.777e-03   -8.411   <2e-16
+## StreamingTV1                         -2.783e+00  6.569e-03 -423.675   <2e-16
+## StreamingMovies1                     -2.564e+00  6.568e-03 -390.369   <2e-16
+## PaperlessBilling1                    -9.508e-03  6.664e-03   -1.427    0.154
+## PaymentMethodCredit Card (automatic)  1.069e-02  9.997e-03    1.070    0.285
+## PaymentMethodElectronic Check         5.365e-03  8.940e-03    0.600    0.548
+## PaymentMethodMailed Check             7.493e-03  9.761e-03    0.768    0.443
+## Bandwidth_GB_Year                     1.220e-02  1.515e-06 8055.715   <2e-16
+##                                         
+## (Intercept)                          ***
+## AreaSuburban                            
+## AreaUrban                               
+## Children                             ***
+## Age                                  ***
+## GenderMale                           ***
+## GenderNonbinary                      ***
+## InternetServiceFiber Optic           ***
+## InternetServiceNone                  ***
+## Multiple1                            ***
+## OnlineSecurity1                      ***
+## OnlineBackup1                        ***
+## DeviceProtection1                    ***
+## TechSupport1                         ***
+## StreamingTV1                         ***
+## StreamingMovies1                     ***
+## PaperlessBilling1                       
+## PaymentMethodCredit Card (automatic)    
+## PaymentMethodElectronic Check           
+## PaymentMethodMailed Check               
+## Bandwidth_GB_Year                    ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.3278 on 9979 degrees of freedom
+## Multiple R-squared:  0.9998, Adjusted R-squared:  0.9998 
+## F-statistic: 3.254e+06 on 20 and 9979 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+I found that after removing MonthlyCharge with a VIF of 23.87, the model
+returned ``AreaSuburban'', ``AreaUrban'', ``PaperlessBilling1,''
+``PaymentMethodCredit Card (automatic),'' ``PaymentMethodElectronic
+Check,'' ``PaymentMethodMailed Check'' to all have values that were not
+statistically significant. The following table is the result of the
+second stepwise elimination. I checked the VIF values for the updated
+model and found all values around 1.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(reduced\_model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
+##     Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+##     TechSupport + StreamingTV + StreamingMovies + Bandwidth_GB_Year, 
+##     data = churn)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.4536 -0.2314  0.1829  0.3839  0.4400 
+## 
+## Coefficients:
+##                              Estimate Std. Error  t value Pr(>|t|)    
+## (Intercept)                -6.787e+00  1.443e-02 -470.301   <2e-16 ***
+## Children                   -3.759e-01  1.528e-03 -245.959   <2e-16 ***
+## Age                         3.987e-02  1.585e-04  251.483   <2e-16 ***
+## GenderMale                 -7.833e-01  6.638e-03 -117.996   <2e-16 ***
+## GenderNonbinary             2.913e-01  2.207e-02   13.197   <2e-16 ***
+## InternetServiceFiber Optic  5.055e+00  7.479e-03  675.955   <2e-16 ***
+## InternetServiceNone         5.054e+00  9.061e-03  557.742   <2e-16 ***
+## Multiple1                  -8.790e-01  6.579e-03 -133.614   <2e-16 ***
+## OnlineSecurity1            -9.253e-01  6.844e-03 -135.205   <2e-16 ***
+## OnlineBackup1              -1.150e+00  6.597e-03 -174.256   <2e-16 ***
+## DeviceProtection1          -1.038e+00  6.610e-03 -157.026   <2e-16 ***
+## TechSupport1               -5.700e-02  6.775e-03   -8.412   <2e-16 ***
+## StreamingTV1               -2.783e+00  6.567e-03 -423.764   <2e-16 ***
+## StreamingMovies1           -2.564e+00  6.567e-03 -390.448   <2e-16 ***
+## Bandwidth_GB_Year           1.220e-02  1.514e-06 8058.672   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.3277 on 9985 degrees of freedom
+## Multiple R-squared:  0.9998, Adjusted R-squared:  0.9998 
+## F-statistic: 4.649e+06 on 14 and 9985 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\textbf{D3.} The updated model (reduced\_model), includes Tenure
+(dependant variable), Children, Age, GenderMale, GenderNonbinary,
+InternetServiceFiber Optic, InternetServiceNone, Multiple1,
+OnlineSecurity1, OnlineBackup1, DeviceProtection1, TechSupport1,
+StreamingTV1, StreamingMovies1, and Bandwidth\_GB\_Year.~
+
+The reduced\_model shows an adjusted R-squared value of 0.9998, meaning
+that the model accounts for 99.98\% of variance in Tenure. The models
+f-statistic is 4.649e+06 and the p-value is 2.2e-16 which indicates that
+the model works and is highly significant. The Residuals range from
+-0.4536 to 0.4400 with a median of 0.1829. In this new model, all of the
+preidictor variabels are statistically significant.
+
+\textbf{E1}. To compare the initial model and the reduced model, I used
+a kruskal-wallis test as opposed to an ANOVA becuase ANOVA assumes a
+normal distribution. Because the residuals are not normally distributed
+I used a non-parametric alternative to the ANOVA, known as the
+Kruskal-wallis test.\\
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# comparing the residuals of each model.}
+\FunctionTok{kruskal.test}\NormalTok{(Residuals }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Model, }\AttributeTok{data =}\NormalTok{ residuals\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Kruskal-Wallis rank sum test
+## 
+## data:  Residuals by Model
+## Kruskal-Wallis chi-squared = 1.2851, df = 1, p-value = 0.2569
+\end{verbatim}
+
+The Kruskal-Wallis test compares the distributions of residuals between
+two models and tests whether their medians are the same. The test
+statistic (chi-squared = 1.2851) with 1 degree of freedom returned a
+p-value of 0.2569, indicating no significant difference between the
+residual distributions of the models. This suggests that the residuals
+from both models are similar in distribution. Because the p-value is
+greater than 0.05, I fail to reject the null hypothesis that there is no
+difference between the distribution of the residuals in each model.
+
+To compare the statistics of the two models, I have included their key
+metrics below.
+
+The initial model shows a residual standard error (RSE) of 0.1075, while
+the reduced model has an RSE of 0.3277. As expected, this indicates that
+the initial model fits the data more closely than the reduced model. The
+initial model included 88 predictors (residual degrees of freedom),
+compared to only 14 predictors in the reduced model. Despite this
+difference, the reduced model still captured 99.98\% of the variability
+in the dependent variable (R-squared = 0.9998) with far fewer
+predictors, making it less complex, which is good for keeping down data
+collection costs if each variable has data that needs to be collected.
+In contrast, the initial model captured 100\% of the variability
+(R-squared = 1) but with significantly more predictors.
+
+Both models have similarly large F-statistics, 4.799e+06 for the initial
+model and 4.649e+06 for the reduced model, along with statistically
+significant p-values. This demonstrates that both models are highly
+effective at explaining variance in the dependent variable and are
+statistically significant.
+
+\subsubsection{Initial model
+statistics:}\label{initial-model-statistics}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Tenure ~ ., data = training_set)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.15449 -0.10738  0.07453  0.10508  0.16148 
+## 
+## Coefficients:
+##                                        Estimate Std. Error   t value Pr(>|t|)
+## (Intercept)                          -3.836e+00  2.854e-02  -134.392  < 2e-16
+## Population                           -2.747e-09  8.908e-08    -0.031  0.97540
+## AreaSuburban                         -9.197e-03  3.169e-03    -2.903  0.00371
+## AreaUrban                            -4.122e-03  3.156e-03    -1.306  0.19157
+## Children                             -3.760e-01  6.012e-04  -625.330  < 2e-16
+## Age                                   3.997e-02  6.196e-05   645.016  < 2e-16
+## Income                                2.536e-08  4.610e-08     0.550  0.58225
+## MaritalMarried                       -3.994e-03  4.106e-03    -0.973  0.33074
+## MaritalNever Married                 -4.323e-04  4.050e-03    -0.107  0.91499
+## MaritalSeparated                      4.931e-04  4.021e-03     0.123  0.90241
+## MaritalWidowed                       -1.961e-03  4.008e-03    -0.489  0.62458
+## GenderMale                           -7.917e-01  2.620e-03  -302.139  < 2e-16
+## GenderNonbinary                       2.659e-01  8.691e-03    30.595  < 2e-16
+## Churn1                                1.785e-03  4.128e-03     0.432  0.66541
+## Outage_sec_perweek                    1.670e-04  4.330e-04     0.386  0.69969
+## Email                                -3.520e-04  4.265e-04    -0.825  0.40919
+## Contacts                              2.299e-04  1.296e-03     0.177  0.85921
+## Yearly_equip_failure                  4.083e-04  2.035e-03     0.201  0.84097
+## Techie1                              -1.266e-03  3.441e-03    -0.368  0.71296
+## ContractOne year                      3.730e-03  3.474e-03     1.074  0.28300
+## ContractTwo Year                      4.570e-03  3.294e-03     1.387  0.16534
+## Port_modem1                          -5.566e-04  2.585e-03    -0.215  0.82952
+## Tablet1                               2.625e-03  2.814e-03     0.933  0.35102
+## InternetServiceFiber Optic            5.752e+00  4.262e-03  1349.615  < 2e-16
+## InternetServiceNone                   4.600e+00  4.061e-03  1132.949  < 2e-16
+## Phone1                               -3.347e-04  4.428e-03    -0.076  0.93975
+## Multiple1                             2.672e-01  5.462e-03    48.912  < 2e-16
+## OnlineSecurity1                      -8.315e-01  2.726e-03  -305.026  < 2e-16
+## OnlineBackup1                        -3.566e-01  4.215e-03   -84.606  < 2e-16
+## DeviceProtection1                    -5.956e-01  3.189e-03  -186.737  < 2e-16
+## TechSupport1                          3.827e-01  3.280e-03   116.681  < 2e-16
+## StreamingTV1                         -1.303e+00  6.703e-03  -194.425  < 2e-16
+## StreamingMovies1                     -7.270e-01  8.119e-03   -89.536  < 2e-16
+## PaperlessBilling1                    -5.597e-03  2.622e-03    -2.135  0.03281
+## PaymentMethodCredit Card (automatic)  3.892e-03  3.935e-03     0.989  0.32275
+## PaymentMethodElectronic Check         5.075e-03  3.522e-03     1.441  0.14967
+## PaymentMethodMailed Check             1.171e-02  3.847e-03     3.045  0.00234
+## MonthlyCharge                        -3.513e-02  1.486e-04  -236.363  < 2e-16
+## Bandwidth_GB_Year                     1.221e-02  7.199e-07 16953.219  < 2e-16
+## Timely_response2                      9.895e-03  9.963e-03     0.993  0.32066
+## Timely_response3                      1.445e-02  1.010e-02     1.431  0.15252
+## Timely_response4                      1.366e-02  1.050e-02     1.301  0.19321
+## Timely_response5                      1.611e-02  1.124e-02     1.433  0.15182
+## Timely_response6                      2.188e-02  1.485e-02     1.474  0.14056
+## Timely_response7                      4.769e-02  3.151e-02     1.513  0.13025
+## Timely_fixes2                        -7.977e-03  1.046e-02    -0.762  0.44591
+## Timely_fixes3                        -8.362e-03  1.054e-02    -0.794  0.42751
+## Timely_fixes4                        -1.041e-02  1.081e-02    -0.963  0.33565
+## Timely_fixes5                        -8.773e-03  1.139e-02    -0.770  0.44126
+## Timely_fixes6                        -9.267e-03  1.454e-02    -0.637  0.52405
+## Timely_fixes7                        -4.466e-03  3.843e-02    -0.116  0.90750
+## Timely_replacements2                  1.336e-03  9.985e-03     0.134  0.89360
+## Timely_replacements3                 -3.354e-05  9.893e-03    -0.003  0.99729
+## Timely_replacements4                 -8.901e-04  1.009e-02    -0.088  0.92970
+## Timely_replacements5                 -1.341e-03  1.067e-02    -0.126  0.90004
+## Timely_replacements6                  1.615e-02  1.400e-02     1.154  0.24856
+## Timely_replacements7                 -1.270e-02  4.019e-02    -0.316  0.75201
+## Timely_replacements8                 -1.265e-01  1.173e-01    -1.078  0.28095
+## Reliability2                          5.398e-03  9.471e-03     0.570  0.56871
+## Reliability3                          8.658e-03  9.171e-03     0.944  0.34514
+## Reliability4                          8.070e-03  9.280e-03     0.870  0.38455
+## Reliability5                          1.014e-02  9.807e-03     1.034  0.30129
+## Reliability6                          1.247e-02  1.291e-02     0.966  0.33414
+## Reliability7                         -5.801e-02  4.926e-02    -1.178  0.23895
+## Options2                             -5.206e-03  1.001e-02    -0.520  0.60313
+## Options3                             -1.358e-04  9.795e-03    -0.014  0.98894
+## Options4                             -2.938e-03  9.917e-03    -0.296  0.76702
+## Options5                             -6.652e-03  1.049e-02    -0.634  0.52604
+## Options6                             -5.246e-04  1.347e-02    -0.039  0.96895
+## Options7                             -1.273e-02  4.212e-02    -0.302  0.76256
+## Respectful2                           1.785e-02  1.038e-02     1.720  0.08549
+## Respectful3                           1.147e-02  1.024e-02     1.121  0.26250
+## Respectful4                           7.977e-03  1.043e-02     0.765  0.44448
+## Respectful5                           1.212e-02  1.096e-02     1.106  0.26870
+## Respectful6                           1.680e-02  1.396e-02     1.203  0.22891
+## Respectful7                           2.612e-02  4.600e-02     0.568  0.57020
+## Courteous2                           -4.706e-05  9.430e-03    -0.005  0.99602
+## Courteous3                           -4.863e-03  9.125e-03    -0.533  0.59411
+## Courteous4                           -6.409e-03  9.235e-03    -0.694  0.48775
+## Courteous5                           -2.742e-03  9.775e-03    -0.281  0.77909
+## Courteous6                           -4.428e-03  1.283e-02    -0.345  0.73006
+## Courteous7                           -3.093e-02  3.743e-02    -0.826  0.40869
+## Active_listening2                    -2.888e-02  9.648e-03    -2.993  0.00277
+## Active_listening3                    -2.234e-02  9.309e-03    -2.400  0.01643
+## Active_listening4                    -2.334e-02  9.385e-03    -2.487  0.01292
+## Active_listening5                    -2.514e-02  9.869e-03    -2.548  0.01087
+## Active_listening6                    -1.507e-02  1.304e-02    -1.155  0.24795
+## Active_listening7                     2.600e-03  3.412e-02     0.076  0.93926
+## Active_listening8                    -1.562e-01  1.097e-01    -1.424  0.15455
+##                                         
+## (Intercept)                          ***
+## Population                              
+## AreaSuburban                         ** 
+## AreaUrban                               
+## Children                             ***
+## Age                                  ***
+## Income                                  
+## MaritalMarried                          
+## MaritalNever Married                    
+## MaritalSeparated                        
+## MaritalWidowed                          
+## GenderMale                           ***
+## GenderNonbinary                      ***
+## Churn1                                  
+## Outage_sec_perweek                      
+## Email                                   
+## Contacts                                
+## Yearly_equip_failure                    
+## Techie1                                 
+## ContractOne year                        
+## ContractTwo Year                        
+## Port_modem1                             
+## Tablet1                                 
+## InternetServiceFiber Optic           ***
+## InternetServiceNone                  ***
+## Phone1                                  
+## Multiple1                            ***
+## OnlineSecurity1                      ***
+## OnlineBackup1                        ***
+## DeviceProtection1                    ***
+## TechSupport1                         ***
+## StreamingTV1                         ***
+## StreamingMovies1                     ***
+## PaperlessBilling1                    *  
+## PaymentMethodCredit Card (automatic)    
+## PaymentMethodElectronic Check           
+## PaymentMethodMailed Check            ** 
+## MonthlyCharge                        ***
+## Bandwidth_GB_Year                    ***
+## Timely_response2                        
+## Timely_response3                        
+## Timely_response4                        
+## Timely_response5                        
+## Timely_response6                        
+## Timely_response7                        
+## Timely_fixes2                           
+## Timely_fixes3                           
+## Timely_fixes4                           
+## Timely_fixes5                           
+## Timely_fixes6                           
+## Timely_fixes7                           
+## Timely_replacements2                    
+## Timely_replacements3                    
+## Timely_replacements4                    
+## Timely_replacements5                    
+## Timely_replacements6                    
+## Timely_replacements7                    
+## Timely_replacements8                    
+## Reliability2                            
+## Reliability3                            
+## Reliability4                            
+## Reliability5                            
+## Reliability6                            
+## Reliability7                            
+## Options2                                
+## Options3                                
+## Options4                                
+## Options5                                
+## Options6                                
+## Options7                                
+## Respectful2                          .  
+## Respectful3                             
+## Respectful4                             
+## Respectful5                             
+## Respectful6                             
+## Respectful7                             
+## Courteous2                              
+## Courteous3                              
+## Courteous4                              
+## Courteous5                              
+## Courteous6                              
+## Courteous7                              
+## Active_listening2                    ** 
+## Active_listening3                    *  
+## Active_listening4                    *  
+## Active_listening5                    *  
+## Active_listening6                       
+## Active_listening7                       
+## Active_listening8                       
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1075 on 6911 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 4.799e+06 on 88 and 6911 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\subsubsection{Reduced model
+statistics:}\label{reduced-model-statistics}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Tenure ~ Children + Age + Gender + InternetService + 
+##     Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+##     TechSupport + StreamingTV + StreamingMovies + Bandwidth_GB_Year, 
+##     data = churn)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.4536 -0.2314  0.1829  0.3839  0.4400 
+## 
+## Coefficients:
+##                              Estimate Std. Error  t value Pr(>|t|)    
+## (Intercept)                -6.787e+00  1.443e-02 -470.301   <2e-16 ***
+## Children                   -3.759e-01  1.528e-03 -245.959   <2e-16 ***
+## Age                         3.987e-02  1.585e-04  251.483   <2e-16 ***
+## GenderMale                 -7.833e-01  6.638e-03 -117.996   <2e-16 ***
+## GenderNonbinary             2.913e-01  2.207e-02   13.197   <2e-16 ***
+## InternetServiceFiber Optic  5.055e+00  7.479e-03  675.955   <2e-16 ***
+## InternetServiceNone         5.054e+00  9.061e-03  557.742   <2e-16 ***
+## Multiple1                  -8.790e-01  6.579e-03 -133.614   <2e-16 ***
+## OnlineSecurity1            -9.253e-01  6.844e-03 -135.205   <2e-16 ***
+## OnlineBackup1              -1.150e+00  6.597e-03 -174.256   <2e-16 ***
+## DeviceProtection1          -1.038e+00  6.610e-03 -157.026   <2e-16 ***
+## TechSupport1               -5.700e-02  6.775e-03   -8.412   <2e-16 ***
+## StreamingTV1               -2.783e+00  6.567e-03 -423.764   <2e-16 ***
+## StreamingMovies1           -2.564e+00  6.567e-03 -390.448   <2e-16 ***
+## Bandwidth_GB_Year           1.220e-02  1.514e-06 8058.672   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.3277 on 9985 degrees of freedom
+## Multiple R-squared:  0.9998, Adjusted R-squared:  0.9998 
+## F-statistic: 4.649e+06 on 14 and 9985 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\textbf{E2.} I will include the full code file in my assessment uploads.
+
+The reduced model has a residual standard error of 0.3277 and a adjusted
+r-squared value of 0.9998. This suggests that the model has very good
+fit. In terms of predictive power, this residual standard error
+indicates that the reduced model provides very precise predictions.
+
+\pandocbounded{\includegraphics[keepaspectratio]{WriteUp_D208_V2_files/figure-latex/unnamed-chunk-18-1.pdf}}
+
+The \textbf{residuals vs leverage} (bottom right) plot shows that there
+are no high leverage point or outliers based on `cooks distance.'
+
+The \textbf{Q-Q residuals} plot (top right) show that the residuals do
+not stick to the diagonal line expecially on the tails indicating that
+the residuals are not normally distributed.
+
+The r\textbf{esiduals vs fitted} (top left)plot show that the horizontal
+red line is reasonably flat but the residuals show horizontal lines
+rather than randomness suggesting heteroscadasticity rather than the
+assumption of homoscedasticity.
+
+The \textbf{scale-location} (bottom left) plot checks for
+homoscedasticity. Once again the residuals show horizontal lines.
+Ideally these values should be evenly spread across the plot.
+
+\subsubsection{Predicted values:}\label{predicted-values}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Getting the predicted values with the test data}
+\NormalTok{y\_pred }\OtherTok{=} \FunctionTok{predict}\NormalTok{(reduced\_model, }\AttributeTok{newdata =}\NormalTok{ test\_set)}
+
+\CommentTok{\#print the predicted values}
+\NormalTok{y\_pred}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          1          2          3          4          5          6          7 
+##  1.5920497 16.6746050  1.2668099  4.4624421 19.0625900 14.0928134 12.4036666 
+##          8          9         10         11         12         13         14 
+## 20.2576384  8.1409243  4.5726253 11.3104666  3.7855797 20.4783207  2.8938447 
+##         15         16         17         18         19         20         21 
+## 11.7650353  5.2998844  6.3147384 15.9433238  9.2268934  4.9042582 11.0170793 
+##         22         23         24         25         26         27         28 
+## 11.8287920 24.3425223  8.1833143 14.7516292  5.0673079  4.1575074  4.2016903 
+##         29         30         31         32         33         34         35 
+##  6.9996851 17.0385798  3.4224259 11.1899686  4.8023441 18.3084940 12.7091992 
+##         36         37         38         39         40         41         42 
+## 13.0160143  7.6508764  2.3142117  9.9752344  6.1716167  6.8343880 15.0682160 
+##         43         44         45         46         47         48         49 
+##  3.0407019  6.5856768  5.1352186  8.3001811 19.2949693  9.8268343  2.5614105 
+##         50         51         52         53         54         55         56 
+## 16.0821323 17.6644708  5.7899817  6.5785460  2.7584021  3.4852652 18.3649931 
+##         57         58         59         60         61         62         63 
+## 18.1682503 15.5438054 21.4899074  4.7449966  5.4070193 10.7163566  5.4983582 
+##         64         65         66         67         68         69         70 
+## 12.4352799  8.9867782 16.1818868 23.3231030 13.1488651 12.2046999  2.0596187 
+##         71         72         73         74         75         76         77 
+##  1.6325478  6.9756238 10.7954202  3.1928066  9.8238160  1.5864408  2.7940059 
+##         78         79         80         81         82         83         84 
+##  9.9414856  9.3443248 20.7799171  5.6237288 12.2145187  8.5784727 15.0693862 
+##         85         86         87         88         89         90         91 
+##  8.0662927  4.2635016 14.3440748  2.8028377  9.6160105 12.2773574  2.2778217 
+##         92         93         94         95         96         97         98 
+##  4.4261286  3.3162147  5.5389104 23.2895403 11.5375977  2.0112681 13.8732297 
+##         99        100        101        102        103        104        105 
+##  6.9023869 13.5339498 14.9474569  8.5709364 14.8658097  2.4824642  9.9743771 
+##        106        107        108        109        110        111        112 
+## 10.0631987 21.9300059  2.1169874  7.4910014  5.6249076 10.7502683 17.8118574 
+##        113        114        115        116        117        118        119 
+## 17.7165916  2.8493214  6.1605640  5.5750237  1.8730862  8.8373783  0.9665976 
+##        120        121        122        123        124        125        126 
+## 32.7250048 10.6769507  6.6122844  7.6923488 16.7227234 13.6375289  2.1122739 
+##        127        128        129        130        131        132        133 
+##  0.9885613 17.2601832 10.6573015 16.9183634  5.4248745 11.0274705 14.2684542 
+##        134        135        136        137        138        139        140 
+##  9.8922042  7.5896790 14.2811296  8.6821577  5.1850063  7.3999187  1.4594036 
+##        141        142        143        144        145        146        147 
+##  1.8605076  1.8140223 15.7830989  9.0095678 17.1354727  1.3470654  1.7517060 
+##        148        149        150        151        152        153        154 
+##  5.3886216  6.8046771  7.0414606 15.2044801  2.1911474  2.0474882  8.4958380 
+##        155        156        157        158        159        160        161 
+##  6.3951395  9.6465500  1.6238238  7.5794689  7.4951718  2.0027224 15.1820180 
+##        162        163        164        165        166        167        168 
+## 22.3389471 10.8201045  4.6943138  1.4725992  5.3250831 13.9894636 19.6257901 
+##        169        170        171        172        173        174        175 
+##  6.3814239  3.8339571  1.2848290  6.8015802  2.5475350 14.3119371 12.0627922 
+##        176        177        178        179        180        181        182 
+## 15.6033974  3.2705930 14.9932675  1.0842242  3.9158178  2.2178065  2.7507337 
+##        183        184        185        186        187        188        189 
+##  3.2862600  5.3559455  2.5704314 11.6067246  1.2543213  5.7489922 15.1794478 
+##        190        191        192        193        194        195        196 
+##  4.9447277 19.4038473 14.7231443  2.8697286 24.6156616  5.1113990  3.8518661 
+##        197        198        199        200        201        202        203 
+## 13.8228678  6.7601456 20.9814077 10.1572765  2.2598822  7.4396483  1.4644657 
+##        204        205        206        207        208        209        210 
+##  5.7988854 16.4794272 19.6399563 14.6752572  9.9482744  7.5140750  8.6888153 
+##        211        212        213        214        215        216        217 
+## 17.4005168  8.0479528 11.0228456 10.0298226  5.5686869  5.9755753  9.2739724 
+##        218        219        220        221        222        223        224 
+##  5.0191616  9.9330768 14.9071468  9.4035700  8.6684186 11.2952872  7.8680940 
+##        225        226        227        228        229        230        231 
+##  5.8579634  5.0256452  5.6187274  2.7108741  4.7247834  3.5405328 21.9819550 
+##        232        233        234        235        236        237        238 
+##  3.6258339  2.5188704  8.8426238  4.4193317  8.4831365 10.1559420  3.3820948 
+##        239        240        241        242        243        244        245 
+## 11.3187040  6.9219715  4.5338321 13.9877116  9.5806589 28.7296098 20.1103087 
+##        246        247        248        249        250        251        252 
+##  4.8709259  1.5543976  5.4871839  8.2538061  1.6655886  4.1968676 15.5406495 
+##        253        254        255        256        257        258        259 
+## 20.1893888 17.5451899 10.4022986 26.4471270  4.5959943  4.6910707  7.2518191 
+##        260        261        262        263        264        265        266 
+##  1.8646419  2.5147442 15.1120626 13.5646477 18.2555606  4.8717141  5.0494316 
+##        267        268        269        270        271        272        273 
+##  9.4016830 10.1408620 10.5941625  3.0871071  1.2379077 11.1521086 15.6135997 
+##        274        275        276        277        278        279        280 
+##  3.3365241  8.7377086  7.5963686 10.0843953 15.0256135 12.6224900  4.8528822 
+##        281        282        283        284        285        286        287 
+## 14.2483004  3.1653007  4.9378096  4.6260065 12.0162962  5.3250432 15.4989488 
+##        288        289        290        291        292        293        294 
+##  5.4965626 27.6854742  9.9684961 18.3010861  2.1823039  8.6500569  2.4695273 
+##        295        296        297        298        299        300        301 
+##  1.9520485  6.9531675  1.9886332  9.9020055 19.2462191 15.7173255  4.7588206 
+##        302        303        304        305        306        307        308 
+## 16.6896231  8.7723481  6.1249003  3.5247968 18.8101356 18.5168894  3.8850855 
+##        309        310        311        312        313        314        315 
+##  0.9984146  1.8179159  9.9128376 18.2519382  8.2887032  7.6681815 10.6125450 
+##        316        317        318        319        320        321        322 
+##  4.3578906  4.3900400  9.4787272  2.0048810 11.6158955  2.1163106 16.2083787 
+##        323        324        325        326        327        328        329 
+##  8.2621630 18.9487442  5.4188773  6.5857873  6.9666622 17.2044912  2.0195984 
+##        330        331        332        333        334        335        336 
+##  8.6809035  6.8670357 14.9919650  7.3323028  1.9591009 11.2516988  4.0800306 
+##        337        338        339        340        341        342        343 
+##  8.2733304  9.9389470  2.9289811 10.0496568 18.8581732  9.1613390  2.3404578 
+##        344        345        346        347        348        349        350 
+##  3.4854047 17.8719879 14.4571164  6.6603461  7.6822316  3.6121932  8.9737557 
+##        351        352        353        354        355        356        357 
+##  6.5493676 17.3046740  6.3855345 18.9690151  2.3246109  6.8823819  1.5230914 
+##        358        359        360        361        362        363        364 
+##  2.1978949  1.6385992  9.2594442  5.6675317 19.7278702  5.9858191  7.4046927 
+##        365        366        367        368        369        370        371 
+##  6.5795296 23.7315409  4.9993251 18.0162011  4.2674643 20.6932058  8.6249834 
+##        372        373        374        375        376        377        378 
+##  8.9791445  3.3876384  9.7665647 15.3762087  8.4705423  5.4346841 22.5129196 
+##        379        380        381        382        383        384        385 
+## 27.5505330 10.3737918 17.7293433 16.3901097  0.8242306  3.8628827  9.9363195 
+##        386        387        388        389        390        391        392 
+##  6.5225858  3.8668418 10.8833943  7.4755034 11.8106597 25.6910103 16.0024931 
+##        393        394        395        396        397        398        399 
+##  0.9585376 10.8350187  4.4380314  5.5081562  2.6596962  2.7631846  8.7697378 
+##        400        401        402        403        404        405        406 
+##  7.6209227  2.7788438  4.4400679 10.0723268 20.5483016  7.8948728 14.2756259 
+##        407        408        409        410        411        412        413 
+##  5.0805113  1.2665061 12.7153454  7.6168317  3.9080682  2.7114830 17.2441956 
+##        414        415        416        417        418        419        420 
+##  1.3233563  2.7874573  9.6236505  3.2759287  4.3923505  5.8936034  5.4859872 
+##        421        422        423        424        425        426        427 
+##  4.2492742 11.8609003 10.4797715  3.6316792  2.0550140 16.0679877  7.5424187 
+##        428        429        430        431        432        433        434 
+##  5.2129496  9.2751362  6.1772557  2.4139470 18.6574114  6.4094368  9.1746545 
+##        435        436        437        438        439        440        441 
+##  4.1417450  8.4148652  1.9879498  4.4446895  0.8419483 13.0457574 10.8363643 
+##        442        443        444        445        446        447        448 
+##  1.7729496 12.2276496  4.2291566  4.2196647 19.9305155  8.0249632  2.9619002 
+##        449        450        451        452        453        454        455 
+##  7.9512416 10.9020836 12.8851930  2.3424356 14.8070471 29.4930712  2.2610659 
+##        456        457        458        459        460        461        462 
+## 18.2212524 16.6602226  2.1984049 17.8996955  6.7697869  2.4948412  1.9033598 
+##        463        464        465        466        467        468        469 
+## 15.2756552 11.3329430 10.9705359  8.2411208  1.4808641 10.8143061 19.7637029 
+##        470        471        472        473        474        475        476 
+##  8.6752045  9.4675497  2.0182402  4.1730788  9.1277161  2.9122984 16.4463003 
+##        477        478        479        480        481        482        483 
+##  5.5735490  8.5493909  7.1698930  5.9708607  2.9295151  3.7554688  4.1262334 
+##        484        485        486        487        488        489        490 
+##  4.0552870 21.4162270  8.8015457  3.5392175  4.9999834  4.6916241 11.8552939 
+##        491        492        493        494        495        496        497 
+## 11.2687239 25.9858834 12.6072839 14.9428301  4.6592852 12.7210785  3.8493500 
+##        498        499        500        501        502        503        504 
+## 18.8836284  9.7680782 10.6512055  6.7298243 11.2604245 11.3957214  6.9825565 
+##        505        506        507        508        509        510        511 
+## 13.5890924  6.3519285 11.2793041  0.8415173  6.5400357  7.8217997  8.9580075 
+##        512        513        514        515        516        517        518 
+##  6.0991671  2.4256094 13.8644608  7.6552339  9.6425416 16.1833931 16.3340502 
+##        519        520        521        522        523        524        525 
+##  7.9194181  8.9174322  3.0931450  7.7233661  6.0714066  9.0701362  2.0925752 
+##        526        527        528        529        530        531        532 
+##  8.8463531  4.3817725 14.5287827 17.5619608  8.0518556 13.7149145  5.9777225 
+##        533        534        535        536        537        538        539 
+## 15.3190726  7.0438593  3.7504864 13.6430469  8.2824764  8.1438895  3.5494429 
+##        540        541        542        543        544        545        546 
+##  0.6105294 16.6921584 15.3153002  2.2382948  4.2942197  7.7894143  2.9034439 
+##        547        548        549        550        551        552        553 
+##  2.1482621 16.5359357  7.9890701  9.0877475  2.7409085  9.5893039 13.1214307 
+##        554        555        556        557        558        559        560 
+## 12.7437403  1.0554267  7.0636298  6.0817484  4.7310585  7.0102420 12.8096129 
+##        561        562        563        564        565        566        567 
+## 17.8097246 17.8922309 11.8715537  0.9586230  7.6089860  1.1686455 13.6159969 
+##        568        569        570        571        572        573        574 
+## 20.6594954  6.3767757 14.6511818  3.5984958  7.4120723  7.0058861 18.1815547 
+##        575        576        577        578        579        580        581 
+##  2.6103252  7.5908483 18.3991872  4.1093878  7.0337686  3.9848218  1.3253940 
+##        582        583        584        585        586        587        588 
+## 15.3456490  4.8238214 12.7456801 22.5686577 11.4657368 12.6297013  1.6537855 
+##        589        590        591        592        593        594        595 
+##  4.6623595  1.2160703 14.4297337  3.2936375  3.6217614 10.5767897 14.2231181 
+##        596        597        598        599        600        601        602 
+## 16.4162461  5.5349255 21.4902812  5.5952351  6.4574933  8.9675988 17.8095643 
+##        603        604        605        606        607        608        609 
+##  3.5769393 11.2269896  7.2163771  6.7671719  4.3718786 10.2684144  6.0163101 
+##        610        611        612        613        614        615        616 
+##  8.7713144  3.2808042  2.4889574 25.3738913 19.0997288  2.2649755  2.4597769 
+##        617        618        619        620        621        622        623 
+## 30.9142102 21.2346445 13.2177476  9.9306420  2.2085964 12.4402301  5.6954491 
+##        624        625        626        627        628        629        630 
+##  7.6832170 26.6907845 14.6773581 12.9139538 10.2374463 30.6107289  5.4668173 
+##        631        632        633        634        635        636        637 
+## 10.6638555 18.1892405  6.5793747 11.9015033  5.5997852 19.9587758 11.1218703 
+##        638        639        640        641        642        643        644 
+## 14.7222891 28.0905594 17.2757860  8.4861232 11.0265238  7.9544118  9.8042740 
+##        645        646        647        648        649        650        651 
+##  7.9799421  4.8758536  6.4683371  4.9503018  2.9673847 12.5183696 10.3923567 
+##        652        653        654        655        656        657        658 
+##  0.8188160  4.8214318 16.7147920  9.3534577  7.1688740  4.2359021  2.1123123 
+##        659        660        661        662        663        664        665 
+## 10.2832191 17.3502347  7.4688998  4.0822176  3.1330393  1.7667564  2.4087839 
+##        666        667        668        669        670        671        672 
+## 10.9285764  3.8334503 27.1622007 11.5030404 13.5080004 10.1703390  9.3402771 
+##        673        674        675        676        677        678        679 
+## 10.7580776 14.0914115  5.3962790  2.6154266  8.0716631  5.6756215  2.5287121 
+##        680        681        682        683        684        685        686 
+## 11.8221063  4.8715597 27.3182484  3.1737784 12.4581849  3.6433554 25.5416728 
+##        687        688        689        690        691        692        693 
+## 10.7118005 16.5898777  6.3479185  7.9740299 24.2274169  7.1804962  8.2961031 
+##        694        695        696        697        698        699        700 
+##  7.6105934  5.1994264 12.5026916  2.3449398 13.3563654 12.6411297 15.1882734 
+##        701        702        703        704        705        706        707 
+##  1.7827528  7.6740580  3.8150792 10.0148796  3.0054556  1.5784466  2.0831829 
+##        708        709        710        711        712        713        714 
+## 20.2506632  2.3469866  1.2828762 11.5765730 14.5874252 11.2865949  7.0376432 
+##        715        716        717        718        719        720        721 
+##  5.4039150 19.9957261  9.3163306 13.8240292 14.5762905  1.8744449  5.9464847 
+##        722        723        724        725        726        727        728 
+## 10.6164446 15.2769282  4.4586087  4.1491689 13.4805355 19.3436221  4.1949529 
+##        729        730        731        732        733        734        735 
+## 16.2113410 10.7115599 12.9442674 20.1446592  1.2796679  7.7394177  6.2612728 
+##        736        737        738        739        740        741        742 
+##  1.2460451  2.0150555  5.8363853  3.1823460  5.6443363 26.3573437  7.6276620 
+##        743        744        745        746        747        748        749 
+## 19.7144020 20.4961560  9.4056289 16.1359655  5.2890922  6.5302654  1.5606841 
+##        750        751        752        753        754        755        756 
+## 17.2978510 16.4720969  3.8226113 23.9565183 17.4117723 27.0267199  9.4141129 
+##        757        758        759        760        761        762        763 
+## 12.3240394  4.0272464 19.1710169 16.3850900 18.9541029  0.9843440  0.6206789 
+##        764        765        766        767        768        769        770 
+## 14.8352215  2.8607903  7.6093777 29.2192365  4.2607708  2.7088221  1.9686506 
+##        771        772        773        774        775        776        777 
+##  6.9457351 10.0520772  9.4025701  3.9577420 17.9042781  1.3809362 21.9206334 
+##        778        779        780        781        782        783        784 
+##  3.5720877 11.4545770  9.0940960  9.4951232 28.0340382  8.0288597  1.3167556 
+##        785        786        787        788        789        790        791 
+##  2.5841189  1.6916008  6.5791678  7.2536270 30.4213426  7.4332017  2.0550748 
+##        792        793        794        795        796        797        798 
+## 15.9185400  9.6046144  0.9981899  1.8110443 17.1381878  3.0917505  6.1112786 
+##        799        800        801        802        803        804        805 
+##  5.0016028  7.1258984 11.2635399 17.0680993 11.9548483  6.8469711  5.2577151 
+##        806        807        808        809        810        811        812 
+##  4.3366079 22.5451260  4.3248959  8.8115058  1.5732963 10.9651199 14.8106151 
+##        813        814        815        816        817        818        819 
+##  1.7848683  1.5750243 10.8333115  8.6093641  4.6823868 25.2838481  2.7347913 
+##        820        821        822        823        824        825        826 
+##  8.7777942  2.2209402  2.5468462 10.4414867  3.8087254 11.5812518 13.6209951 
+##        827        828        829        830        831        832        833 
+## 15.0400314 15.9487759  3.8891217 11.8105513  7.0012949 10.0759881  5.4876164 
+##        834        835        836        837        838        839        840 
+##  4.1869169 18.7711062 23.7860508  7.9027063 13.9606646 19.1605979  3.0780658 
+##        841        842        843        844        845        846        847 
+##  4.5488914  6.6899923 20.1281447 12.3582727  2.4424706  3.9003289  4.0859682 
+##        848        849        850        851        852        853        854 
+## 11.5178670  5.4269245 18.3206024  8.9026860 13.4537602  5.0360750 12.9117983 
+##        855        856        857        858        859        860        861 
+##  5.0708237  3.4286267 10.5237135 14.1805638  5.8808233  7.3982316  4.5503461 
+##        862        863        864        865        866        867        868 
+## 20.6788261  4.0630834 27.2537799 15.7683380  8.4443750  4.8851159  4.6359471 
+##        869        870        871        872        873        874        875 
+##  1.3482391  3.8903154  8.7978682  5.1991358 13.7587890 16.9976236 17.1321059 
+##        876        877        878        879        880        881        882 
+## 11.1225898  5.0655764 22.6681934 19.8317753 13.0852185 14.5762015  4.8474739 
+##        883        884        885        886        887        888        889 
+##  6.9228552 11.0646931 21.0664080  5.8581710  6.0333228 16.0233724  5.7757808 
+##        890        891        892        893        894        895        896 
+## 10.9145905  4.5782399 12.4041674 21.2636652  2.9106165  2.7938957  4.4368395 
+##        897        898        899        900        901        902        903 
+## 11.5804256  4.0834236  4.6938801 12.0405176  6.4058300 16.3160590  8.2065935 
+##        904        905        906        907        908        909        910 
+## 10.6058037  5.6596803 13.3804486  6.4197483 10.5231494  8.7195983  1.7225153 
+##        911        912        913        914        915        916        917 
+## 17.6692826  8.9407439  2.2956488  3.2667472  1.9787172  2.0638933 13.6760796 
+##        918        919        920        921        922        923        924 
+##  5.5935925  1.5528793  6.1322960  7.1964918 21.3205025  2.6270650  7.5684903 
+##        925        926        927        928        929        930        931 
+##  1.3964291 21.1735949 18.2663614 17.4773056  8.5550614 18.6798891  7.9759518 
+##        932        933        934        935        936        937        938 
+##  8.0015782 17.4852457 15.3621537  7.3875057 15.4639053  7.0939226  7.2444014 
+##        939        940        941        942        943        944        945 
+## 17.5160521 27.6541974  4.3094194  7.4162540  4.2548757  8.1212024 17.0140749 
+##        946        947        948        949        950        951        952 
+##  4.0648014  6.0473304  4.6517644 16.6841986  2.6449438 10.7559174  3.6976706 
+##        953        954        955        956        957        958        959 
+##  2.4850477  9.7062606 17.5851431  3.4293814 10.6108722  3.4270308  1.4002080 
+##        960        961        962        963        964        965        966 
+##  8.6324446  4.8281421  2.2659616  8.4265628  4.6274592  8.6705762 10.3621217 
+##        967        968        969        970        971        972        973 
+## 10.8632748  1.0715042  6.6915335 13.4734660  9.3223893 15.8900530  0.9030003 
+##        974        975        976        977        978        979        980 
+## 20.2046905 21.5597588 11.3981694  8.5934782  5.5806089 14.6376527  4.2413443 
+##        981        982        983        984        985        986        987 
+##  1.4266780 10.1329876  4.7520801  9.7642424  7.4716962 13.7432387  5.4864822 
+##        988        989        990        991        992        993        994 
+##  1.3770556  4.7707851  2.0612435  1.6244282  6.4564054 16.4361366 15.9253967 
+##        995        996        997        998        999       1000       1001 
+## 11.8541703  3.5587026 10.2917675  7.9039957  8.8421109  6.2720709  1.7601186 
+##       1002       1003       1004       1005       1006       1007       1008 
+##  2.1214997  1.3539125  1.7411346 21.8338812 20.8574514  9.0459815 16.6019773 
+##       1009       1010       1011       1012       1013       1014       1015 
+## 13.1643961  3.7796824  7.4460682 11.3110712  4.8800157 14.2531636 17.1246443 
+##       1016       1017       1018       1019       1020       1021       1022 
+##  7.8863348  8.0184171  4.0628302  8.5157445  4.2664545 18.5752390 19.5944405 
+##       1023       1024       1025       1026       1027       1028       1029 
+##  8.9732826  2.0547237  7.9843352  7.2503888 10.2979881  6.9165223  9.3537670 
+##       1030       1031       1032       1033       1034       1035       1036 
+##  5.4069660  9.2515468 12.0038327 17.7142793  5.8463800  5.8268815 10.4684431 
+##       1037       1038       1039       1040       1041       1042       1043 
+##  1.4851818  8.8770769  7.1661810 13.7753395  6.0815835  3.2924341 21.7832082 
+##       1044       1045       1046       1047       1048       1049       1050 
+##  5.7733934  7.8165787  3.9542515 10.4917588 11.4499590  7.3105298  4.9428075 
+##       1051       1052       1053       1054       1055       1056       1057 
+## 13.9371014  4.7934635  7.2740165  6.0783940  5.1201871  4.1295619  8.7930229 
+##       1058       1059       1060       1061       1062       1063       1064 
+##  3.1324743  2.3711888  2.7294520  1.6492534  0.8402407  1.1625577 11.4086720 
+##       1065       1066       1067       1068       1069       1070       1071 
+## 19.2330412  3.3793043  8.1475060  4.8136578  7.9048726 19.1256716 14.5104842 
+##       1072       1073       1074       1075       1076       1077       1078 
+## 17.1472624  4.3213564 29.8038764 11.0134907 10.5877684  1.6352792  4.0254036 
+##       1079       1080       1081       1082       1083       1084       1085 
+##  6.7410791  4.3222492 15.1836923 16.3002302  8.9813608 18.9453111  6.3996928 
+##       1086       1087       1088       1089       1090       1091       1092 
+## 11.2621368  5.6862873 12.7138490  7.7354142  4.5172285 11.1213276 15.8356563 
+##       1093       1094       1095       1096       1097       1098       1099 
+## 10.4286484  2.7500589  6.5964112  9.1438074  2.0327193  4.1448355 16.2400189 
+##       1100       1101       1102       1103       1104       1105       1106 
+##  3.4575947 21.3275448  2.6760395  1.7461431 18.0247741 11.2860838 11.9799502 
+##       1107       1108       1109       1110       1111       1112       1113 
+##  2.0131956  5.2417538  2.5547582 14.4961698  9.7199854  8.3006573  5.5307133 
+##       1114       1115       1116       1117       1118       1119       1120 
+##  1.8653653 11.5019519 16.8487859  8.6120060 19.9353802 12.1248366  9.9002088 
+##       1121       1122       1123       1124       1125       1126       1127 
+##  7.9174818 10.1645673  6.5129278  2.3459002  9.3822469  5.4115414  6.8214519 
+##       1128       1129       1130       1131       1132       1133       1134 
+## 19.0154855 12.5584349  5.7437630  4.5131846  5.2190320 22.5101709 14.5211985 
+##       1135       1136       1137       1138       1139       1140       1141 
+## 19.0142445 16.9746805 12.0948127 15.2848226  7.1728767 15.6482119  8.2680463 
+##       1142       1143       1144       1145       1146       1147       1148 
+##  9.4339481 12.4026260  4.6618730  4.2073926 16.2833378 14.5147165 11.5057791 
+##       1149       1150       1151       1152       1153       1154       1155 
+## 11.0318334  0.8499801  6.6593277  7.2679984 12.1268440 17.5812111 15.7804894 
+##       1156       1157       1158       1159       1160       1161       1162 
+##  9.5662823  0.9603937 18.4956370 16.6318693  4.4436900 12.5083508  6.6747536 
+##       1163       1164       1165       1166       1167       1168       1169 
+## 14.1647899  3.6802844 22.3946298  7.8335325 27.3423464 11.4269620  9.7380798 
+##       1170       1171       1172       1173       1174       1175       1176 
+##  6.0062452 10.9420560  4.1386751 10.6585706  2.9847018  8.0794827  1.6354581 
+##       1177       1178       1179       1180       1181       1182       1183 
+## 12.4884952  5.6399297 21.0192058  5.8758658 10.0709375  9.8074010 16.6425681 
+##       1184       1185       1186       1187       1188       1189       1190 
+## 18.9470815  6.2951095 18.8747227  9.9719992 10.9061640  2.7100475  9.6448394 
+##       1191       1192       1193       1194       1195       1196       1197 
+##  6.7873976  4.1597932  3.8104164 14.9717190 14.1280031  2.7652638 11.4275083 
+##       1198       1199       1200       1201       1202       1203       1204 
+##  5.0248272  8.7924628  7.4123543  9.3559708 32.9441251  7.9829964  6.0477631 
+##       1205       1206       1207       1208       1209       1210       1211 
+## 13.2993579  9.3454209  7.9010394  1.7216629  7.6682088 11.2078980 13.4420536 
+##       1212       1213       1214       1215       1216       1217       1218 
+##  6.8125089  8.9979992  5.7491499 11.1189866  5.0795013  5.5926825  4.2229496 
+##       1219       1220       1221       1222       1223       1224       1225 
+## 25.7228590  3.7324963  2.0717642 13.9584818  6.4139696  5.4051954 25.6460412 
+##       1226       1227       1228       1229       1230       1231       1232 
+##  7.4705262 33.0075325  6.2099677  2.6487189  4.9070863  2.4700620 22.9052643 
+##       1233       1234       1235       1236       1237       1238       1239 
+##  7.4352017 10.4906458 10.5710308 15.3347389  8.5044286  0.7060949 19.8025992 
+##       1240       1241       1242       1243       1244       1245       1246 
+##  1.8867251  1.0566794 12.5806136 10.3370899  3.1409963 12.9309062  7.0057820 
+##       1247       1248       1249       1250       1251       1252       1253 
+##  2.8474322 21.0681374  3.0535307 14.6697405  2.3513661  7.7023419  1.2330831 
+##       1254       1255       1256       1257       1258       1259       1260 
+##  1.4921438  5.1126310  6.7749875  8.9181327  6.7015711 18.2508602 20.6143589 
+##       1261       1262       1263       1264       1265       1266       1267 
+## 14.9746560 11.9697991  3.7693932 18.6516697 10.7885384  6.3829624 12.1510131 
+##       1268       1269       1270       1271       1272       1273       1274 
+## 16.8483676  4.4110734  7.6298641  3.8206235 14.2009057 17.0245077  4.7877323 
+##       1275       1276       1277       1278       1279       1280       1281 
+##  3.7353453 20.3575012 12.4375459  1.6105797 10.5182508  5.2653338 14.1284608 
+##       1282       1283       1284       1285       1286       1287       1288 
+## 12.5705540  4.4917169  8.9765294  5.2361342  3.6967864 16.4186757 13.9115231 
+##       1289       1290       1291       1292       1293       1294       1295 
+##  0.9977380 11.2449393  3.7161619 19.8302160  3.9888562  4.4215189  3.7858406 
+##       1296       1297       1298       1299       1300       1301       1302 
+##  1.5471360 12.2846049  9.0972357  4.5058330 14.1896817  6.7507153 20.7261936 
+##       1303       1304       1305       1306       1307       1308       1309 
+## 10.0965310 13.4992918  2.9759504  4.3052096  2.7821999  8.4898494  3.1145392 
+##       1310       1311       1312       1313       1314       1315       1316 
+##  1.0991305 25.2769980 12.5023360  3.2950224 20.3227548  7.4227203  3.6889614 
+##       1317       1318       1319       1320       1321       1322       1323 
+##  1.6817200 14.6131848 13.3961881  2.3753915 11.9346755  6.6720660 31.6167688 
+##       1324       1325       1326       1327       1328       1329       1330 
+##  9.5519449  1.5885342  7.3298455 10.6622234 16.8281808  9.0100827  1.4498103 
+##       1331       1332       1333       1334       1335       1336       1337 
+##  9.7429608  6.3793634 15.7452417  1.7292177  5.9228430  4.2161524  7.1531510 
+##       1338       1339       1340       1341       1342       1343       1344 
+## 10.1639857  5.3302766  2.9887453  6.5687609  5.0318798  8.4651850 13.1986678 
+##       1345       1346       1347       1348       1349       1350       1351 
+##  4.1791514  7.1432006 15.3498377 15.0272215  1.3737976  6.5936612 12.8761269 
+##       1352       1353       1354       1355       1356       1357       1358 
+##  1.7646589  1.5147053 10.0049352  5.2591352 21.5630183 12.0508151  8.7587610 
+##       1359       1360       1361       1362       1363       1364       1365 
+## 19.4170701  8.4425186 10.0713076 15.4409711  9.4761406  9.6036573  4.0255766 
+##       1366       1367       1368       1369       1370       1371       1372 
+##  7.8451480  8.3534688  2.3840032  7.1278188  2.4992829 10.6989738  4.1474424 
+##       1373       1374       1375       1376       1377       1378       1379 
+##  7.0640035 29.1039334  7.4757798 15.1533135  4.2862415  8.2349630  8.1735130 
+##       1380       1381       1382       1383       1384       1385       1386 
+## 14.1361008  8.1802393  9.9365324 14.2570206 10.9984053  6.7735374  2.6035599 
+##       1387       1388       1389       1390       1391       1392       1393 
+##  5.7590476 11.6987741  4.6961000  7.6537240 14.7587590  4.0144357  8.6617917 
+##       1394       1395       1396       1397       1398       1399       1400 
+##  5.5482042  6.0134908  3.1130873  8.0591773  7.8932781 25.1127246  6.9500477 
+##       1401       1402       1403       1404       1405       1406       1407 
+##  2.3323873 11.5338894  2.5805394 12.2716068 12.0344098  3.6904143 13.9774053 
+##       1408       1409       1410       1411       1412       1413       1414 
+## 10.3482237  2.6701390 15.0530702 12.4803637 12.8773315  4.6980481 12.0136240 
+##       1415       1416       1417       1418       1419       1420       1421 
+##  2.7651220  7.7252179 15.8237615  9.5487234  8.4000836 10.5672691  5.6846202 
+##       1422       1423       1424       1425       1426       1427       1428 
+##  8.9802868 13.4988998 17.9576316  8.4687337 18.5723230  2.7220101  4.9585024 
+##       1429       1430       1431       1432       1433       1434       1435 
+## 11.3809370 11.4737522 11.7301460 12.1637590 19.1836807 10.2978075  2.1099525 
+##       1436       1437       1438       1439       1440       1441       1442 
+## 10.6718874 18.6396073  2.4376865  2.8879915  5.2950590 12.5802751  5.5974842 
+##       1443       1444       1445       1446       1447       1448       1449 
+## 10.3033209 10.3786546  7.1535618  9.9158334  3.2105663 23.7821925 10.6845951 
+##       1450       1451       1452       1453       1454       1455       1456 
+##  5.9935913 11.4823326  7.2037606 17.1021975 11.6239205 10.6971308  4.6253806 
+##       1457       1458       1459       1460       1461       1462       1463 
+##  2.2345406  7.7737755  3.4737191  2.1074921  3.2018455 21.8115587 26.9712870 
+##       1464       1465       1466       1467       1468       1469       1470 
+##  9.3739854  2.2217613  7.4830830  7.1601559  6.5677542 12.9218409  7.7395067 
+##       1471       1472       1473       1474       1475       1476       1477 
+##  4.2459131  1.7636212  6.7043691  9.6195343  4.7774713  5.6662065  9.6178537 
+##       1478       1479       1480       1481       1482       1483       1484 
+##  9.7831196  8.1796003  6.6476399  7.1703375 14.9203540  8.2680988  6.8768355 
+##       1485       1486       1487       1488       1489       1490       1491 
+##  6.9915295  1.3085480  6.0801406  2.9146808  9.2555699 20.5937122 20.3236742 
+##       1492       1493       1494       1495       1496       1497       1498 
+##  5.7238373 12.1106412 14.3644197  9.8708568  9.3390062 11.7173094  1.9903099 
+##       1499       1500       1501       1502       1503       1504       1505 
+##  8.6400419  4.6213684  3.8958603 10.9227095 11.3385548  5.8698855  2.5272597 
+##       1506       1507       1508       1509       1510       1511       1512 
+##  8.3755949 11.5493199 10.1028241  6.8489425  1.7127699  8.8031946 15.1783889 
+##       1513       1514       1515       1516       1517       1518       1519 
+##  8.0628150  7.7888345  6.6743454 53.6291156 61.4079715 63.0541731 66.0451410 
+##       1520       1521       1522       1523       1524       1525       1526 
+## 66.4925169 71.2353887 62.9533326 67.3724671 65.1506294 70.8873939 68.3496363 
+##       1527       1528       1529       1530       1531       1532       1533 
+## 55.6765382 66.3497520 71.3079335 62.0520101 44.5660583 71.2140373 70.2851745 
+##       1534       1535       1536       1537       1538       1539       1540 
+## 65.5195542 64.2409809 69.4928776 56.7980397 69.6872060 64.9599670 71.7501135 
+##       1541       1542       1543       1544       1545       1546       1547 
+## 60.7632934 50.7866194 61.1243959 66.9309025 56.1600023 60.0427128 63.8934641 
+##       1548       1549       1550       1551       1552       1553       1554 
+## 58.0186075 52.9783989 61.9900011 62.4113053 69.6529484 61.8342243 54.8150627 
+##       1555       1556       1557       1558       1559       1560       1561 
+## 52.8753059 42.5176349 47.5582390 53.8167126 68.4669809 63.1914135 54.9814164 
+##       1562       1563       1564       1565       1566       1567       1568 
+## 67.5694123 60.7479723 67.3809232 60.1756888 70.0949899 64.3909524 42.8831284 
+##       1569       1570       1571       1572       1573       1574       1575 
+## 61.3515418 63.8895186 71.7880819 65.6334797 71.7427113 49.4785235 71.0123934 
+##       1576       1577       1578       1579       1580       1581       1582 
+## 59.2577182 66.0513099 39.9338521 53.5647331 67.5002281 43.8339081 63.8828102 
+##       1583       1584       1585       1586       1587       1588       1589 
+## 64.9388664 45.4753104 59.4826367 55.0594154 67.4275680 55.1200006 42.0221659 
+##       1590       1591       1592       1593       1594       1595       1596 
+## 68.8510230 58.8186509 70.8989930 47.4335026 69.5555789 70.6186206 69.7225580 
+##       1597       1598       1599       1600       1601       1602       1603 
+## 65.8895385 49.2501703 46.1475357 67.0469730 59.3850623 69.7416261 37.8863543 
+##       1604       1605       1606       1607       1608       1609       1610 
+## 67.9481101 58.1557229 64.2707120 50.2806763 69.8511515 60.4257764 66.0916384 
+##       1611       1612       1613       1614       1615       1616       1617 
+## 50.2313931 59.1592253 44.4404586 44.6347915 69.3494852 50.1921705 60.0495311 
+##       1618       1619       1620       1621       1622       1623       1624 
+## 67.5834104 46.6989626 52.2284048 60.7667815 53.6376409 60.6294009 64.6039028 
+##       1625       1626       1627       1628       1629       1630       1631 
+## 53.7037903 49.6150483 46.3384690 53.0278305 43.3957573 50.7687509 67.3685916 
+##       1632       1633       1634       1635       1636       1637       1638 
+## 58.5211279 63.1747292 71.6120785 46.0470747 60.4973510 71.1176075 55.3131123 
+##       1639       1640       1641       1642       1643       1644       1645 
+## 59.3063372 56.9069576 61.5305298 66.5183675 45.3406106 65.7040468 56.8855540 
+##       1646       1647       1648       1649       1650       1651       1652 
+## 72.1274029 50.2823543 65.6429449 62.3798428 49.5708256 71.1998850 54.2003495 
+##       1653       1654       1655       1656       1657       1658       1659 
+## 65.4229572 37.8694564 57.3279122 70.0733718 53.2591454 65.4812710 60.8897683 
+##       1660       1661       1662       1663       1664       1665       1666 
+## 59.8632835 67.6561950 65.6937891 68.3613645 50.7596129 38.3517421 56.1308448 
+##       1667       1668       1669       1670       1671       1672       1673 
+## 69.1561799 61.6065089 64.2524739 54.8521127 67.3921771 61.9966410 57.8945134 
+##       1674       1675       1676       1677       1678       1679       1680 
+## 61.5972962 64.6871721 71.0540685 69.3818150 58.0098956 56.9609157 65.9706331 
+##       1681       1682       1683       1684       1685       1686       1687 
+## 61.3984928 65.9477087 58.2100864 48.1437641 62.8536739 53.2393774 56.3048743 
+##       1688       1689       1690       1691       1692       1693       1694 
+## 61.6483492 71.3697663 64.6932991 64.6370799 63.2662610 60.0439324 66.4399306 
+##       1695       1696       1697       1698       1699       1700       1701 
+## 40.6786971 62.8793176 70.6845884 57.6873583 59.2231796 61.2459545 60.9848047 
+##       1702       1703       1704       1705       1706       1707       1708 
+## 53.0752194 58.7762569 62.5806872 56.3996680 61.6385564 56.6027909 72.3325093 
+##       1709       1710       1711       1712       1713       1714       1715 
+## 68.1562767 63.9995086 66.7615800 62.3441582 42.1331974 60.9574689 71.4732047 
+##       1716       1717       1718       1719       1720       1721       1722 
+## 61.2026219 68.4295056 68.1170275 60.1479064 57.1724491 65.6389366 62.2007647 
+##       1723       1724       1725       1726       1727       1728       1729 
+## 70.0215310 63.4754860 56.1247682 60.1770758 54.9061900 62.8495990 65.0362042 
+##       1730       1731       1732       1733       1734       1735       1736 
+## 70.2951845 52.8459577 70.5866469 43.2365567 61.9620112 60.7442632 64.0419703 
+##       1737       1738       1739       1740       1741       1742       1743 
+## 64.3119658 61.6042844 61.0698873 57.5622332 50.8557045 67.9613635 55.1149969 
+##       1744       1745       1746       1747       1748       1749       1750 
+## 61.4925401 66.1336858 63.2516531 68.0120954 66.4306441 68.4432052 48.2133186 
+##       1751       1752       1753       1754       1755       1756       1757 
+## 65.6778378 58.3156716 69.3199750 70.7368634 50.5642460 61.1305840 66.2992935 
+##       1758       1759       1760       1761       1762       1763       1764 
+## 59.6289052 67.6659703 57.6908720 50.0314237 62.0065546 61.1183420 57.5991554 
+##       1765       1766       1767       1768       1769       1770       1771 
+## 68.9024962 48.0538818 71.6066861 63.2861104 60.1310813 47.3845132 48.2496704 
+##       1772       1773       1774       1775       1776       1777       1778 
+## 67.0003424 65.8877953 72.2344356 71.2022406 61.3316691 72.2114308 44.4722240 
+##       1779       1780       1781       1782       1783       1784       1785 
+## 70.3208956 63.8804604 46.1452447 40.3607800 66.5386993 56.0815861 61.9162632 
+##       1786       1787       1788       1789       1790       1791       1792 
+## 70.5184185 40.3376154 48.5125447 68.6775623 70.2360426 44.0442637 70.3168333 
+##       1793       1794       1795       1796       1797       1798       1799 
+## 60.6822388 53.5993313 65.2666482 57.8169761 55.1982338 56.0122075 46.7864206 
+##       1800       1801       1802       1803       1804       1805       1806 
+## 69.5077815 69.5468870 60.5828261 54.4336940 66.5141904 70.0842504 39.3466512 
+##       1807       1808       1809       1810       1811       1812       1813 
+## 69.6215839 52.5023033 66.9152311 47.0227143 68.7929243 66.0359915 61.3147710 
+##       1814       1815       1816       1817       1818       1819       1820 
+## 67.4758199 47.7268960 49.1404570 61.9523966 67.4928071 58.8326702 59.1597087 
+##       1821       1822       1823       1824       1825       1826       1827 
+## 71.6858462 56.2889057 65.0266488 63.4188389 63.7182685 60.1478886 68.9126570 
+##       1828       1829       1830       1831       1832       1833       1834 
+## 50.4016707 68.1729989 67.7796854 63.9046600 70.8793079 68.6529566 57.9503207 
+##       1835       1836       1837       1838       1839       1840       1841 
+## 42.3091940 60.3284021 41.8326364 66.7366304 64.7618408 64.4139034 61.4193627 
+##       1842       1843       1844       1845       1846       1847       1848 
+## 67.3086331 61.1139816 49.0141184 41.1508561 68.7211418 44.1115014 41.1773808 
+##       1849       1850       1851       1852       1853       1854       1855 
+## 63.0240165 56.5996894 70.3641345 62.9737608 64.1341511 64.4028805 63.9676792 
+##       1856       1857       1858       1859       1860       1861       1862 
+## 67.2874735 67.5748276 67.8242353 58.8241971 58.6883036 49.6936405 60.5762070 
+##       1863       1864       1865       1866       1867       1868       1869 
+## 47.7692190 59.3771360 71.3055413 49.1941591 56.6536699 67.6834076 50.4929965 
+##       1870       1871       1872       1873       1874       1875       1876 
+## 57.5354971 61.2060378 56.3536558 54.8662678 61.1313118 68.5224325 63.8698514 
+##       1877       1878       1879       1880       1881       1882       1883 
+## 71.2492584 48.4072273 51.7701662 62.9795620 62.3870188 68.5576014 61.9695626 
+##       1884       1885       1886       1887       1888       1889       1890 
+## 66.5040285 62.6695101 69.0914977 62.0144265 47.8732059 65.4893415 50.4528066 
+##       1891       1892       1893       1894       1895       1896       1897 
+## 64.4022735 71.1501726 56.3278579 60.6179560 62.6097793 58.0881449 67.3423593 
+##       1898       1899       1900       1901       1902       1903       1904 
+## 67.2765025 55.4335406 63.7674278 50.6735893 64.9090524 49.2488551 70.4403901 
+##       1905       1906       1907       1908       1909       1910       1911 
+## 64.3904697 60.4274383 69.8414389 43.0918982 67.7662938 57.3676791 63.7012202 
+##       1912       1913       1914       1915       1916       1917       1918 
+## 70.2661436 69.2782483 63.4310238 59.2712480 38.0931644 63.5134547 60.0781494 
+##       1919       1920       1921       1922       1923       1924       1925 
+## 62.3662008 72.2124268 69.1185985 46.6010716 60.0620607 60.3795596 65.1082852 
+##       1926       1927       1928       1929       1930       1931       1932 
+## 71.3461742 63.8438274 61.1358984 45.0949786 64.0510161 67.7576307 53.2248241 
+##       1933       1934       1935       1936       1937       1938       1939 
+## 48.3980958 51.8254378 38.6954900 60.3742992 67.6674273 64.7510302 68.7933628 
+##       1940       1941       1942       1943       1944       1945       1946 
+## 58.8857356 57.8949124 71.9683690 58.5560097 65.8315716 66.5278841 70.4590546 
+##       1947       1948       1949       1950       1951       1952       1953 
+## 61.4703132 50.6710334 59.1839799 49.5597741 62.9891527 68.5955846 65.2386676 
+##       1954       1955       1956       1957       1958       1959       1960 
+## 68.7932548 62.8504977 51.3158185 57.2197336 45.3082889 60.0042419 68.8241411 
+##       1961       1962       1963       1964       1965       1966       1967 
+## 55.9209676 47.8381613 54.9037668 63.0310534 68.6935274 71.1095135 54.7412751 
+##       1968       1969       1970       1971       1972       1973       1974 
+## 71.6218874 69.0407309 62.0048304 65.2190341 63.1537035 68.6153688 55.0424817 
+##       1975       1976       1977       1978       1979       1980       1981 
+## 62.4615155 39.8414765 70.9548381 70.1243735 57.1692547 46.7115502 66.3627401 
+##       1982       1983       1984       1985       1986       1987       1988 
+## 40.7010232 62.0492952 56.4519600 42.2468436 49.5944933 67.3451562 46.0381388 
+##       1989       1990       1991       1992       1993       1994       1995 
+## 49.0311937 58.1021211 47.8738819 60.1706476 62.6772177 60.9154094 54.8043315 
+##       1996       1997       1998       1999       2000       2001       2002 
+## 63.8114775 68.0941230 56.4653863 56.9376273 60.0943083 67.7535580 70.5638611 
+##       2003       2004       2005       2006       2007       2008       2009 
+## 63.1038452 63.5633086 64.2059036 52.8432798 58.3296291 66.0490261 61.5811246 
+##       2010       2011       2012       2013       2014       2015       2016 
+## 69.9514314 45.7462941 69.2742701 69.3381618 59.4426026 66.9393291 53.7484962 
+##       2017       2018       2019       2020       2021       2022       2023 
+## 59.7125228 39.7577160 56.3380750 48.4687431 50.7045643 50.4344649 68.2233956 
+##       2024       2025       2026       2027       2028       2029       2030 
+## 69.3195501 59.8098178 68.3923107 64.9314914 50.6621608 59.0741247 64.1280889 
+##       2031       2032       2033       2034       2035       2036       2037 
+## 57.7011861 58.6493203 65.3806758 64.4803072 52.0137710 39.8411104 59.1023043 
+##       2038       2039       2040       2041       2042       2043       2044 
+## 70.7720919 65.1926169 57.7246603 58.7023947 61.9177290 59.4045605 62.6150531 
+##       2045       2046       2047       2048       2049       2050       2051 
+## 65.0576728 57.6076011 45.7674890 46.7661080 69.1285418 67.5208574 56.2409294 
+##       2052       2053       2054       2055       2056       2057       2058 
+## 65.4660918 54.1891826 71.6261281 70.3259371 64.3978577 45.3475385 67.3210041 
+##       2059       2060       2061       2062       2063       2064       2065 
+## 49.5015321 53.7636652 64.9857452 54.3118128 65.0149740 71.3111716 69.6535576 
+##       2066       2067       2068       2069       2070       2071       2072 
+## 71.8314590 51.0234771 68.4041830 62.6503008 65.0926459 45.6898467 64.7879435 
+##       2073       2074       2075       2076       2077       2078       2079 
+## 58.1529877 50.1845922 60.7873479 51.9306459 51.5820856 50.6753453 65.1426477 
+##       2080       2081       2082       2083       2084       2085       2086 
+## 71.4947042 62.7789603 72.2256069 66.1058303 48.1834183 67.9082788 64.5265356 
+##       2087       2088       2089       2090       2091       2092       2093 
+## 59.9008088 71.0564810 68.1497003 61.6135796 54.4582200 55.2224818 61.0821162 
+##       2094       2095       2096       2097       2098       2099       2100 
+## 70.4249981 58.2584330 65.8141951 68.5493718 54.9991015 62.6957691 43.1244481 
+##       2101       2102       2103       2104       2105       2106       2107 
+## 67.8664328 66.5863280 71.5476657 62.7466428 45.9926239 69.9093941 42.7321545 
+##       2108       2109       2110       2111       2112       2113       2114 
+## 61.3957844 48.0821496 66.7072430 57.2968929 67.1637255 51.0590327 55.4160383 
+##       2115       2116       2117       2118       2119       2120       2121 
+## 69.8394554 70.2758048 66.1766124 57.9098690 66.3282410 67.0427759 54.7510956 
+##       2122       2123       2124       2125       2126       2127       2128 
+## 56.3096032 60.5456097 60.7881925 55.8234469 70.5137158 69.2887658 70.9445349 
+##       2129       2130       2131       2132       2133       2134       2135 
+## 71.4278351 70.2620997 56.7426674 42.9607325 56.1791913 60.0902685 66.4755213 
+##       2136       2137       2138       2139       2140       2141       2142 
+## 69.2523655 67.7915573 38.2796755 65.6220014 70.9957184 51.3294450 61.2445152 
+##       2143       2144       2145       2146       2147       2148       2149 
+## 52.4148032 67.2872555 43.2379156 41.2829693 71.2776037 56.1274917 69.3658012 
+##       2150       2151       2152       2153       2154       2155       2156 
+## 54.6634581 58.5186315 63.4381163 62.7759339 69.9950707 65.8015995 64.0188822 
+##       2157       2158       2159       2160       2161       2162       2163 
+## 54.2709970 71.3393404 57.7825281 62.9210626 63.1614549 63.2515656 56.7000498 
+##       2164       2165       2166       2167       2168       2169       2170 
+## 70.2909972 52.6158067 58.1351169 71.5653406 68.7346679 66.8965855 64.1071694 
+##       2171       2172       2173       2174       2175       2176       2177 
+## 60.7744878 61.3173525 64.4946473 65.9350316 48.3904847 57.9338568 43.3981007 
+##       2178       2179       2180       2181       2182       2183       2184 
+## 69.4009375 53.3568289 67.0919174 47.3649976 54.5450471 70.1320389 70.5375878 
+##       2185       2186       2187       2188       2189       2190       2191 
+## 63.8910532 71.3715021 69.2449602 50.6601293 66.4251239 69.5622613 70.3961747 
+##       2192       2193       2194       2195       2196       2197       2198 
+## 71.7985730 68.2051789 51.8747500 53.4938390 58.7832305 57.0949336 69.9164854 
+##       2199       2200       2201       2202       2203       2204       2205 
+## 70.4608937 56.9977688 63.0192645 67.4605612 64.5987696 63.6527001 68.5298047 
+##       2206       2207       2208       2209       2210       2211       2212 
+## 56.1106529 45.8014245 61.5409164 62.3931363 52.3399267 56.9581854 63.4317051 
+##       2213       2214       2215       2216       2217       2218       2219 
+## 49.4581375 63.0659409 52.8815342 45.4145319 69.5438711 56.4853201 46.8790865 
+##       2220       2221       2222       2223       2224       2225       2226 
+## 48.2232088 56.3687250 70.5172101 45.3082685 56.3846303 63.4495036 60.5394701 
+##       2227       2228       2229       2230       2231       2232       2233 
+## 43.4932031 66.2887592 64.4257598 64.3165514 56.1670330 58.9354141 66.0141556 
+##       2234       2235       2236       2237       2238       2239       2240 
+## 68.5000979 58.9931973 40.7248981 68.1823135 71.2958992 59.3597798 66.9285487 
+##       2241       2242       2243       2244       2245       2246       2247 
+## 59.3654813 62.1524364 63.1424715 46.0895984 62.1622371 61.1553450 53.3958181 
+##       2248       2249       2250       2251       2252       2253       2254 
+## 66.5156923 68.6186037 47.7228990 47.7879751 70.6103831 65.1037355 67.4579445 
+##       2255       2256       2257       2258       2259       2260       2261 
+## 46.6741938 64.6917513 65.0398919 66.4862136 62.1023615 67.1468118 50.3971346 
+##       2262       2263       2264       2265       2266       2267       2268 
+## 51.4228695 67.1445586 46.7153541 68.1300834 55.8880672 58.7515971 65.1847672 
+##       2269       2270       2271       2272       2273       2274       2275 
+## 49.7330800 66.2536782 56.1520314 57.9055889 65.4987806 63.1123277 61.7817740 
+##       2276       2277       2278       2279       2280       2281       2282 
+## 67.2788326 54.6532368 57.1944937 38.5647587 46.9994007 69.7186510 44.3403263 
+##       2283       2284       2285       2286       2287       2288       2289 
+## 70.5840010 51.0636242 52.7895538 56.4127315 59.6394550 66.7158047 58.7352784 
+##       2290       2291       2292       2293       2294       2295       2296 
+## 62.4284822 46.0635243 46.4999921 70.4683350 62.9363354 68.6416105 58.0968776 
+##       2297       2298       2299       2300       2301       2302       2303 
+## 62.2815399 58.6246525 69.1225470 57.1778438 63.2771673 70.6100977 55.8008130 
+##       2304       2305       2306       2307       2308       2309       2310 
+## 50.2846517 38.9044319 66.7539521 50.2635524 58.3465154 59.4398322 63.7011058 
+##       2311       2312       2313       2314       2315       2316       2317 
+## 71.1095024 58.9759233 63.5718493 70.8385451 72.1715936 70.2128922 69.5669685 
+##       2318       2319       2320       2321       2322       2323       2324 
+## 60.8768339 55.4884556 38.2648272 58.1271124 45.0154550 61.6166494 61.2038533 
+##       2325       2326       2327       2328       2329       2330       2331 
+## 69.1214611 59.5185797 66.3954678 71.6811892 59.0916814 66.4063305 68.7407134 
+##       2332       2333       2334       2335       2336       2337       2338 
+## 69.8593135 57.4216601 56.8880627 57.8890712 50.8581376 54.7676977 62.2461269 
+##       2339       2340       2341       2342       2343       2344       2345 
+## 71.7954231 61.2925696 47.2616812 70.9749753 70.8380352 68.1717765 37.6031582 
+##       2346       2347       2348       2349       2350       2351       2352 
+## 54.3753017 67.0882995 62.4267458 56.7322143 63.3088111 57.9413272 41.4687023 
+##       2353       2354       2355       2356       2357       2358       2359 
+## 71.3781471 49.9505075 66.2902697 71.7094908 66.8511931 58.3228649 70.4194966 
+##       2360       2361       2362       2363       2364       2365       2366 
+## 65.7528494 54.5669929 51.7342122 67.2334585 48.0841830 66.4351215 64.2041754 
+##       2367       2368       2369       2370       2371       2372       2373 
+## 65.8409679 59.1952306 56.7132941 57.1494531 65.6823780 68.4311077 50.5322929 
+##       2374       2375       2376       2377       2378       2379       2380 
+## 70.1145178 62.7239040 70.6088531 57.4051836 57.7004668 51.2801435 53.4884103 
+##       2381       2382       2383       2384       2385       2386       2387 
+## 62.7730933 64.1789767 52.4095093 62.5492886 54.1938985 54.3275681 52.1565049 
+##       2388       2389       2390       2391       2392       2393       2394 
+## 47.6725452 64.1356581 68.4597560 51.2717694 63.6800029 70.4417305 47.9336860 
+##       2395       2396       2397       2398       2399       2400       2401 
+## 65.3101381 51.2612080 70.2036009 58.0787952 65.0986538 62.0024876 68.0098679 
+##       2402       2403       2404       2405       2406       2407       2408 
+## 68.9809560 70.8228216 69.8453679 63.5726955 70.9105158 67.9338834 59.1050290 
+##       2409       2410       2411       2412       2413       2414       2415 
+## 51.5603890 59.7153227 52.5404905 65.9437210 63.4633127 68.8840869 68.1261112 
+##       2416       2417       2418       2419       2420       2421       2422 
+## 70.3013010 55.5537362 70.2328196 68.8056321 66.1983256 38.4481659 52.1604230 
+##       2423       2424       2425       2426       2427       2428       2429 
+## 51.7180231 52.4559026 65.3051797 63.4848885 69.8060802 48.4704479 67.0123362 
+##       2430       2431       2432       2433       2434       2435       2436 
+## 60.9238137 67.4444200 54.0561699 66.2046988 67.9791795 68.4985059 66.5831082 
+##       2437       2438       2439       2440       2441       2442       2443 
+## 63.5801138 46.9786135 58.3091755 48.3491648 41.8232128 65.8747616 67.8028842 
+##       2444       2445       2446       2447       2448       2449       2450 
+## 50.1280540 61.1428181 39.2909235 58.6579363 67.4897134 69.2614219 69.2910407 
+##       2451       2452       2453       2454       2455       2456       2457 
+## 50.4645728 57.9036565 70.8907628 68.0896385 55.8284820 63.2895480 65.6724507 
+##       2458       2459       2460       2461       2462       2463       2464 
+## 54.3652924 69.8518657 69.7987009 71.0931799 55.5368281 59.3838824 65.0370579 
+##       2465       2466       2467       2468       2469       2470       2471 
+## 71.2843503 56.6088850 45.7082060 56.7816751 69.9279275 42.7845493 64.3136184 
+##       2472       2473       2474       2475       2476       2477       2478 
+## 64.2896019 70.2374386 44.1784407 67.7071264 68.2446937 52.5585626 49.8660044 
+##       2479       2480       2481       2482       2483       2484       2485 
+## 44.7814038 56.8322937 68.9204221 64.4125320 61.0152640 49.8962783 71.9110935 
+##       2486       2487       2488       2489       2490       2491       2492 
+## 50.7960032 54.9190922 71.3313445 46.3582971 70.1113092 61.7444406 58.5772195 
+##       2493       2494       2495       2496       2497       2498       2499 
+## 63.3474255 63.0757641 58.5003563 52.2360329 54.4539963 54.9549320 70.7364239 
+##       2500       2501       2502       2503       2504       2505       2506 
+## 59.0868608 70.1311993 56.9517916 65.6144456 54.5320903 61.7251391 67.1647289 
+##       2507       2508       2509       2510       2511       2512       2513 
+## 71.5167283 65.4488556 62.3037014 52.8138425 64.1563123 46.0635358 48.2925196 
+##       2514       2515       2516       2517       2518       2519       2520 
+## 66.4391771 66.5605199 64.7125981 67.9142542 43.2473322 42.0716851 44.9934716 
+##       2521       2522       2523       2524       2525       2526       2527 
+## 52.3430417 58.9208562 70.1769355 43.8711544 70.1984224 48.3010973 59.1489664 
+##       2528       2529       2530       2531       2532       2533       2534 
+## 55.4151133 61.9001037 58.7285395 43.2786011 46.3915412 42.1313255 54.0884572 
+##       2535       2536       2537       2538       2539       2540       2541 
+## 54.4907495 65.2148274 71.4529286 47.3344541 61.0412744 43.1538454 56.3169992 
+##       2542       2543       2544       2545       2546       2547       2548 
+## 67.9484910 67.6108142 70.5859549 69.2502413 62.2951255 69.6639234 72.4066401 
+##       2549       2550       2551       2552       2553       2554       2555 
+## 50.2334396 53.0520460 61.3257929 62.0643529 54.3232543 55.2415838 50.4106295 
+##       2556       2557       2558       2559       2560       2561       2562 
+## 65.6156298 70.9251837 68.7926761 65.0218329 56.9508194 66.5907952 64.7405285 
+##       2563       2564       2565       2566       2567       2568       2569 
+## 55.7797149 69.2290465 59.3656653 45.9696832 70.7550365 59.8105561 66.9798974 
+##       2570       2571       2572       2573       2574       2575       2576 
+## 68.4313682 45.0952935 64.7082285 61.8496943 63.5957682 65.2445454 61.5299999 
+##       2577       2578       2579       2580       2581       2582       2583 
+## 60.1431834 39.0458560 71.2355079 67.2367507 62.7951909 64.6470362 71.1403615 
+##       2584       2585       2586       2587       2588       2589       2590 
+## 67.5359840 65.5638744 55.8516631 70.6885931 58.7476517 43.1736027 49.5705582 
+##       2591       2592       2593       2594       2595       2596       2597 
+## 69.9863113 57.1324934 70.4337293 41.5735741 57.8605731 55.6343682 62.4706951 
+##       2598       2599       2600       2601       2602       2603       2604 
+## 64.6539599 49.6884494 71.9488405 51.3846418 42.3116149 63.0003684 55.4839704 
+##       2605       2606       2607       2608       2609       2610       2611 
+## 71.6412138 46.4395518 65.1520474 54.6278490 69.6631832 67.3333714 71.5664621 
+##       2612       2613       2614       2615       2616       2617       2618 
+## 39.1605339 43.0746752 66.4850596 49.3135272 70.8127517 70.6298915 63.3371692 
+##       2619       2620       2621       2622       2623       2624       2625 
+## 52.1969462 55.2946425 47.8057761 55.3141670 71.3231764 68.2146239 63.0744016 
+##       2626       2627       2628       2629       2630       2631       2632 
+## 64.7624904 54.5264238 55.7775378 42.2388432 56.5751962 69.0217139 37.8933007 
+##       2633       2634       2635       2636       2637       2638       2639 
+## 50.8526965 45.8587739 69.3908955 70.0722647 39.8290935 58.5375414 71.4628910 
+##       2640       2641       2642       2643       2644       2645       2646 
+## 50.8124663 56.6490632 50.6805843 71.6448994 67.9554629 69.0743445 65.7854893 
+##       2647       2648       2649       2650       2651       2652       2653 
+## 68.4071188 47.8263809 47.5945507 71.2935242 59.9043965 58.3254814 55.8774351 
+##       2654       2655       2656       2657       2658       2659       2660 
+## 63.1100693 58.3083946 68.8349625 70.1692035 69.1083349 70.0235617 61.5918141 
+##       2661       2662       2663       2664       2665       2666       2667 
+## 57.1972499 42.4313238 59.6649598 71.7583936 54.8404326 53.8676251 62.9994610 
+##       2668       2669       2670       2671       2672       2673       2674 
+## 70.3241688 67.5784584 51.1950005 63.0045363 69.2259948 64.9246308 71.0929097 
+##       2675       2676       2677       2678       2679       2680       2681 
+## 64.4021698 54.5688773 42.8991239 57.9023491 66.9681491 57.7998837 60.3228599 
+##       2682       2683       2684       2685       2686       2687       2688 
+## 70.8702153 68.3636108 46.2179496 56.6225319 70.1519809 62.6344420 59.2446989 
+##       2689       2690       2691       2692       2693       2694       2695 
+## 71.5765094 65.7754035 56.3137484 65.9270635 51.6841458 44.8867446 36.5447637 
+##       2696       2697       2698       2699       2700       2701       2702 
+## 71.3488174 64.4141974 69.5495425 70.3444324 71.0784257 69.2778995 62.0059071 
+##       2703       2704       2705       2706       2707       2708       2709 
+## 57.2310872 64.6083956 62.4283886 70.2850307 68.2763467 42.3930069 56.8714478 
+##       2710       2711       2712       2713       2714       2715       2716 
+## 61.5452228 68.6529341 38.5601269 56.7539292 70.8119241 67.3626952 63.1298926 
+##       2717       2718       2719       2720       2721       2722       2723 
+## 46.0222519 66.8510873 69.2443635 60.5867876 60.3802407 72.3122331 61.4575640 
+##       2724       2725       2726       2727       2728       2729       2730 
+## 64.8652755 64.3143554 60.9212649 70.2121957 57.5408114 64.8156414 58.6034720 
+##       2731       2732       2733       2734       2735       2736       2737 
+## 62.0367363 56.1974769 64.9540768 42.3184220 60.5095339 54.5631986 56.0489798 
+##       2738       2739       2740       2741       2742       2743       2744 
+## 71.6516606 58.7733165 59.0754912 37.9512790 66.2396253 59.3660475 64.4217091 
+##       2745       2746       2747       2748       2749       2750       2751 
+## 60.0563612 70.5752809 45.8567369 71.5497538 61.9295242 62.5484437 62.4183217 
+##       2752       2753       2754       2755       2756       2757       2758 
+## 40.1473515 56.1719501 39.2210590 55.4929660 64.9127843 63.2721911 49.6097315 
+##       2759       2760       2761       2762       2763       2764       2765 
+## 71.4701199 56.4043824 61.8457689 67.3149852 52.0983915 71.2865904 53.1944891 
+##       2766       2767       2768       2769       2770       2771       2772 
+## 56.5578474 66.5253988 53.4584698 71.1877173 59.0954524 61.0967703 68.2569869 
+##       2773       2774       2775       2776       2777       2778       2779 
+## 60.4044098 50.5951160 66.3426824 68.0221686 65.6595643 69.6762709 63.1459011 
+##       2780       2781       2782       2783       2784       2785       2786 
+## 52.4903908 57.7935654 50.7780172 63.7843571 62.8590470 68.2999886 57.4434219 
+##       2787       2788       2789       2790       2791       2792       2793 
+## 64.1384398 60.3247392 54.6039621 51.9714043 64.5389000 59.4493547 48.4377663 
+##       2794       2795       2796       2797       2798       2799       2800 
+## 66.9020109 58.9868083 63.6398751 63.6023138 54.4070185 37.1671734 57.0411777 
+##       2801       2802       2803       2804       2805       2806       2807 
+## 66.4320068 55.9671171 70.6912960 65.0380600 49.4939422 60.2250264 61.9001428 
+##       2808       2809       2810       2811       2812       2813       2814 
+## 58.7374452 69.7960247 59.3399360 69.6575431 63.4610437 56.5597066 64.5921661 
+##       2815       2816       2817       2818       2819       2820       2821 
+## 56.1516941 56.8594628 67.2561503 62.8616526 49.5570357 41.3767154 61.8134177 
+##       2822       2823       2824       2825       2826       2827       2828 
+## 49.2492091 56.6333513 56.3639876 70.9627708 67.5640823 67.8057308 53.2207995 
+##       2829       2830       2831       2832       2833       2834       2835 
+## 64.6089286 53.3406667 71.1280137 68.4360399 54.3049418 59.0757425 52.0675008 
+##       2836       2837       2838       2839       2840       2841       2842 
+## 48.7200470 69.0683988 66.9868661 54.4054926 63.6315168 53.8700077 59.8926314 
+##       2843       2844       2845       2846       2847       2848       2849 
+## 67.0417660 72.2183136 68.1742946 58.7483306 58.1310357 55.2871053 56.1695371 
+##       2850       2851       2852       2853       2854       2855       2856 
+## 59.3624948 51.2414539 68.0098436 58.2673351 66.9027834 60.7626728 58.6225553 
+##       2857       2858       2859       2860       2861       2862       2863 
+## 67.8582884 55.8881743 66.3032317 57.0165411 60.1748512 64.8680024 67.8429092 
+##       2864       2865       2866       2867       2868       2869       2870 
+## 53.1982866 60.5088526 63.5048363 46.4805316 54.8585096 60.9104027 67.0838821 
+##       2871       2872       2873       2874       2875       2876       2877 
+## 62.8597416 62.7638543 65.9699495 59.9750078 58.1293251 60.7203170 69.4960141 
+##       2878       2879       2880       2881       2882       2883       2884 
+## 67.3077701 64.7174330 58.6041693 46.8468927 71.2578406 70.4183112 68.2893025 
+##       2885       2886       2887       2888       2889       2890       2891 
+## 52.4033282 40.2686274 47.1414345 64.4435307 66.5565253 42.0495344 63.9793804 
+##       2892       2893       2894       2895       2896       2897       2898 
+## 59.9770604 65.4466780 61.0116692 69.1558043 68.8490393 52.6970240 61.3406708 
+##       2899       2900       2901       2902       2903       2904       2905 
+## 59.2636267 66.3046523 70.7130504 46.6744508 63.3865307 54.1017339 65.8056791 
+##       2906       2907       2908       2909       2910       2911       2912 
+## 70.8458959 62.2257141 63.2349234 46.6417317 53.2236999 53.7979776 64.9876511 
+##       2913       2914       2915       2916       2917       2918       2919 
+## 66.7689197 68.1378969 60.0576603 43.8219025 49.2070239 59.4371253 70.5381327 
+##       2920       2921       2922       2923       2924       2925       2926 
+## 71.9905125 62.9911239 60.2817249 69.7053950 68.6188509 66.8175882 43.9555945 
+##       2927       2928       2929       2930       2931       2932       2933 
+## 62.8614269 65.1071845 68.4341036 60.5403915 71.6330010 69.7738588 62.4527152 
+##       2934       2935       2936       2937       2938       2939       2940 
+## 70.4538244 70.8371290 51.0744398 70.9504382 40.8363731 57.3837518 56.9259496 
+##       2941       2942       2943       2944       2945       2946       2947 
+## 52.2219364 55.1289067 58.1773577 66.1842291 60.5344812 57.9940386 68.2415005 
+##       2948       2949       2950       2951       2952       2953       2954 
+## 53.4110048 46.0695487 62.2193727 62.4909356 59.0288715 52.2666886 55.1736475 
+##       2955       2956       2957       2958       2959       2960       2961 
+## 54.5993953 59.0992143 68.0996566 63.1797198 67.7854832 40.5287236 63.4031093 
+##       2962       2963       2964       2965       2966       2967       2968 
+## 66.8488516 61.1817791 71.5493835 71.7591339 50.4722209 64.1447938 60.5079983 
+##       2969       2970       2971       2972       2973       2974       2975 
+## 69.2009635 64.7646216 55.1597864 65.3825605 71.1329317 57.7247217 67.3267038 
+##       2976       2977       2978       2979       2980       2981       2982 
+## 37.3954256 48.6521999 62.3260930 57.2947436 61.4488460 52.2691874 72.0902335 
+##       2983       2984       2985       2986       2987       2988       2989 
+## 71.7097082 59.6538794 70.3546317 53.0490143 66.8530116 59.0947280 60.8518476 
+##       2990       2991       2992       2993       2994       2995       2996 
+## 47.1146936 64.4229594 55.5058729 68.0045777 58.3351529 48.4690664 54.9790977 
+##       2997       2998       2999       3000 
+## 55.0890914 56.0780708 60.6309427 63.1527707
+\end{verbatim}
+
+\section{Part V: Data Summary and
+Implications}\label{part-v-data-summary-and-implications}
+
+\textbf{F1.} In this model, the Y-intercept is not particularly
+meaningful because many of the variables do not have practical
+interpretations when equal to zero. For example, an age of zero would
+imply the presence of customers who are newborns, which is unrealistic.
+Additionally, some variables are binary, where a value of zero
+represents ``No.'' In other words, when all predictors are zero, the
+expected value of tenure would be -6.787 months, which dosen't make
+sense. So the Y-intercept in this context is not meaningful.
+
+The model has a statistically significant p-value meaning that I can
+reject the null hypothesis that the predictors have no effect on tenure.
+In this particular model, InternetServiceFiber Optic and
+InternetServiceNone have the highest positive coefficients (5.055 and
+5.054) meaning that the customers with fiber optic service or no
+internet service are associated with higher tenure. in contrast, it
+appeas that the two variables with the most negative coeefficients,
+StreamingTV1 and StreamingMovies1 (-2.783 and -2.564) are both
+associated with customers who have lower tenure.
+
+\textbf{F2.} This model can identify discrepancies between predicted and
+actual customer tenure, which is critical for mitigating churn. For
+example, if the model predicts a customer's tenure to be 18 months, but
+their actual tenure reaches 24 months, it could signal imminent churn.
+In such cases, the company should take proactive measures such as
+offering service upgrades, discounts, or addressing potential
+dissatisfaction to retain the customer. Similarly, if a customer is
+predicted to stay for 24 months, but by 18 months their usage declines
+or their customer service calls increase, this could indicate early
+signs of churn that require prompt intervention.
+
+Additionally, the model can predict expected tenure for new customers
+based on demographics and service usage patterns. Insights from key
+predictors, such as the positive impact of ``\emph{InternetServiceFiber
+Optic''} and the negative impact of''\emph{StreamingTV},'' enable the
+company to tailor offerings. For example, promoting fiber-optic services
+or improving streaming-related issues could enhance retention among
+customers with a higher risk of shorter tenure.
+
+\section{Part VI: Demonstration}\label{part-vi-demonstration}
+
+\textbf{G.} A link to the panopto demonstration video will be included
+in the uploaded documents.
+
+\textbf{H:} Web Sources:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Bobbitt, Z. (2019, March 10).} Multicollinearity in
+  regression. Statology. Retrieved November 17, 2024, from
+  \url{https://www.statology.org/multicollinearity-regression/}
+\item
+  \textbf{Bobbitt, Z. (2020, January 8).} The four assumptions of linear
+  regression. Statology. Retrieved November 17, 2024, from
+  \url{https://www.statology.org/linear-regression-assumptions/}
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  \textbf{Çetinkaya-Rundel, M., Hardin, J., \& Horton, N. J. (2021).}
+  Dummy variables and interactions. Modern Statistics with R. Retrieved
+  December 4, 2024, from
+  \url{https://www.modernstatisticswithr.com/regression.html\#dummy}
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  \textbf{Gallo, A. (2014, October 29).} The value of keeping the right
+  customers. Harvard Business Review. Retrieved November 17, 2024, from
+  \url{https://hbr.org/2014/10/the-value-of-keeping-the-right-customers}
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  \textbf{Ihaka, R. (n.d.).} The R Project: A brief history and thoughts
+  about the future (p.~12). The University of Auckland. Retrieved
+  November 17, 2024, from
+  \url{https://www.stat.auckland.ac.nz/~ihaka/downloads/Otago.pdf}
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  \textbf{Larose, C. D., \& Larose, D. T. (2019).} Data science using
+  Python and R. Wiley. Retrieved from
+  \url{https://eds.p.ebscohost.com/eds/ebookviewer/ebook/bmxlYmtfXzIwOTEzNzFfX0FO0?sid=04ef9475-3bed-4dbe-8317-a1c5eb6da3cb@redis&vid=0&format=EB&lpid=lp_151&rid=0}
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{7}
+\tightlist
+\item
+  \textbf{Martin, G.} {[}R Programming 101{]}. (n.d.). Multiple
+  regression - Making sure that your assumptions are met {[}Video{]}.
+  YouTube. \url{https://www.youtube.com/watch?v=1lwvNLDSu0s&t=1092s}
+\end{enumerate}
+
+\end{document}

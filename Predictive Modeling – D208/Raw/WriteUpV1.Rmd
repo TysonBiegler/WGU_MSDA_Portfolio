@@ -1,5 +1,5 @@
 ---
-title: "WriteUp_D208_V2"
+title: "WriteUpV1"
 author: "Tyson Biegler"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: html_document
@@ -9,7 +9,7 @@ subtitle: College of Information Technology, Western Governors University
 ```{r include=FALSE, echo=FALSE, warning=FALSE}
 
 # Set wd ------------------------------------------------------------------
-setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Raw')
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/R/Raw')
 
 # Initial Setup -----------------------------------------------------------
 #install.packages("tidyverse")

@@ -2,7 +2,9 @@
 title: "WriteUp_D208_V2"
 author: "Tyson Biegler"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 subtitle: College of Information Technology, Western Governors University
 ---
 
@@ -178,9 +180,9 @@ churn <- churn[, !(names(churn) %in% c("CaseOrder",
 
 str(churn)
 
-setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Cleaned')
+#setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Cleaned')
 
-write.csv(churn, "CLEANED_churn.csv")
+#write.csv(churn, "CLEANED_churn.csv")
 ```
 
 **C1.** I need to remove irrelevant columns such as customer_id, CaseOrder, and some other columns that have data not relevant to my question.  Secondly I have to update the data types. The Categorical variables will be converted to factors and the remaining quantitative variables will be converted to integer or numeric depending on the values.  Once I have all the data cleaned and prepared Ill be ready to feed it into an initial linear model. 
@@ -352,13 +354,16 @@ test_set <- subset(churn, split == FALSE)
 
 
 # Initial model --------------------------------------------------------
-
+#using this just to show the plot of the initial model. 
 Initial_model1 <- lm(Tenure ~ ., data = training_set)
 
 #plotting the reduced model
 par(mfrow = c(2, 2))
 plot(Initial_model1)
 mtext("Diagnostic Plots for Initial Model", side = 3, outer = TRUE, line = -2, cex = 1.5)
+
+#This model will be used to create the reduced model.
+Initial_model <- lm(Tenure ~ ., data = training_set)
 
 ```
 
@@ -443,8 +448,21 @@ kruskal.test(Residuals ~ Model, data = residuals_df)
 
 The Kruskal-Wallis test compares the distributions of residuals between two models and tests whether their medians are the same. The test statistic (chi-squared = 1.2851) with 1 degree of freedom returned a p-value of 0.2569, indicating no significant difference between the residual distributions of the models. This suggests that the residuals from both models are similar in distribution. Because the p-value is greater than 0.05, I fail to reject the null hypothesis that there is no difference between the distribution of the residuals in each model.
 
+To compare the statistics of the two models, I have included their key metrics below.
+
+The initial model shows a residual standard error (RSE) of 0.1075, while the reduced model has an RSE of 0.3277. As expected, this indicates that the initial model fits the data more closely than the reduced model. The initial model included 88 predictors (residual degrees of freedom), compared to only 14 predictors in the reduced model. Despite this difference, the reduced model still captured 99.98% of the variability in the dependent variable (R-squared = 0.9998) with far fewer predictors, making it less complex, which is good for keeping down data collection costs if each variable has data that needs to be collected. In contrast, the initial model captured 100% of the variability (R-squared = 1) but with significantly more predictors.
+
+Both models have similarly large F-statistics, 4.799e+06 for the initial model and 4.649e+06 for the reduced model, along with statistically significant p-values. This demonstrates that both models are highly effective at explaining variance in the dependent variable and are statistically significant.
+
+### Initial model statistics:
+
 ```{r echo=FALSE}
 summary(Initial_model1)
+```
+
+### Reduced model statistics:
+
+```{r echo=FALSE}
 summary(reduced_model)
 ```
 
@@ -466,6 +484,16 @@ The **Q-Q residuals** plot (top right) show that the residuals do not stick to t
 The r**esiduals vs fitted** (top left)plot show that the horizontal red line is reasonably flat but the residuals show horizontal lines rather than randomness suggesting heteroscadasticity rather than the assumption of homoscedasticity.
 
 The **scale-location** (bottom left) plot checks for homoscedasticity. Once again the residuals show horizontal lines. Ideally these values should be evenly spread across the plot.
+
+### Predicted values:
+
+```{r}
+#Getting the predicted values with the test data
+y_pred = predict(reduced_model, newdata = test_set)
+
+#print the predicted values
+y_pred
+```
 
 # Part V: Data Summary and Implications
 
