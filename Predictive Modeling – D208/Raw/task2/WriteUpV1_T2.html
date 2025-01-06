@@ -105,12 +105,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="part-i-research-question" class="level2">
 <h2 class="anchored" data-anchor-id="part-i-research-question"><strong>Part I: Research Question</strong></h2>
-<p><strong>A1.</strong>&nbsp;&nbsp;What variables have the biggest impact on customer churn?</p>
-<p><strong>A2.</strong>&nbsp;this analysis aims to create a multiple logistic regression model that can accurately predict customer churn. Company executives can use the data from this model to address customer churn more accurately.</p>
+<p><strong>A1.</strong>&nbsp;Which factors are most strongly associated with customer churn, and how do they influence the likelihood of churn?</p>
+<p><strong>A2.</strong>&nbsp;This analysis aims to create a multiple logistic regression model to accurately predict customer churn. Company executives can use this model’s data to accurately address customer churn.</p>
 </section>
 <section id="part-ii-method-justification" class="level2">
 <h2 class="anchored" data-anchor-id="part-ii-method-justification"><strong>Part II: Method Justification</strong></h2>
-<p><strong>B1</strong>.&nbsp;&nbsp;According to Zach Bobbitt from statology.org, there are 6 Assumptions of logistic regression. <strong>(Z. Bobbit 2020)</strong><br>
+<p><strong>B1</strong>.&nbsp;&nbsp;According to Zach Bobbitt from statology.org, there are 6 logistic regression assumptions. <strong>(Z. Bobbit 2020)</strong><br>
 </p>
 <ol type="1">
 <li><p>The Response variable needs to be binary. I will be using a binary factor type in this analysis.</p></li>
@@ -120,15 +120,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>The relationship between the explanatory variables and the logit of the response variable is linear.</p></li>
 <li><p>Lastly, linear regression assumes that the sample size is large enough to ensure reliable and meaningful conclusions from the fitted model.</p></li>
 </ol>
-<p><strong>B2</strong>.&nbsp; I will be using R within R-Studio to perform this analysis. While Python can perform this same statistical analysis, it was not explicitly designed for this purpose. R, on the other hand, was specifically designed for statistical analysis (<strong>Ihaka, n.d., p.&nbsp;12</strong>). Due to this, R is the more logical choice for performing statistical tasks. Secondly, I have more experience using R than I do with Python. I’ve used R to complete previous courses, and I feel that it is more intuitive than Python.</p>
-<p><strong>B3</strong>.&nbsp;&nbsp;Logistic regression is the appropriate technique for this analysis because the dependent variable is binary (Yes = 1, No = 0). Additionally, the predictor variables include a mix of categorical and continuous types, making logistic regression a good choice. Lastly, logistic regression ranks customers based on their odds of churning, enabling the company to promptly identify and address at-risk customers.</p>
+<p><strong>B2</strong>.&nbsp; I will use R within R-Studio to perform this analysis. While Python can perform this same statistical analysis, it was not explicitly designed for this purpose. R, on the other hand, was specifically designed for statistical analysis (<strong>Ihaka, n.d., p.&nbsp;12</strong>). Due to this, R is the more logical choice for performing statistical tasks. Secondly, I have more experience using R than I do with Python. I’ve used R to complete previous courses, and I feel that it is more intuitive than Python.</p>
+<p><strong>B3</strong>.&nbsp;&nbsp;Logistic regression is the appropriate technique for this analysis because the dependent variable is binary (Yes = 1, No = 0). Additionally, the predictor variables include a mix of categorical and continuous types, making logistic regression a good choice. Lastly, logistic regression ranks customers based on their odds of churning, enabling the company to identify and address at-risk customers promptly.</p>
 </section>
 <section id="part-iii-data-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="part-iii-data-preparation"><strong>Part III: Data Preparation</strong></h2>
-<p><strong>C1</strong>. I need to remove irrelevant columns such as <code>customer_id</code>, <code>CaseOrder</code>, and some other columns that have data not relevant to my question. Secondly I have to update the data types. The Categorical variables will be converted to factors and the remaining quantitative variables will be converted to integer or numeric depending on the values. Once I have all the data cleaned and prepared Ill be ready to feed it into an initial linear model.</p>
-<p><strong>C2</strong>. The dependent variable I’m explaining is ‘<code>Churn</code>.’ After I removed several columns of data that had to many unique entries or contained irrelevant information, such as <code>customer_id</code>, or <code>lat</code> and <code>lng</code>, I was left with around 70 independent variables, including the automatically generated dummy variables. The numeric and integer types all include a min, 1st Qu, Median, Mean, 3rd Qu, and Max values whereas the factors include just the count for each level. The summary statistics below show all of the variables including the dependant variable, that I will be using in my linear model. I will explain how I ended up with these variables in the next few sections.</p>
+<p><strong>C1</strong>. I need to remove irrelevant columns such as <code>customer_id</code>, <code>CaseOrder</code>, and some other columns with irrelevant data to my question. Secondly, I have to update the data types. The categorical variables will be converted to factors, and the remaining quantitative variables will be converted to integers or numerics, depending on the values. Once I have all the data cleaned and prepared, I’ll be ready to feed it into an initial linear model.</p>
+<p><strong>C2</strong>. The dependent variable I’m explaining is ‘<code>Churn</code>.’ After removing several columns of data that had too many unique entries or contained irrelevant information, such as customer_id, <code>lat</code> and <code>lng</code>, I was left with around 70 independent variables, including the automatically generated dummy variables. The numeric and integer types all include a min, 1st Qu, Median, Mean, 3rd Qu, and Max values, whereas the factors include just the count for each level. The summary statistics below show all the variables, including the dependant variable, that I will use in my linear model. I will explain how I ended up with these variables in the next few sections.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(churn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Population           Area         Children           Age       
  Min.   :     0   Rural   :3327   Min.   : 0.000   Min.   :18.00  
@@ -204,10 +203,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  (Other):  15    </code></pre>
 </div>
 </div>
-<p><strong>C3</strong>.&nbsp; After running stepwise model selection based on the Akaike Information Criterion (AIC) and Backward elimination, I was left with far fewer variables than the initial model that included nearly 50 variables. I eliminated more using <code>VIF()</code>, which I will explain later. The following charts are the distributions of the variables I included in the final “reduced_model.”</p>
-</section>
-<section id="go-over-these-plots-to-make-sure-im-still-using-these-variables" class="level1">
-<h1>GO OVER THESE PLOTS TO MAKE SURE IM STILL USING THESE VARIABLES</h1>
+<p><strong>C3</strong>.&nbsp; After running step-wise model selection based on the Akaike Information Criterion (AIC) and Backward elimination, I was left with far fewer variables than the initial model that included nearly 50 variables. I eliminated more using <code>VIF()</code>, which I will explain later. The following charts are the distributions of the variables I included in the final “reduced_model.”</p>
 <p><strong>Univariate plots</strong></p>
 <div class="cell">
 <div class="cell-output-display">
@@ -219,10 +215,76 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>univariate5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> Phone)) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Phone)) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Phone"</span>) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>univariate6 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> Multiple)) <span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Multiple)) <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Multiple"</span>) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>univariate7 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> OnlineBackup)) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> OnlineBackup)) <span class="sc">+</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"OnlineBackup"</span>) <span class="sc">+</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>univariate8 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> DeviceProtection)) <span class="sc">+</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> DeviceProtection)) <span class="sc">+</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"DeviceProtection"</span>) <span class="sc">+</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange all plots into a grid</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  univariate5, univariate6,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  univariate7, univariate8,</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">2</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
 <p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>univariate9 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> StreamingTV)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> StreamingTV)) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"StreamingTV"</span>) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>univariate10 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> StreamingMovies)) <span class="sc">+</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> StreamingMovies)) <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"StreamingMovies"</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>univariate11 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> PaymentMethod)) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">fill =</span> PaymentMethod)) <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PaymentMethod"</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>univariate12 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(churn, <span class="fu">aes</span>(<span class="at">x =</span> Tenure)) <span class="sc">+</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">fill =</span> ..count..), <span class="at">binwidth =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Tenure (In Months)"</span>) <span class="sc">+</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>()</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrange all plots into a grid</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  univariate9, univariate10,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  univariate11, univariate12,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">ncol =</span> <span class="dv">2</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
+ℹ Please use `after_stat(count)` instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -232,7 +294,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -241,24 +303,87 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p><strong>C4</strong>.&nbsp;renamed the survey response variables to improve clarity and converted them to factors. R automatically generates dummy variables for each unique value in these factor variables. Additionally, I applied scaling to some of the larger quantitative variables using the built-in <code>scale()</code> function in R <strong>(R Core Team, 2019)</strong>. This process, known as standardization or z-score normalization, is described in an article from GeeksforGeeks titled ’<em>Logistic Regression and the Feature Scaling Ensemble.</em></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [10,000 × 38] (S3: tbl_df/tbl/data.frame)
+ $ Population          : num [1:10000, 1] -0.6734 0.0478 -0.4172 0.2845 0.1105 ...
+  ..- attr(*, "scaled:center")= num 9757
+  ..- attr(*, "scaled:scale")= num 14433
+ $ Area                : Factor w/ 3 levels "Rural","Suburban",..: 3 3 3 2 2 3 2 2 2 1 ...
+ $ Children            : int [1:10000] 0 1 4 1 0 3 0 2 2 1 ...
+ $ Age                 : int [1:10000] 68 27 50 48 83 83 79 30 49 86 ...
+ $ Income              : num [1:10000, 1] -0.39876 -0.64192 -1.07083 -0.74049 0.00948 ...
+  ..- attr(*, "scaled:center")= num 39807
+  ..- attr(*, "scaled:scale")= num 28200
+ $ Marital             : Factor w/ 5 levels "Divorced","Married",..: 5 2 5 2 4 3 5 2 4 2 ...
+ $ Gender              : Factor w/ 3 levels "Female","Male",..: 2 1 1 2 2 1 2 1 3 1 ...
+ $ Churn               : Factor w/ 2 levels "0","1": 1 2 1 1 2 1 2 2 1 1 ...
+ $ Outage_sec_perweek  : num [1:10000, 1] -0.68 0.57 0.252 1.65 -0.623 ...
+  ..- attr(*, "scaled:center")= num 10
+  ..- attr(*, "scaled:scale")= num 2.98
+ $ Email               : int [1:10000] 10 12 9 15 16 15 10 16 20 18 ...
+ $ Contacts            : int [1:10000] 0 0 0 2 2 3 0 0 2 1 ...
+ $ Yearly_equip_failure: int [1:10000] 1 1 1 0 1 1 1 0 3 0 ...
+ $ Techie              : Factor w/ 2 levels "0","1": 1 2 2 2 1 1 2 2 1 1 ...
+ $ Contract            : Factor w/ 3 levels "Month-to-month",..: 2 1 3 3 1 2 1 1 1 3 ...
+ $ Port_modem          : Factor w/ 2 levels "0","1": 2 1 2 1 2 2 1 1 2 2 ...
+ $ Tablet              : Factor w/ 2 levels "0","1": 2 2 1 1 1 1 1 1 1 1 ...
+ $ InternetService     : Factor w/ 3 levels "DSL","Fiber Optic",..: 2 2 1 1 2 3 1 1 1 2 ...
+ $ Phone               : Factor w/ 2 levels "0","1": 2 2 2 2 1 2 2 1 2 2 ...
+ $ Multiple            : Factor w/ 2 levels "0","1": 1 2 2 1 1 2 1 1 1 1 ...
+ $ OnlineSecurity      : Factor w/ 2 levels "0","1": 2 2 1 2 1 2 1 1 2 2 ...
+ $ OnlineBackup        : Factor w/ 2 levels "0","1": 2 1 1 1 1 2 1 2 2 1 ...
+ $ DeviceProtection    : Factor w/ 2 levels "0","1": 1 1 1 1 1 2 1 1 1 2 ...
+ $ TechSupport         : Factor w/ 2 levels "0","1": 1 1 1 1 2 1 2 1 1 1 ...
+ $ StreamingTV         : Factor w/ 2 levels "0","1": 1 2 1 2 2 1 2 1 1 1 ...
+ $ StreamingMovies     : Factor w/ 2 levels "0","1": 2 2 2 1 1 2 2 1 1 2 ...
+ $ PaperlessBilling    : Factor w/ 2 levels "0","1": 2 2 2 2 1 1 1 2 2 2 ...
+ $ PaymentMethod       : Factor w/ 4 levels "Bank Transfer(automatic)",..: 2 1 2 4 4 3 3 4 1 4 ...
+ $ Tenure              : num [1:10000, 1] -1.049 -1.262 -0.71 -0.659 -1.242 ...
+  ..- attr(*, "scaled:center")= num 34.5
+  ..- attr(*, "scaled:scale")= num 26.4
+ $ MonthlyCharge       : num [1:10000, 1] -0.00394 1.63024 -0.29521 -1.22646 -0.52806 ...
+  ..- attr(*, "scaled:center")= num 173
+  ..- attr(*, "scaled:scale")= num 42.9
+ $ Bandwidth_GB_Year   : num [1:10000, 1] -1.138 -1.186 -0.612 -0.562 -1.428 ...
+  ..- attr(*, "scaled:center")= num 3392
+  ..- attr(*, "scaled:scale")= num 2185
+ $ Timely_response     : Factor w/ 7 levels "1","2","3","4",..: 5 3 4 4 4 3 6 2 5 2 ...
+ $ Timely_fixes        : Factor w/ 7 levels "1","2","3","4",..: 5 4 4 4 4 3 5 2 4 2 ...
+ $ Timely_replacements : Factor w/ 8 levels "1","2","3","4",..: 5 3 2 4 4 3 6 2 4 2 ...
+ $ Reliability         : Factor w/ 7 levels "1","2","3","4",..: 3 3 4 2 3 2 4 5 3 2 ...
+ $ Options             : Factor w/ 7 levels "1","2","3","4",..: 4 4 4 5 4 4 1 2 4 5 ...
+ $ Respectful          : Factor w/ 8 levels "1","2","3","4",..: 4 3 3 4 4 3 5 3 3 2 ...
+ $ Courteous           : Factor w/ 7 levels "1","2","3","4",..: 3 4 3 3 4 3 5 4 4 3 ...
+ $ Active_listening    : Factor w/ 8 levels "1","2","3","4",..: 4 4 3 3 5 3 5 5 4 3 ...</code></pre>
+</div>
+</div>
 <p><strong>C5</strong>.&nbsp;The prepared data set will be included in my submission files.<br>
 &nbsp;</p>
+</section>
 <section id="part-iv-model-comparison-and-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="part-iv-model-comparison-and-analysis"><strong>Part IV: Model Comparison and Analysis</strong></h2>
-<p><em>Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.</em></p>
-<p><strong>D1.</strong></p>
-<p>To set up my initial model i first started by seperateing in the data in to training and test sets with a 80/20 split. The initial model will attempt to explain <code>Churn</code> by all the remaining variables in the dataset that were not removed in the data cleaning step.<br>
+<p><strong>D1.</strong> To set up my initial model i first started by separating in the data in to training and test sets with a 80/20 split. The initial model will attempt to explain <code>Churn</code> by all the remaining variables in the data set that were not removed in the data cleaning step.<br>
 <br>
-I begin by creating a linear model using <code>glm()</code> because I need to use the statistical family “binomial’ for logistic regression. I based the model on the training set of data, <code>churn_train</code>.</p>
+I begin by creating a logistic regression model using <code>glm()</code> because I need to use the statistical family “binomial’ for logistic regression. I based the model on the training set of data, <code>churn_train</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>initial_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(Churn <span class="sc">~</span>. , <span class="at">data =</span> churn_train, <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(initial_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>initial_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(Churn <span class="sc">~</span>. , <span class="at">data =</span> churn_train, <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(initial_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -266,96 +391,96 @@ glm(formula = Churn ~ ., family = "binomial", data = churn_train)
 
 Coefficients:
                                        Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)                          -4.839e+00  1.848e+00  -2.618 0.008834 ** 
-Population                            3.367e-07  3.133e-06   0.107 0.914436    
-AreaSuburban                         -4.461e-02  1.086e-01  -0.411 0.681180    
-AreaUrban                             4.823e-02  1.074e-01   0.449 0.653253    
-Children                              6.610e-02  1.564e-01   0.423 0.672563    
-Age                                  -7.418e-03  1.673e-02  -0.443 0.657468    
-Income                                2.676e-07  1.535e-06   0.174 0.861637    
-MaritalMarried                        2.851e-01  1.394e-01   2.046 0.040747 *  
-MaritalNever Married                  4.174e-02  1.382e-01   0.302 0.762705    
-MaritalSeparated                      2.351e-01  1.370e-01   1.716 0.086140 .  
-MaritalWidowed                        2.577e-01  1.374e-01   1.876 0.060653 .  
-GenderMale                            4.493e-01  3.270e-01   1.374 0.169451    
-GenderNonbinary                      -1.930e-01  3.197e-01  -0.604 0.546060    
-Outage_sec_perweek                   -1.501e-02  1.479e-02  -1.015 0.310187    
-Email                                -7.513e-03  1.453e-02  -0.517 0.605060    
-Contacts                              5.559e-02  4.462e-02   1.246 0.212784    
-Yearly_equip_failure                 -1.971e-02  6.871e-02  -0.287 0.774245    
-Techie1                               1.079e+00  1.169e-01   9.231  &lt; 2e-16 ***
-ContractOne year                     -3.501e+00  1.470e-01 -23.824  &lt; 2e-16 ***
-ContractTwo Year                     -3.576e+00  1.453e-01 -24.617  &lt; 2e-16 ***
-Port_modem1                           1.054e-01  8.794e-02   1.198 0.230864    
-Tablet1                              -2.674e-02  9.628e-02  -0.278 0.781216    
-InternetServiceFiber Optic           -3.156e+00  2.391e+00  -1.320 0.186877    
-InternetServiceNone                  -1.870e+00  1.905e+00  -0.981 0.326376    
-Phone1                               -2.455e-01  1.481e-01  -1.657 0.097435 .  
-Multiple1                             3.464e-01  2.306e-01   1.502 0.133129    
-OnlineSecurity1                      -8.797e-02  3.552e-01  -0.248 0.804404    
-OnlineBackup1                        -3.286e-02  2.067e-01  -0.159 0.873648    
-DeviceProtection1                    -5.610e-04  2.660e-01  -0.002 0.998317    
-TechSupport1                         -2.094e-01  1.978e-01  -1.059 0.289743    
-StreamingTV1                          1.471e+00  5.793e-01   2.539 0.011129 *  
-StreamingMovies1                      1.556e+00  4.152e-01   3.748 0.000178 ***
-PaperlessBilling1                     1.434e-01  8.901e-02   1.611 0.107245    
-PaymentMethodCredit Card (automatic)  1.486e-01  1.321e-01   1.125 0.260675    
-PaymentMethodElectronic Check         5.920e-01  1.202e-01   4.925 8.42e-07 ***
-PaymentMethodMailed Check             1.179e-01  1.316e-01   0.896 0.370373    
-Tenure                                4.758e-02  4.137e-01   0.115 0.908436    
-MonthlyCharge                         4.630e-02  1.582e-02   2.927 0.003424 ** 
-Bandwidth_GB_Year                    -2.017e-03  5.049e-03  -0.399 0.689543    
-Timely_response2                      1.056e-01  3.418e-01   0.309 0.757296    
-Timely_response3                     -7.566e-02  3.429e-01  -0.221 0.825370    
-Timely_response4                     -1.076e-01  3.558e-01  -0.302 0.762311    
-Timely_response5                     -1.304e-01  3.795e-01  -0.344 0.731096    
-Timely_response6                      3.060e-02  4.868e-01   0.063 0.949869    
-Timely_response7                      1.409e+00  1.348e+00   1.046 0.295702    
-Timely_fixes2                         2.154e-01  3.684e-01   0.585 0.558843    
-Timely_fixes3                         1.219e-01  3.690e-01   0.330 0.741147    
-Timely_fixes4                         1.855e-01  3.776e-01   0.491 0.623126    
-Timely_fixes5                         2.166e-02  3.981e-01   0.054 0.956611    
-Timely_fixes6                         2.053e-01  5.007e-01   0.410 0.681806    
-Timely_fixes7                        -6.657e-01  7.369e+00  -0.090 0.928015    
-Timely_replacements2                 -3.269e-01  3.419e-01  -0.956 0.339021    
-Timely_replacements3                 -2.369e-01  3.372e-01  -0.703 0.482339    
-Timely_replacements4                 -3.094e-01  3.427e-01  -0.903 0.366706    
-Timely_replacements5                 -1.997e-01  3.624e-01  -0.551 0.581665    
-Timely_replacements6                  2.301e-01  4.835e-01   0.476 0.634229    
-Timely_replacements7                 -1.537e+00  1.295e+00  -1.187 0.235277    
-Timely_replacements8                 -1.541e+01  8.828e+02  -0.017 0.986073    
-Reliability2                          1.696e-01  3.041e-01   0.558 0.577032    
-Reliability3                         -1.634e-01  2.934e-01  -0.557 0.577510    
-Reliability4                         -5.346e-02  2.969e-01  -0.180 0.857110    
-Reliability5                         -9.182e-03  3.150e-01  -0.029 0.976749    
-Reliability6                          1.445e-01  4.290e-01   0.337 0.736239    
-Reliability7                         -1.380e+01  3.028e+02  -0.046 0.963658    
-Options2                             -3.150e-02  3.517e-01  -0.090 0.928640    
-Options3                             -1.678e-01  3.446e-01  -0.487 0.626236    
-Options4                             -6.010e-02  3.494e-01  -0.172 0.863411    
-Options5                              3.204e-02  3.681e-01   0.087 0.930649    
-Options6                             -4.349e-02  4.570e-01  -0.095 0.924184    
-Options7                             -2.083e+00  1.313e+00  -1.586 0.112741    
-Respectful2                           4.614e-01  3.685e-01   1.252 0.210514    
-Respectful3                           4.663e-01  3.620e-01   1.288 0.197807    
-Respectful4                           5.603e-01  3.685e-01   1.520 0.128396    
-Respectful5                           4.490e-01  3.859e-01   1.163 0.244701    
-Respectful6                           2.759e-01  4.680e-01   0.589 0.555546    
-Respectful7                           6.015e-01  4.381e+00   0.137 0.890787    
-Respectful8                          -1.455e+01  8.827e+02  -0.016 0.986851    
-Courteous2                            2.446e-01  3.204e-01   0.763 0.445181    
-Courteous3                            3.610e-01  3.078e-01   1.173 0.240947    
-Courteous4                            2.223e-01  3.124e-01   0.711 0.476849    
-Courteous5                            4.118e-01  3.331e-01   1.236 0.216366    
-Courteous6                            4.166e-01  4.387e-01   0.950 0.342299    
-Courteous7                           -7.384e-01  2.013e+00  -0.367 0.713830    
-Active_listening2                    -9.349e-02  3.068e-01  -0.305 0.760544    
-Active_listening3                    -1.828e-02  2.925e-01  -0.062 0.950170    
-Active_listening4                    -1.316e-01  2.952e-01  -0.446 0.655651    
-Active_listening5                     6.247e-03  3.122e-01   0.020 0.984035    
-Active_listening6                     3.980e-02  4.201e-01   0.095 0.924522    
-Active_listening7                    -5.120e-01  1.045e+00  -0.490 0.624126    
-Active_listening8                    -1.401e+01  8.827e+02  -0.016 0.987333    
+(Intercept)                           -2.183497   1.616793  -1.351 0.176852    
+Population                             0.004859   0.045224   0.107 0.914436    
+AreaSuburban                          -0.044614   0.108589  -0.411 0.681180    
+AreaUrban                              0.048228   0.107353   0.449 0.653253    
+Children                               0.066099   0.156399   0.423 0.672563    
+Age                                   -0.007418   0.016729  -0.443 0.657468    
+Income                                 0.007546   0.043294   0.174 0.861637    
+MaritalMarried                         0.285143   0.139360   2.046 0.040747 *  
+MaritalNever Married                   0.041739   0.138242   0.302 0.762705    
+MaritalSeparated                       0.235091   0.136990   1.716 0.086140 .  
+MaritalWidowed                         0.257710   0.137371   1.876 0.060653 .  
+GenderMale                             0.449330   0.327031   1.374 0.169451    
+GenderNonbinary                       -0.192983   0.319679  -0.604 0.546060    
+Outage_sec_perweek                    -0.044682   0.044029  -1.015 0.310187    
+Email                                 -0.007514   0.014529  -0.517 0.605060    
+Contacts                               0.055588   0.044615   1.246 0.212784    
+Yearly_equip_failure                  -0.019707   0.068706  -0.287 0.774245    
+Techie1                                1.079215   0.116909   9.231  &lt; 2e-16 ***
+ContractOne year                      -3.501160   0.146962 -23.824  &lt; 2e-16 ***
+ContractTwo Year                      -3.575674   0.145252 -24.617  &lt; 2e-16 ***
+Port_modem1                            0.105360   0.087936   1.198 0.230864    
+Tablet1                               -0.026740   0.096277  -0.278 0.781216    
+InternetServiceFiber Optic            -3.155596   2.390831  -1.320 0.186877    
+InternetServiceNone                   -1.869907   1.905271  -0.981 0.326376    
+Phone1                                -0.245461   0.148098  -1.657 0.097435 .  
+Multiple1                              0.346369   0.230624   1.502 0.133129    
+OnlineSecurity1                       -0.087968   0.355207  -0.248 0.804404    
+OnlineBackup1                         -0.032863   0.206651  -0.159 0.873648    
+DeviceProtection1                     -0.000561   0.265977  -0.002 0.998317    
+TechSupport1                          -0.209434   0.197824  -1.059 0.289743    
+StreamingTV1                           1.470611   0.579297   2.539 0.011129 *  
+StreamingMovies1                       1.556146   0.415179   3.748 0.000178 ***
+PaperlessBilling1                      0.143362   0.089006   1.611 0.107245    
+PaymentMethodCredit Card (automatic)   0.148570   0.132087   1.125 0.260675    
+PaymentMethodElectronic Check          0.591955   0.120186   4.925 8.42e-07 ***
+PaymentMethodMailed Check              0.117905   0.131624   0.896 0.370373    
+Tenure                                 1.258128  10.939179   0.115 0.908436    
+MonthlyCharge                          1.988126   0.679274   2.927 0.003424 ** 
+Bandwidth_GB_Year                     -4.407857  11.034127  -0.399 0.689543    
+Timely_response2                       0.105617   0.341765   0.309 0.757296    
+Timely_response3                      -0.075658   0.342895  -0.221 0.825370    
+Timely_response4                      -0.107618   0.355823  -0.302 0.762311    
+Timely_response5                      -0.130430   0.379524  -0.344 0.731096    
+Timely_response6                       0.030604   0.486771   0.063 0.949869    
+Timely_response7                       1.409240   1.347659   1.046 0.295702    
+Timely_fixes2                          0.215362   0.368416   0.585 0.558843    
+Timely_fixes3                          0.121886   0.368976   0.330 0.741147    
+Timely_fixes4                          0.185548   0.377571   0.491 0.623126    
+Timely_fixes5                          0.021660   0.398114   0.054 0.956611    
+Timely_fixes6                          0.205284   0.500692   0.410 0.681806    
+Timely_fixes7                         -0.665699   7.368606  -0.090 0.928015    
+Timely_replacements2                  -0.326865   0.341873  -0.956 0.339021    
+Timely_replacements3                  -0.236863   0.337151  -0.703 0.482339    
+Timely_replacements4                  -0.309366   0.342728  -0.903 0.366706    
+Timely_replacements5                  -0.199652   0.362375  -0.551 0.581665    
+Timely_replacements6                   0.230058   0.483536   0.476 0.634229    
+Timely_replacements7                  -1.537415   1.295348  -1.187 0.235277    
+Timely_replacements8                 -15.409312 882.774206  -0.017 0.986073    
+Reliability2                           0.169587   0.304069   0.558 0.577032    
+Reliability3                          -0.163430   0.293398  -0.557 0.577510    
+Reliability4                          -0.053462   0.296920  -0.180 0.857110    
+Reliability5                          -0.009182   0.315033  -0.029 0.976749    
+Reliability6                           0.144490   0.428959   0.337 0.736239    
+Reliability7                         -13.795167 302.766485  -0.046 0.963658    
+Options2                              -0.031497   0.351700  -0.090 0.928640    
+Options3                              -0.167815   0.344568  -0.487 0.626236    
+Options4                              -0.060103   0.349367  -0.172 0.863411    
+Options5                               0.032037   0.368124   0.087 0.930649    
+Options6                              -0.043487   0.456973  -0.095 0.924184    
+Options7                              -2.083100   1.313437  -1.586 0.112741    
+Respectful2                            0.461390   0.368478   1.252 0.210514    
+Respectful3                            0.466251   0.362045   1.288 0.197807    
+Respectful4                            0.560269   0.368487   1.520 0.128396    
+Respectful5                            0.448965   0.385935   1.163 0.244701    
+Respectful6                            0.275895   0.468040   0.589 0.555546    
+Respectful7                            0.601494   4.380605   0.137 0.890787    
+Respectful8                          -14.547750 882.743578  -0.016 0.986851    
+Courteous2                             0.244603   0.320381   0.763 0.445181    
+Courteous3                             0.360973   0.307834   1.173 0.240947    
+Courteous4                             0.222263   0.312440   0.711 0.476849    
+Courteous5                             0.411782   0.333090   1.236 0.216366    
+Courteous6                             0.416573   0.438668   0.950 0.342299    
+Courteous7                            -0.738353   2.013415  -0.367 0.713830    
+Active_listening2                     -0.093494   0.306772  -0.305 0.760544    
+Active_listening3                     -0.018280   0.292516  -0.062 0.950170    
+Active_listening4                     -0.131636   0.295197  -0.446 0.655651    
+Active_listening5                      0.006247   0.312198   0.020 0.984035    
+Active_listening6                      0.039801   0.420112   0.095 0.924522    
+Active_listening7                     -0.511992   1.044859  -0.490 0.624126    
+Active_listening8                    -14.014593 882.743676  -0.016 0.987333    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -368,22 +493,21 @@ AIC: 3599.4
 Number of Fisher Scoring iterations: 13</code></pre>
 </div>
 </div>
-<p>The summary of the initial model shows that there are several variables who’s coefficients do not add any statistically significant information to the model. I’ll address these in the next step.</p>
+<p>The summary of the initial model shows that there are several variables whose coefficients do not add any statistically significant information to the model. I’ll address these in the next step.</p>
 <p>The null deviance is 9251.6 on 7999 degrees of freedom, meaning that my response variable, <code>Churn</code>, shows a lot of variability without predictors and could be explained by adding predictor variables. The residual deviance of 3419.4 on 7910 degrees of freedom indicates that the predictor variables do indeed provide an effective explanation of the variability in <code>Churn</code>.</p>
 <p>The AIC for this model is 3599.4. I will reference this number again when comparing the reduced model.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>2.&nbsp;I’ve chosen to use backward stepwise selection <strong>(Larose &amp; Larose, 2019)</strong>, because I have a large amount of variables and backward elimination will remove each insignificant variable until only those values that have a meaningful contribution will remain.</p>
+<p><strong>D2</strong>.&nbsp;I’ve chosen to use backward stepwise selection <strong>(Larose &amp; Larose, 2019)</strong>, because I have a large amount of variables and backward elimination will remove each insignificant variable until only those values that have a meaningful contribution will remain.</p>
+<p><strong>D3</strong>. After backward elimination I was left with the following model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>initial_model <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(<span class="at">object =</span> initial_model, <span class="at">direction =</span> <span class="st">"backward"</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(initial_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -394,29 +518,29 @@ glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService +
     data = churn_train)
 
 Coefficients:
-                                      Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)                          -6.546167   0.670910  -9.757  &lt; 2e-16 ***
-Children                             -0.146373   0.042548  -3.440 0.000581 ***
-Age                                   0.015510   0.004485   3.458 0.000543 ***
-Techie1                               1.099979   0.115276   9.542  &lt; 2e-16 ***
-ContractOne year                     -3.445299   0.144164 -23.898  &lt; 2e-16 ***
-ContractTwo Year                     -3.507074   0.141909 -24.714  &lt; 2e-16 ***
-InternetServiceFiber Optic            0.095929   0.562920   0.170 0.864686    
-InternetServiceNone                   0.761809   0.489279   1.557 0.119470    
-Phone1                               -0.243791   0.145357  -1.677 0.093506 .  
-Multiple1                             0.463706   0.161808   2.866 0.004160 ** 
-OnlineSecurity1                      -0.564547   0.125614  -4.494 6.98e-06 ***
-OnlineBackup1                        -0.249549   0.139805  -1.785 0.074265 .  
-DeviceProtection1                    -0.337493   0.124476  -2.711 0.006702 ** 
-StreamingTV1                          0.710337   0.267354   2.657 0.007886 ** 
-StreamingMovies1                      1.097328   0.272227   4.031 5.56e-05 ***
-PaperlessBilling1                     0.149497   0.087666   1.705 0.088140 .  
-PaymentMethodCredit Card (automatic)  0.147691   0.130322   1.133 0.257100    
-PaymentMethodElectronic Check         0.564349   0.118028   4.781 1.74e-06 ***
-PaymentMethodMailed Check             0.102746   0.129278   0.795 0.426747    
-Tenure                               -0.512633   0.099884  -5.132 2.86e-07 ***
-MonthlyCharge                         0.026319   0.004895   5.377 7.59e-08 ***
-Bandwidth_GB_Year                     0.004843   0.001214   3.988 6.65e-05 ***
+                                       Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                           -3.273097   0.492371  -6.648 2.98e-11 ***
+Children                              -0.146373   0.042548  -3.440 0.000581 ***
+Age                                    0.015510   0.004485   3.458 0.000543 ***
+Techie1                                1.099979   0.115276   9.542  &lt; 2e-16 ***
+ContractOne year                      -3.445299   0.144164 -23.898  &lt; 2e-16 ***
+ContractTwo Year                      -3.507074   0.141909 -24.714  &lt; 2e-16 ***
+InternetServiceFiber Optic             0.095929   0.562920   0.170 0.864686    
+InternetServiceNone                    0.761809   0.489279   1.557 0.119470    
+Phone1                                -0.243791   0.145357  -1.677 0.093506 .  
+Multiple1                              0.463706   0.161808   2.866 0.004160 ** 
+OnlineSecurity1                       -0.564547   0.125614  -4.494 6.98e-06 ***
+OnlineBackup1                         -0.249549   0.139805  -1.785 0.074265 .  
+DeviceProtection1                     -0.337493   0.124476  -2.711 0.006702 ** 
+StreamingTV1                           0.710337   0.267354   2.657 0.007886 ** 
+StreamingMovies1                       1.097328   0.272227   4.031 5.56e-05 ***
+PaperlessBilling1                      0.149497   0.087666   1.705 0.088140 .  
+PaymentMethodCredit Card (automatic)   0.147691   0.130322   1.133 0.257100    
+PaymentMethodElectronic Check          0.564349   0.118028   4.781 1.74e-06 ***
+PaymentMethodMailed Check              0.102746   0.129278   0.795 0.426747    
+Tenure                               -13.555580   2.641246  -5.132 2.86e-07 ***
+MonthlyCharge                          1.130236   0.210212   5.377 7.59e-08 ***
+Bandwidth_GB_Year                     10.583277   2.653505   3.988 6.65e-05 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -428,66 +552,254 @@ AIC: 3517.4
 
 Number of Fisher Scoring iterations: 7</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)) <span class="co"># Arrange plots in a 2x2 grid</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(initial_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>I checked for multicoliniarity using <code>vif()</code> by checking for values above 5. This model returned a few that were exceptionally high. <code>Bandwidth_GB_Year</code> was the highest with a vif value of 2656.593644. I manually removed this variable from the model and checked vif again to find that the other variables were less than 5 aside from <code>MonthlyCharge</code> whose value was 16.889045. Once these two variables were removed from the model all the vif values were under 5.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                         GVIF Df GVIF^(1/(2*Df))
+Children             4.408718  1        2.099695
+Age                  4.524717  1        2.127138
+Techie               1.073101  1        1.035906
+Contract             1.671715  2        1.137079
+InternetService     80.958271  2        2.999614
+Phone                1.009656  1        1.004816
+Multiple             3.534505  1        1.880028
+OnlineSecurity       1.966776  1        1.402418
+OnlineBackup         2.627063  1        1.620822
+DeviceProtection     2.074451  1        1.440295
+StreamingTV          9.483245  1        3.079488
+StreamingMovies      9.806014  1        3.131456
+PaperlessBilling     1.007578  1        1.003782
+PaymentMethod        1.035359  3        1.005808
+Tenure            2289.554799  1       47.849293
+MonthlyCharge       22.288658  1        4.721087
+Bandwidth_GB_Year 2656.593644  1       51.542154</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
+    Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+    StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
+    Tenure, family = "binomial", data = churn_train)
+
+Coefficients:
+                                       Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -5.262e+00  2.649e-01 -19.862  &lt; 2e-16 ***
+Children                              5.434e-03  2.009e-02   0.270   0.7868    
+Age                                  -4.828e-05  2.095e-03  -0.023   0.9816    
+Techie1                               1.092e+00  1.142e-01   9.562  &lt; 2e-16 ***
+ContractOne year                     -3.338e+00  1.386e-01 -24.088  &lt; 2e-16 ***
+ContractTwo Year                     -3.383e+00  1.356e-01 -24.941  &lt; 2e-16 ***
+InternetServiceFiber Optic           -1.393e+00  1.014e-01 -13.739  &lt; 2e-16 ***
+InternetServiceNone                  -1.571e+00  1.239e-01 -12.681  &lt; 2e-16 ***
+Phone1                               -2.839e-01  1.436e-01  -1.977   0.0481 *  
+Multiple1                             1.645e+00  9.266e-02  17.752  &lt; 2e-16 ***
+OnlineSecurity1                      -1.180e-01  8.896e-02  -1.326   0.1848    
+OnlineBackup1                         7.720e-01  8.735e-02   8.839  &lt; 2e-16 ***
+DeviceProtection1                     3.880e-01  8.617e-02   4.503 6.69e-06 ***
+StreamingTV1                          2.951e+00  1.083e-01  27.244  &lt; 2e-16 ***
+StreamingMovies1                      3.487e+00  1.151e-01  30.291  &lt; 2e-16 ***
+PaperlessBilling1                     1.409e-01  8.675e-02   1.624   0.1044    
+PaymentMethodCredit Card (automatic)  1.278e-01  1.293e-01   0.989   0.3228    
+PaymentMethodElectronic Check         5.390e-01  1.169e-01   4.612 3.98e-06 ***
+PaymentMethodMailed Check             7.236e-02  1.284e-01   0.563   0.5731    
+Tenure                               -2.890e+00  8.043e-02 -35.931  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3562.2  on 7980  degrees of freedom
+AIC: 3602.2
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p>Lastly I needed to remove the variables from the model that were not adding any value. <code>Children</code>, <code>Age</code>, <code>PaperlessBilling1</code>, and <code>OnlineSecurity1</code> all have coefficients that were not statistically significant. The following is the reduced model.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ Techie + Contract + InternetService + Phone + 
+    Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+    StreamingMovies + PaymentMethod + Tenure, family = "binomial", 
+    data = churn_train)
+
+Coefficients:
+                                     Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -5.20830    0.23006 -22.638  &lt; 2e-16 ***
+Techie1                               1.09654    0.11402   9.617  &lt; 2e-16 ***
+ContractOne year                     -3.33261    0.13829 -24.098  &lt; 2e-16 ***
+ContractTwo Year                     -3.37854    0.13512 -25.005  &lt; 2e-16 ***
+InternetServiceFiber Optic           -1.38596    0.10117 -13.700  &lt; 2e-16 ***
+InternetServiceNone                  -1.56353    0.12371 -12.639  &lt; 2e-16 ***
+Phone1                               -0.28445    0.14362  -1.981   0.0476 *  
+Multiple1                             1.64377    0.09254  17.763  &lt; 2e-16 ***
+OnlineBackup1                         0.77150    0.08729   8.839  &lt; 2e-16 ***
+DeviceProtection1                     0.39277    0.08605   4.564 5.01e-06 ***
+StreamingTV1                          2.94220    0.10800  27.243  &lt; 2e-16 ***
+StreamingMovies1                      3.48437    0.11498  30.305  &lt; 2e-16 ***
+PaymentMethodCredit Card (automatic)  0.12543    0.12913   0.971   0.3314    
+PaymentMethodElectronic Check         0.53286    0.11667   4.567 4.94e-06 ***
+PaymentMethodMailed Check             0.06427    0.12833   0.501   0.6165    
+Tenure                               -2.88770    0.08032 -35.953  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3566.6  on 7984  degrees of freedom
+AIC: 3598.6
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>3.&nbsp;&nbsp;Provide a reduced logistic regression model that follows the feature selection or model evaluation process in part D2, including a screenshot of the output for <em>each</em> model.<br>
-&nbsp;</p>
-<p>E.&nbsp;&nbsp;Analyze the data set using your reduced logistic regression model by doing the following in a document file:</p>
-<p>1.&nbsp;&nbsp;Explain your data analysis process by comparing the initial logistic regression model and reduced logistic regression model, including the following element:</p>
-<p>•&nbsp;&nbsp;a model evaluation metric</p>
-<p>2.&nbsp;&nbsp;Provide the output and <em>all</em> calculations of the analysis you performed, including the following elements for your reduced logistic regression model:</p>
-<p>•&nbsp;&nbsp;confusion matrix</p>
-<p>•&nbsp;&nbsp;accuracy calculation</p>
-<p>3.&nbsp;&nbsp;Provide an executable, error-free copy of the code used to support the implementation of the logistic regression models using a Python or R file.<br>
+<p>The coefficients in the reduced model include variables whose coefficient is statistically significant at the 0.001 level. <code>Phone1</code> was kept because it showed a very minor significance, 0.1, but because of the vast number of variables that had no significance I decided to keep <code>Phone1</code>. <code>PaymentMethodCredit Card (automatic)</code> and <code>PaymentMethodMaild Check</code> were also kept in the model despite having an insignificant coefficient value. These dummy variables were retained because <code>PaymentMethod</code> is the variable and these 2 mentioned above are 2 of the levels. Because <code>PaymentMethodMailed Check</code> has a high significance at 0.001 I have decided to keep the variable <code>PaymentMethod</code> in the model.</p>
+<p><strong>E1</strong>.&nbsp;&nbsp;The AIC was used as one of the model evaluation metrics. The AIC for the initial model was <strong>3599.4</strong>, while the AIC for the reduced model was <strong>3598.6</strong>. The reduced model, having a lower AIC value, suggests that the model fits the data well while using far fewer predictors.</p>
+<p>Another metric used is a chi square test on the initial model and the reduced model. The chi square test will determine if the reduced model (simpler model) fits the data significantly worse than the initial model (complex model).</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+
+Model 1: Churn ~ Population + Area + Children + Age + Income + Marital + 
+    Gender + Outage_sec_perweek + Email + Contacts + Yearly_equip_failure + 
+    Techie + Contract + Port_modem + Tablet + InternetService + 
+    Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+    TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
+    PaymentMethod + Tenure + MonthlyCharge + Bandwidth_GB_Year + 
+    Timely_response + Timely_fixes + Timely_replacements + Reliability + 
+    Options + Respectful + Courteous + Active_listening
+Model 2: Churn ~ Techie + Contract + InternetService + Phone + Multiple + 
+    OnlineBackup + DeviceProtection + StreamingTV + StreamingMovies + 
+    PaymentMethod + Tenure
+  Resid. Df Resid. Dev  Df Deviance  Pr(&gt;Chi)    
+1      7910     3419.4                           
+2      7984     3566.6 -74  -147.17 9.088e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>The Chi-square test indicates that the reduced model has more residual degrees of freedom because it includes fewer predictors. However, the reduced model has a higher residual deviance, meaning it fits the data worse than the initial model. This is expected since eliminating predictors generally reduces the model’s ability to explain the variance in the data. The difference in deviance between the models is -147.17, which confirms that the reduced model explains less variance than the initial model. Again, this is anticipated because fewer predictors are included.</p>
+<p>The p-value for the Chi-square test is 9.088e-07, which is far smaller than the significance threshold of 0.05. This indicates that the difference in deviance between the two models is statistically significant, meaning the initial model fits the data significantly better than the reduced model.</p>
+<p>However, the AIC for the reduced model is slightly smaller than that of the initial model, suggesting that the reduced model achieves a similar predictive power. In the next section, I will provide a detailed analysis of the reduced model’s accuracy, but for now, it is worth noting that the reduced model predicts churn correctly 90.375% of the time.</p>
+<p>To summarize the comparison, while the initial model fits the data better, it is also far more complex. The reduced model, on the other hand, achieves similar predictive power (&gt;90% accuracy) with fewer predictors, demonstrating one of the benefits of simpler models: reduced data collection costs.</p>
+<p><strong>E2</strong>.&nbsp;</p>
+<p>I used the <code>predict()</code> function to predict the probabilities of churn in both the training set and the test set. If the probability is above 0.5, the <code>ifelse()</code> function assigns a ‘1’, indicating that the predicted value is ‘Churned,’ and a ‘0’ for ‘Not Churned.’</p>
+<p>I’ve included the confusion matrix for both the test set and the training set below. This confusion matrix evaluates the model’s predictions for churn and consists of true negatives, false negatives, false positives, and true positives. By adding up the accurate predictions (true negatives and true positives) and dividing by the total observations in the data set, I calculate the accuracy rate. Similarly, the misclassification rate is calculated as <code>1− 'Accuracy&nbsp;rate'</code>.</p>
+<p>For the training set (<code>churn_train</code>), the model accurately predicted churn 7,103 times out of a total of 8,000 observations, resulting in an accuracy rate of 90.375%. <code>1−0.90375=0.0965</code> Thus, the misclassification error, or the rate at which the model is incorrect, is 9.65%.</p>
+<p>For the training set (<code>churn_test</code>), the model accurately predicted churn 1765 times out of a total of 2,000 observations, resulting in an accuracy rate of 90.25%. <code>1−0.9025=0.0975</code> therefore, the misclassification error for the test set is 9.65%.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>         Actual
+Predicted    0    1
+        0 5528  418
+        1  352 1702</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Actual
+Predicted    0    1
+        0 1389  114
+        1   81  416</code></pre>
+</div>
+</div>
+<p><strong>E3</strong>.&nbsp;&nbsp;The full error-free code will be included in my submission files. It will be titled <strong><em>CodeV1T2.R</em></strong>.<br>
 &nbsp;</p>
 </section>
 <section id="part-v-data-summary-and-implications" class="level2">
 <h2 class="anchored" data-anchor-id="part-v-data-summary-and-implications"><strong>Part V: Data Summary and Implications</strong></h2>
-<p><em>Note: Your responses to the task prompts must be provided in a document file. Unless otherwise specified, responses to PA requirements that are included in a Python or RStudio notebook will not be accepted.</em><br>
-&nbsp;</p>
-<p>F.&nbsp;&nbsp;Summarize your findings and assumptions by doing the following in a document file:</p>
-<p>1.&nbsp;&nbsp;Discuss the results of your data analysis, including the following elements:</p>
-<p>•&nbsp;&nbsp;a regression equation for the reduced model</p>
-<p>•&nbsp;&nbsp;an interpretation of the coefficients of the reduced model</p>
-<p>•&nbsp;&nbsp;the statistical and practical significance of the reduced model</p>
-<p>•&nbsp;&nbsp;the limitations of the data analysis</p>
-<p>2.&nbsp;&nbsp;Recommend a course of action based on your results.<br>
+<p><strong>F1</strong>.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ Techie + Contract + InternetService + Phone + 
+    Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+    StreamingMovies + PaymentMethod + Tenure, family = "binomial", 
+    data = churn_train)
+
+Coefficients:
+                                     Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -5.20830    0.23006 -22.638  &lt; 2e-16 ***
+Techie1                               1.09654    0.11402   9.617  &lt; 2e-16 ***
+ContractOne year                     -3.33261    0.13829 -24.098  &lt; 2e-16 ***
+ContractTwo Year                     -3.37854    0.13512 -25.005  &lt; 2e-16 ***
+InternetServiceFiber Optic           -1.38596    0.10117 -13.700  &lt; 2e-16 ***
+InternetServiceNone                  -1.56353    0.12371 -12.639  &lt; 2e-16 ***
+Phone1                               -0.28445    0.14362  -1.981   0.0476 *  
+Multiple1                             1.64377    0.09254  17.763  &lt; 2e-16 ***
+OnlineBackup1                         0.77150    0.08729   8.839  &lt; 2e-16 ***
+DeviceProtection1                     0.39277    0.08605   4.564 5.01e-06 ***
+StreamingTV1                          2.94220    0.10800  27.243  &lt; 2e-16 ***
+StreamingMovies1                      3.48437    0.11498  30.305  &lt; 2e-16 ***
+PaymentMethodCredit Card (automatic)  0.12543    0.12913   0.971   0.3314    
+PaymentMethodElectronic Check         0.53286    0.11667   4.567 4.94e-06 ***
+PaymentMethodMailed Check             0.06427    0.12833   0.501   0.6165    
+Tenure                               -2.88770    0.08032 -35.953  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3566.6  on 7984  degrees of freedom
+AIC: 3598.6
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p>Several variables show a strong and significant association with churn. The variable with the most notable positive association is <code>StreamingMovies1</code> having an coefficient of 3.48437, which means that, holding all other variables constant, subscribing to <code>StreamingMovies</code> (increasing the predictor variable by 1) increases the log-odds of churn by 3.48437.</p>
+<p>To convert the log odds into odds I will get the exponentiated coefficients from the reduced model. (<strong>RStudio, n.d.)</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                         (Intercept)                              Techie1 
+                         0.005470978                          2.993794507 
+                    ContractOne year                     ContractTwo Year 
+                         0.035699943                          0.034097069 
+          InternetServiceFiber Optic                  InternetServiceNone 
+                         0.250084106                          0.209394880 
+                              Phone1                            Multiple1 
+                         0.752430194                          5.174646492 
+                       OnlineBackup1                    DeviceProtection1 
+                         2.163017155                          1.481081693 
+                        StreamingTV1                     StreamingMovies1 
+                        18.957494650                         32.601923128 
+PaymentMethodCredit Card (automatic)        PaymentMethodElectronic Check 
+                         1.133636347                          1.703802472 
+           PaymentMethodMailed Check                               Tenure 
+                         1.066378884                          0.055704203 </code></pre>
+</div>
+</div>
+<p>The odds of churn are <strong>32.60</strong> times higher for customers with <code>StreamingMovies</code> services. similarly, <code>StreamingTV1</code> and <code>Multiple1</code> have 18.96 and 5.17 respectively, times higher odds of churning. Likewise, when a customer is a Techie (<code>Techie1</code>), the odds of churn are 2.993794507 times higher than non-techie customers.</p>
+<p>This model contains almost exclusively, variables whose statistical significance is 0.001. one variable has a 0.1 significance and two other dummy variables are not statistically significant but could not be removed because they are just part of a variable that does include a very statistically significant coefficient.</p>
+<p>This reduced model successfully predicts customer churn at a rate over 90%. Statistically, variables such as <code>Techie</code>, <code>Contract</code>, <code>InternetService</code>, <code>Multiple</code>, <code>StreamingTV</code>, <code>StreamingMovies</code>, and <code>Tenure</code> are highly significant, with p-values below 0.05. For instance, customers with <code>StreamingMovies1</code> or <code>StreamingTV1</code> are significantly more likely to churn, while longer contracts decreases the likelihood of churn. The model successfully reduces the number of variables making the model simpler and does not sacrafice fit or performance. Practically, these findings can offer meaningful insights since the company can accurately predict is a if a specific customer is going to churn or not.</p>
+<p>It is important to remember that correlation does not equal causation. For example, just because customers with a two year contract has far lower odds of churn as compared to a customer on the month to month contract, that does not mean that the contract length is the cause of the churn odds. There may be other factors that are not provided in the data set that are the actual cause of the lower odds.</p>
+<p><strong>F2</strong>.&nbsp;The company should focus on longer <code>contracts</code>, specifically one or two year contracts, <code>InternetServiceFiber Optic</code> and <code>phone</code> services. These variables have the greatest effect on increasing customer churn. While I can not say that any of these variables are the cause of the customer not churning, the customers who subscribe to these services have far lower odds of churning than customers who do not subscribe. It also appears that streaming services are having a detrimental effect on customer churn. The company should investigate this further by collecting survey data that captures customer satisfaction. <code>StreamingTV</code> and <code>StreamingMovies</code> are the two most detrimental services to the company and should be investigated further.<br>
 &nbsp;</p>
 </section>
 <section id="part-vi-demonstration" class="level2">
 <h2 class="anchored" data-anchor-id="part-vi-demonstration"><strong>Part VI: Demonstration</strong></h2>
-<p>G.&nbsp;&nbsp;Provide a Panopto video recording that includes the presenter and a vocalized demonstration of the functionality of the code used for the analysis of the programming environment, including the following elements:</p>
-<p>•&nbsp;&nbsp;an identification of the version of the programming environment</p>
-<p>•&nbsp;&nbsp;a comparison of the initial logistic regression model you used and the reduced logistic regression model you used in your analysis</p>
-<p>•&nbsp;&nbsp;an interpretation of the coefficients of the reduced model<br>
+<p><strong>G1</strong>. The Panopto presentation link will be included in my submission.<br>
 &nbsp;</p>
-<p><em>Note: The audiovisual recording should feature you visibly presenting the material (i.e., not in voiceover or embedded video) and should simultaneously capture both you and your multimedia presentation.<br>
-<br>
-&nbsp;Note: For instructions on how to access and use Panopto, use the “Panopto How-To Videos” web link provided below. To access Panopto’s website, navigate to the web link titled “Panopto Access,” and then choose to log in using the “WGU” option. If prompted, log in using your WGU student portal credentials, and then it will forward you to Panopto’s website.<br>
-<br>
-&nbsp;To submit your recording, upload it to the Panopto drop box titled “Regression Modeling – NBMx | D208.” Once the recording has been uploaded and processed in Panopto’s system, retrieve the URL of the recording from Panopto and copy and paste it into the Links option. Upload the remaining task requirements using the Attachments option.</em><br>
-&nbsp;</p>
-<p>H.&nbsp;&nbsp;List the web sources used to acquire data or segments of third-party code to support the application. Ensure the web sources are reliable.<br>
-&nbsp;</p>
-<p>I.&nbsp;&nbsp;Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.</p>
+<p><strong>H - I&nbsp;&nbsp;Sources</strong><br>
+</p>
 <ol type="1">
 <li><p><strong>Bobbitt, Z.</strong> (2020, October 13).The 6 Assumptions of Logistic Regression (With Examples). Statology. Retrieved December 29, 2024, from https://www.statology.org/assumptions-of-logistic-regression/)</p></li>
 <li><p><strong>GeeksforGeeks.</strong> (2021, June 17). <em>Logistic Regression and the Feature Scaling Ensemble</em>. GeeksforGeeks. Retrieved January 2, 2025, from https://www.geeksforgeeks.org/logistic-regression-and-the-feature-scaling-ensemble/#</p></li>
-<li><p><strong>Ihaka, R. (n.d.).</strong> The R Project: A brief history and thoughts about the future (p.&nbsp;12). The University of Auckland. Retrieved November 17, 2024, from https://www.stat.auckland.ac.nz/~ihaka/downloads/Otago.pdf (https://www.stat.auckland.ac.nz/~ihaka/downloads/Otago.pdf)</p></li>
+<li><p><strong>Ihaka, R. (n.d.).</strong> The R Project: A brief history and thoughts about the future (p.&nbsp;12). The University of Auckland. Retrieved November 17, 2024, from https://www.stat.auckland.ac.nz/~ihaka/downloads/Otago.pdf</p></li>
 <li><p><strong>Larose, C. D., &amp; Larose, D. T. (2019)</strong>. Data science using Python and R. Wiley. Retrieved from https://eds.p.ebscohost.com/eds/ebookviewer/ebook/bmxlYmtfXzIwOTEzNzFfX0FO0?sid=04ef9475-3bed 4dbe-8317-a1c5eb6da3cb@redis&amp;vid=0&amp;format=EB&amp;lpid=lp_151&amp;rid=0</p></li>
-<li><p><strong>R Core Team.</strong> (2019). <em>scale</em> function. <em>R Documentation</em>. Retrieved January 1, 2025 from https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/scale<br>
-&nbsp;</p></li>
+<li><p><strong>R Core Team.</strong> (2019). <em>scale</em> function. <em>R Documentation</em>. Retrieved January 1, 2025 from https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/scale</p></li>
+<li><p><strong>RStudio. (n.d.)</strong>. <em>Logistic regression example</em>. RStudio. Retrieved January 5, 2025, from https://rstudio-pubs-static.s3.amazonaws.com/182726_aef0a3092d4240f3830c2a7a9546916a.html</p></li>
 </ol>
-<p>J.&nbsp;&nbsp;Demonstrate professional communication in the content and presentation of your submission.</p>
-</section>
 </section>
 
 </main>

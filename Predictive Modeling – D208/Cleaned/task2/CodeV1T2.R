@@ -1,3 +1,4 @@
+options(warn = -1) #disable warning
 #install.packages("tidyverse")
 
 library(tidyverse)
@@ -16,7 +17,7 @@ theme_set(theme_minimal())
 
 # Research Question -------------------------------------------------------
 
-# What variabales contribute most to Churn?
+# Which factors are most strongly associated with customer churn, and how do they influence the likelihood of churn?
 
 # Exploring the Data ------------------------------------------------------
 #getting a general understanding of the data
@@ -178,9 +179,6 @@ univariate12 <- ggplot(churn, aes(x = Tenure)) +
   ggtitle("Tenure (In Months)") +
   scale_fill_viridis_c()
 
-summary(churn$Tenure)
-str(churn$Tenure)
-
 
 # Arrange all plots into a grid
 gridExtra::grid.arrange(
@@ -320,37 +318,23 @@ summary(initial_model)
 par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
 plot(initial_model)
 
-initial_model <- stepAIC(object = initial_model, direction = "backward")
-summary(initial_model)
+reduced_model <- stepAIC(object = initial_model, direction = "backward", trace = FALSE)
+summary(reduced_model)
 
 par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
-plot(initial_model)
+plot(reduced_model)
 
-
-
-initial_model <- glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
-                       Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                       StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
-                       Tenure + MonthlyCharge + Bandwidth_GB_Year, family = "binomial", 
-                     data = churn_train)
-
-summary(initial_model)
-
-par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
-plot(initial_model)
-
-
-vif_values <- vif(initial_model)
+vif_values <- vif(reduced_model)
 vif_values #Looking for VIF values above 5. 
 
 # Removed Bandwidth_GB_Year because of a VIF of 2656.593644 and MonthlyCharge with 16.889045
-initial_model <- glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
+reduced_model <- glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
                        Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
                        StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
                        Tenure, family = "binomial", 
                      data = churn_train)
 
-summary(initial_model)
+summary(reduced_model)
 
 # Removed values that did not have a statistically significant coefficient
 reduced_model <- glm(formula = Churn ~ Techie + Contract + InternetService + 
@@ -372,10 +356,6 @@ anova(initial_model, reduced_model, "Chaisq")
 p1 <- predict(reduced_model, churn_train, type='response')
 p2 <- predict(reduced_model, churn_test, type = 'response')
 
-
-head(pred1)
-head(churn_test)
-
 # confusion matrix --------------------------------------------------------
 
 pred1 <- ifelse(p1 > 0.5, 1, 0) #if p1 is greater than 0.5 then return 1 else 0
@@ -391,6 +371,12 @@ table(Predicted = pred2, Actual = churn_test$Churn) #confusion matrix
 # 1 - 0.9025 = 0.0.975 misclassification error. 9.75% of the time the prediction is wrong 
 
 #Both models are similar in accuracy and misclassification
+
+
+# Exponentiate the coefficients to get the odds ratios
+odds_ratios <- exp(coef(reduced_model))
+
+odds_ratios
 
 setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Cleaned/task2')
 
