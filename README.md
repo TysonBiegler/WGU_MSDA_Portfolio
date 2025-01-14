@@ -46,7 +46,7 @@ Feel free to connect with me and follow along with my progress.
 - [Data Acquisition - D205](Data%20Acquisition%20-%20D205)
 - [Data Cleaning - D206](Data%20Cleaning%20-%20D206)
 - [Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207)
-- [Predictive Modeling - D208](Predictive%20Modeling%20-%20D208) *Coming Soon*
+- [Predictive Modeling - D208](Predictive%20Modeling%20-%20D208) 
 - [Data Mining 1 - D209](Data%20Mining%201%20-%20D209) *Coming Soon*
 - [Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210)
 - [Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211)
