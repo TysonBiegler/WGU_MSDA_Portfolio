@@ -1,4 +1,7 @@
+# Tyson Biegler D208 Task 2
+# Student ID: 012170282
 options(warn = -1) #disable warning
+
 
 #install.packages("tidyverse")
 #install.packages("tidymodels")
@@ -6,7 +9,6 @@ options(warn = -1) #disable warning
 #install.packages("car")
 #install.packages("viridis")
 #install.packages("ROCR")
-
 
 library(tidyverse)
 library(tidymodels) 
@@ -74,11 +76,21 @@ churn <- churn %>%
 
 # Convert Continuous Columns to Numeric
 churn <- churn %>%
-  mutate_at(vars(Tenure, MonthlyCharge, Bandwidth_GB_Year, Outage_sec_perweek), as.numeric)
+  mutate_at(vars(Tenure, 
+                 MonthlyCharge, 
+                 Bandwidth_GB_Year, 
+                 Outage_sec_perweek), 
+            as.numeric)
 
 # Convert Columns to Integer for Count Variables
 churn <- churn %>% 
-  mutate_at(vars(Children, Age, Population, Email, Contacts, Yearly_equip_failure), as.integer)
+  mutate_at(vars(Children, 
+                 Age, 
+                 Population, 
+                 Email, 
+                 Contacts, 
+                 Yearly_equip_failure), 
+            as.integer)
 
 #renaming the survey response columns to be more intuitive
 churn <- churn %>%
@@ -277,7 +289,7 @@ gridExtra::grid.arrange(
 )
 
 
-# The initial model -------------------------------------------------------
+# splitting the data ------------------------------------------------------
 
 set.seed(123)
 
@@ -301,12 +313,6 @@ plot(initial_model)
 
 reduced_model <- stepAIC(object = initial_model, direction = "backward", trace = FALSE)
 summary(reduced_model)
-
-reduced_model <- glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
-                       Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                       StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
-                       Tenure + MonthlyCharge + Bandwidth_GB_Year, family = "binomial", 
-                     data = churn_train)
 
 vif_values <- vif(reduced_model)
 vif_values #Looking for VIF values above 10.
@@ -335,24 +341,24 @@ summary(reduced_model)
 reduced_model <- update(reduced_model, . ~ . - PaperlessBilling)
 summary(reduced_model)
 
-
-par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
-plot(reduced_model)
-
-
 # comparing the models ----------------------------------------------------
 
 anova(initial_model, reduced_model, "Chaisq")
 AIC(initial_model) # AIC = 3537.482
 AIC(reduced_model) # AIC = 3598.617
 
-# predict -----------------------------------------------------------------
+# predictions -------------------------------------------------------------
+
+
+# ROC and AUC -------------------------------------------------------------
+#Checking the ROC curve. Hoping to see a curve that hugs the top left corner 
 p1 <- predict(reduced_model, churn_train, type='response')
+
 p2 <- predict(reduced_model, churn_test, type = 'response')
 
-#Checking the ROC curve. Hoping to see a curve that hugs the top left corner 
 pred <- prediction(p2, churn_test$Churn)
 perf <- performance(pred, "tpr", "fpr")
+
 plot(perf, col = "blue", main = "ROC Curve")
 abline(0, 1, col = "red", lty = 2)
 
@@ -361,6 +367,9 @@ auc # AUC = 0.9586676
 
 
 # confusion matrix --------------------------------------------------------
+p1 <- predict(reduced_model, churn_train, type='response')
+
+p2 <- predict(reduced_model, churn_test, type = 'response')
 
 pred1 <- ifelse(p1 > 0.5, 1, 0) #if p1 is greater than 0.5 then return 1 else 0
 pred2 <- ifelse(p2 > 0.5, 1,0)
@@ -371,7 +380,6 @@ train_misclassification <- 1 - train_accuracy
 
 train_accuracy*100 #model is 90.375% accurate
 train_misclassification*100 #9.625% of the time the prediction is wrong
-
 
 table(Predicted = pred2, Actual = churn_test$Churn) #confusion matrix
 test_accuracy <- (1389+416)/2000

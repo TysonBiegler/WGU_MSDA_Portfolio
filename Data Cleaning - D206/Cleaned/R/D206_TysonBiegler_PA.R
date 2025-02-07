@@ -297,7 +297,7 @@
       numeric_columns <- churn %>% select_if(is.numeric) #getting all the numeric columns 
       names(numeric_columns)
 
-    # Saving The Numerica Columns To 'churn_pca_data'
+    # Saving The Numeric Columns To 'churn_pca_data'
       churn_pca_data <- numeric_columns[, 4:14]
 
     # Running PCA with pcrcomp

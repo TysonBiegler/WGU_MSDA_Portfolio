@@ -1,0 +1,350 @@
+---
+title: "D209 Task 1"
+author: "Tyson Biegler"
+subtitle: "Student ID: 012170282"
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# Tyson Biegler D209 Task 1
+# Student ID: 012170282
+
+#install.packages("tidyverse")
+#install.packages("tidymodels")
+library(caret) # Used for building the KNN model (train function), performing cross-validation (trainControl), and evaluating performance (confusionMatrix).
+library(ROCR) # Evaluating model performance with ROC and AUC
+library(tidyverse) # Used for data wrangling
+
+# Set wd ------------------------------------------------------------------
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data Mining I - D209/Raw/Task 1')
+
+# Get data ----------------------------------------------------------------
+churn <- read_csv("churn_clean.csv")
+theme_set(theme_minimal())
+
+
+# Exploring the Data ------------------------------------------------------
+#getting a general understanding of the data
+
+#glimpse(churn)
+str(churn)
+
+#checking for na and duplicates
+sum(is.na(churn))
+sum(duplicated(churn))
+
+# Clearn/Prepare Data -----------------------------------------------------
+# Convert Qualatative Columns to Factors
+churn <- churn %>%
+  mutate_at(vars(City,
+                 State,
+                 Zip,
+                 Gender,
+                 Marital,
+                 Contract,
+                 Area,
+                 County,
+                 PaymentMethod,
+                 InternetService,#
+                 Churn, 
+                 Techie, 
+                 Port_modem, 
+                 Tablet, 
+                 Phone, 
+                 Multiple,
+                 OnlineSecurity, 
+                 OnlineBackup, 
+                 DeviceProtection, 
+                 TechSupport,
+                 StreamingTV, 
+                 StreamingMovies, 
+                 PaperlessBilling
+  ),
+  as.factor)
+
+# Convert Continuous Columns to Numeric
+churn <- churn %>%
+  mutate_at(vars(Tenure, 
+                 MonthlyCharge, 
+                 Bandwidth_GB_Year, 
+                 Outage_sec_perweek), 
+            as.numeric)
+
+# Convert Columns to Integer for Count Variables
+churn <- churn %>% 
+  mutate_at(vars(Children, 
+                 Age, 
+                 Population, 
+                 Email, 
+                 Contacts, 
+                 Yearly_equip_failure), 
+            as.integer)
+
+#renaming the survey response columns to be more intuitive
+churn <- churn %>%
+  mutate_at(vars(43:50), as.numeric) %>%
+  rename_at(vars(43:50), ~ c(
+    "Timely_response",
+    "Timely_fixes",
+    "Timely_replacements",
+    "Reliability",
+    "Options",
+    "Respectful",
+    "Courteous",
+    "Active_listening"
+  ))
+
+
+#Removing columns im not going to use
+churn <- churn[, !(names(churn) %in% c("CaseOrder", 
+                                       "Customer_id", 
+                                       "Interaction",
+                                       "UID",
+                                       "Lat", 
+                                       "Lng",
+                                       "County",
+                                       "TimeZone", 
+                                       "Job",
+                                       "City",
+                                       "State",
+                                       "Zip"
+                                       
+))]
+#str(churn)
+
+# KNN model ---------------------------------------------------------------
+# data prep
+set.seed(1234)
+ind <- sample(2, nrow(churn), replace = T, prob = c(.8, .2))
+training <- churn[ind == 1,]
+test <- churn[ind == 2,]
+
+
+trControl <- trainControl(method = "repeatedcv",
+                          number = 10,
+                          repeats = 3)
+set.seed(222)
+
+#My reduced model from D208
+fit <- train(Churn ~ Techie + Contract + InternetService + Phone + 
+               Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+               StreamingMovies + PaymentMethod + Tenure,
+             data = training,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = trControl,
+             preProcess = c("center", "scale"))
+
+#model performance
+fit
+
+plot(fit)
+
+pred <- predict(fit, newdata = test)
+head(pred)
+table(pred)
+
+confusionMatrix(pred, test$Churn)
+
+# ROC and AUC -------------------------------------------------------------
+#Checking the ROC curve. Hoping to see a curve that hugs the top left corner
+
+p1 <- predict(fit, test, type = 'prob')[,2]
+
+pred2 <- prediction(p1, test$Churn)
+
+perf <- performance(pred2, "tpr", "fpr")
+
+plot(perf, colorize=TRUE, main = "ROC Curve")
+abline(0, 1, col = "red", lty = 2)
+
+auc <- performance(pred2, "auc")@y.values[[1]]
+auc # AUC = 0.9391026
+
+```
+
+# **Part I: Research Question**
+
+**A1.** Can KNN determine which factors are most strongly associated with customer churn, and how accurately can it do so?\
+**A2.**  The goal is to use KNN to predict customer churn and discover how effective KNN is at predicting customer churn.
+
+# **Part II: Method Justification**
+
+**B1:** KNN analyzes the dataset by finding the k-nearest neighbors, based on a method like euclidean distance **(GeeksforGeeks, nd)**, and classifying a new data point based on the majority of those nearest neighbors. The expected outcome of this analysis is to identify customers who are likely to churn based on their similarities to other customers.
+
+**B2:** KNN assumes that data contained in the data set are in closes proximity to other data points that are similar **(Towards Data Science, 2018)**. In other words, similar customers have similar churn outcomes.
+
+**B3:** The following libraries were used to complete this analysis.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+library(tidyverse) # Used for data wrangling
+library(caret) # Used for building the KNN model (train function),cross-validation (trainControl), and evaluating performance with the (confusionMatrix).
+library(ROCR) # Evaluating model performance with ROC and AUC
+
+```
+
+***Tidyverse*** was used for general data wrangling. I used tidyverse for converting variables to other data types (factor, int, and numeric), and removing variables I was not going to use in the analysis by subsetting the dataset with the `!` (not operator).
+
+***Caret*** was maybe the most used library. It was used for tasks involved in training the model like `trainControl()` for cross validation, in this case a 10 fold cross validation that was repeated 3 times to evaluate the models performance. Further training was completed with the `train()` function. The train function in caret allowed me to find and select the best K value as well as to use "center" and "scale" to standardize the data. Caret allowed me to evaluate the models performance and make predictions. I was able to generate predictions for the test data with the `predict()` function within caret. Lastly, I was able to evaluate the models performance by creating a confusion matrix using `confusionMatrix()`. This function let me evaluate the sensitivity, specificity, accuracy, and several other measures.
+
+***ROCR*** was used to evaluate and visualize the model's performance by plotting the ROC curve and calculating the AUC. I used `prediction()` to create an object '*perf*' to evaluate the model's performance using the `performance()` function. The performance function allowed me to calculate the true positive and false positive rates, both of which are required for plotting the ROC curve. I used `plot()` to plot the model's performance with a colorized line and a red dashed line, that represents a baseline where the model would be no better than random guessing. After this I calculated the AUC using the performance function again.
+
+# **Part III: Data Preparation**
+
+**C1:** My data preparation goals were to ensure that the categorical variables, binary variables in this case, were properly encoded as numeric values (0/1) **(R is My Hammer, n.d., *Pre-Processing*)**, and the quantitative variable `Tenure` is scaled appropriately so that KNN can accurately calculate distances.
+
+**C2:** In D208 Task 2 I had created a reduced logistic regression model using Akaike Information Criterion (AIC) and backward elimination. I chose to use those same variables from the reduced logistic regression model because they all had a statistically significant p-value. The selected variables are as follows:
+
+**Categorical Variables (Binary Factor):**
+
+`Churn` (Dependent variable), `Techie`, `Contract`, `InternetService`, `Phone`, `Multiple`, `OnlineBackup`, `DeviceProtection`, `StreamingTV`, `StreamingMovies` and, `PaymentMethod`
+
+**Quantitative variable:**
+
+`Tenure` (Numeric)
+
+**C3:** To ensure the model interprets categorical variables correctly, I converted all binary categorical variables to factors with levels `0` and `1` for "No", and "Yes." Additionally, I ensured that `Tenure` is numeric because a tenure of 30 months should be more similar to 35 months than 10 months. Because of this it is essential that tenure is numeric. Next I removed all the variables that I was not going to use by selecting only the variables that were included in my reduced model in D208. Lastly, I standardized the data because KNN is based on distance calculations and a large tenure could dominate the distance calculation. In my code below the standardization (z-score standardization), in which each of the variables have a mean of 0 and a standard deviation of 1 **(Buya, 2023)**, is accomplished with the line `preProcess = c("center", "scale")`.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+
+# Convert Qualatative Columns to Factors -------------------------------------------------------------
+churn <- churn %>%
+  mutate_at(vars(Churn,
+                 Techie,
+                 Contract,
+                 InternetService,
+                 Phone,
+                 Multiple,
+                 OnlineBackup,
+                 DeviceProtection,
+                 StreamingTV,
+                 StreamingMovies,
+                 PaymentMethod
+  ),
+  as.factor)
+
+
+# Conver Tenure to Numeric ---------------------------------------------------------------------------
+churn$Tenure <- as.numeric(churn$Tenure)
+
+
+#Removing variables im not going to use. This list is based on the reduced model from D208 -----------
+churn <- churn %>%
+  select(Churn, Techie, Contract, InternetService, Phone, Multiple, OnlineBackup,
+         DeviceProtection, StreamingTV, StreamingMovies, PaymentMethod, Tenure)
+
+
+#My reduced model from D208, and Z-score standardization ---------------------------------------------
+
+fit <- train(Churn ~ Techie + Contract + InternetService + Phone + 
+               Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+               StreamingMovies + PaymentMethod + Tenure,
+             data = training,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = trControl,
+             preProcess = c("center", "scale")) # Z-score standardization 
+```
+
+**C4:** The cleaned data set will be included in my submission files and will be named `CLEANED_churn.csv`.
+
+# **Part IV: Analysis**
+
+**D1:** I split the data into training and test data with an 80/20 split.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+
+set.seed(1234)
+ind <- sample(2, nrow(churn), replace = T, prob = c(.8, .2)) #80/20 split
+
+training <- churn[ind == 1,]
+test <- churn[ind == 2,]
+```
+
+**D2:** I used KNN to predict customer churn based on factors like `Techie`, `Contract`, `InternetService`, `Phone`, `Multiple`, `OnlineBackup`, `DeviceProtection`, `StreamingTV`, `StreamingMovies` and, `PaymentMethod`. To improve accuracy I applied cross validation with the `method="repeatedcv"`. This 10 fold cross validation process is repeated 3 times.
+
+Before training, I standardized the data using `preProcess = c("center", "scale")`. This ensures that any particular values does not dominate the distance measurements the KNN relies on. I then trained the model and testing it on new data, checking how well it predicted churn using a confusion matrix.
+
+To further evaluate the model I created a ROC curve, which shows how well the model distinguishes between customers who churn and those who do not. Along with the ROC, I also calculated the AUC to confirm the model's performance.
+
+**D3:** The code used explained in section D2 is provided below.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+trControl <- trainControl(method = "repeatedcv",
+                          number = 10,
+                          repeats = 3)
+set.seed(222)
+
+#My reduced model from D208
+fit <- train(Churn ~ Techie + Contract + InternetService + Phone + 
+               Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+               StreamingMovies + PaymentMethod + Tenure,
+             data = training,
+             method = 'knn',
+             tuneLength = 20,
+             trControl = trControl,
+             preProcess = c("center", "scale"))
+
+#model performance
+fit
+
+plot(fit)
+
+pred <- predict(fit, newdata = test)
+head(pred)
+table(pred)
+
+confusionMatrix(pred, test$Churn)
+
+# ROC and AUC -------------------------------------------------------------
+#Checking the ROC curve. Hoping to see a curve that hugs the top left corner
+
+p1 <- predict(fit, test, type = 'prob')[,2]
+
+pred2 <- prediction(p1, test$Churn)
+
+perf <- performance(pred2, "tpr", "fpr")
+
+plot(perf, colorize=TRUE, main = "ROC Curve")
+abline(0, 1, col = "red", lty = 2)
+
+auc <- performance(pred2, "auc")@y.values[[1]]
+auc # AUC = 0.9391026
+```
+
+# **Part V: Data Summary and Implications**
+
+**E1:** AUC ranges from 0.5 - 1. Values close to 1 indicates that the model is accurately separating churned and non-churned customers. In this case, the AUC score is 0.939 meaning that the model has a strong ability to rank customers based on their likelihood of churning.
+
+**E2.**  
+
+```{r  echo=FALSE, message=FALSE, warning=FALSE}
+confusionMatrix(pred, test$Churn)
+
+paste("AUC :", round(auc, 3))
+```
+
+This model has an accuracy of 87.01%, meaning that it can correctly predict the churn status of a custom the majority of the time. This models accuracy is better than the No Information Rate of 74.57%, meaning that it performs significantly better than if the model just predicted based on the majority class. The p-value of \< 2.2e-16 confirms that this model's predictions are not due to random chance. The sensitivity rate of this model is 95.68%, meaning that the model is very good at identifying the true negatives, or the customers who did not churn. In contrast, 61.58% (specificity) of the time, the model correctly identified the true positives, the customers who did churn.
+
+Despite the reletively low specificity, the model has balanced predictive values, meaning that in real world predictions this model does a good job correctly predicting the churn status of customers. When the model predicts a customer will not churn, it is correct 87.96% of the time (`Pos Pred Value`). Similarly, when the model predicts that a customer will churn, it is correct 82.93% of the time (`Neg Pred Value`).
+
+Considering the accuracy rate of 87.01% and the AUC score of 0.939, I can conclude that in most cases, this model will correctly predict or identify the churn status of a customer. Businesses can use this model to proactively target customers who are at risk for churn.
+
+**E3.** One limitation of this analysis is the use of mostly binary variables in the model. Since KNN works with distance measurements (euclidean distance in this case), it works best with continuous variables where the variables have a wider range of distance. But with Binary variables with only 1 or 0 as their values, the distances are shorter and lose precision. In this KNN model I have only one continuous variable, `Tenure`.
+
+E4. Based on the model's performance, the organization should focus on proactive retention strategies for at-risk customers. With 87.01% accuracy and an AUC of 0.939, the model effectively predicts churn, allowing the company to intervene early. Since it correctly identifies customers who churn 82.93% of the time, the company should use these insights to offer personalized discounts, improved support, or loyalty incentives to address the customers who are at risk of churning.
+
+# **Part VI: Demonstration**
+
+F. My panopto video link will be provided in the submission files.\
+
+**Sources**
+
+1.  **Buya, A. (2023, July)**. *The fundamentals of k-nearest neighbors: Normalization and standardization*. Medium. Retrieved from [https://medium.com/\@buyaalfariz/the-fundamentals-of-k-nearest-neighbors-normalization-and-standardization-a3e6ca616d57](https://medium.com/@buyaalfariz/the-fundamentals-of-k-nearest-neighbors-normalization-and-standardization-a3e6ca616d57)
+
+2.  **Towards Data Science. (2018, September)**. *Machine learning basics with the K-nearest neighbors algorithm*. Retrieved from https://towardsdatascience.com/machine-learning-basics-with-the-k-nearest-neighbors-algorithm-6a6e71d01761
+
+3.  **GeeksforGeeks. (n.d.)**. *K-nearest neighbours*. Retrieved from <https://www.geeksforgeeks.org/k-nearest-neighbours/#>
+
+4.  **R is My Hammer. (n.d.)**. *Pre-processing in machine learning*. Retrieved from <http://rismyhammer.com/ml/Pre-Processing.html>

@@ -9,13 +9,19 @@ editor: visual
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 options(warn = -1) #disable warning
+
 #install.packages("tidyverse")
+#install.packages("tidymodels")
+#install.packages("MASS")
+#install.packages("car")
+#install.packages("viridis")
+#install.packages("ROCR")
 
 library(tidyverse)
 library(tidymodels) 
-library(MASS) 
-library(car)
-library(viridis) # color-blind color scheme for plots
+library(MASS) # Stepwise Regression using AIC
+library(car) # Calculating VIF
+library(ROCR) # Evaluating model performance with ROC
 
 # Set wd ------------------------------------------------------------------
 setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Raw/task2')
@@ -58,22 +64,6 @@ churn <- churn %>%
                   PaperlessBilling),
                 ~ factor(. == 'Yes', levels = c(FALSE, TRUE), labels = c(0, 1))))
 
-#churn <- churn %>%
- # mutate(across(c(Churn, 
-  #                Techie, 
-   #               Port_modem, 
-    #              Tablet, 
-     #             Phone, 
-      #            Multiple,
-       #           OnlineSecurity, 
-        #          OnlineBackup, 
-         #         DeviceProtection, 
-          #        TechSupport,
-           #       StreamingTV, 
-            #      StreamingMovies, 
-             #     PaperlessBilling),
-              #  ~ as.numeric(. == 'Yes')) )
-
 
 # Convert Specific Columns to Factors
 churn <- churn %>%
@@ -92,12 +82,35 @@ churn <- churn %>%
 
 # Convert Continuous Columns to Numeric
 churn <- churn %>%
-  mutate_at(vars(Tenure, MonthlyCharge, Bandwidth_GB_Year, Outage_sec_perweek), as.numeric)
+  mutate_at(vars(Tenure, 
+                 MonthlyCharge, 
+                 Bandwidth_GB_Year, 
+                 Outage_sec_perweek), 
+            as.numeric)
 
 # Convert Columns to Integer for Count Variables
 churn <- churn %>% 
-  mutate_at(vars(Children, Age, Population, Email, Contacts, Yearly_equip_failure), as.integer)
+  mutate_at(vars(Children, 
+                 Age, 
+                 Population, 
+                 Email, 
+                 Contacts, 
+                 Yearly_equip_failure), 
+            as.integer)
 
+#renaming the survey response columns to be more intuitive
+churn <- churn %>%
+  mutate_at(vars(43:50), as.numeric) %>%
+  rename_at(vars(43:50), ~ c(
+    "Timely_response",
+    "Timely_fixes",
+    "Timely_replacements",
+    "Reliability",
+    "Options",
+    "Respectful",
+    "Courteous",
+    "Active_listening"
+  ))
 
 
 #Removing columns im not going to use
@@ -112,16 +125,8 @@ churn <- churn[, !(names(churn) %in% c("CaseOrder",
                                        "Job",
                                        "City",
                                        "State",
-                                       "Zip",
-                                       "Item1",
-                                       "Item2",
-                                       "Item3",
-                                       "Item4",
-                                       "Item5",
-                                       "Item6",
-                                       "Item7",
-                                       "Item8"
-        
+                                       "Zip"
+                                       
 ))]
 str(churn)
 ```
@@ -194,12 +199,13 @@ The univariate plots for the reduced model contain the following variables and t
 
 10. StreamingMovies
 
-11. Tenure
+11. PaymentMethod
+
+12. Tenure
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 # univariate plots --------------------------------------------------------
-
 univariate1 <- ggplot(churn, aes(x = Churn)) + 
   geom_bar(aes(fill = Churn)) + 
   ggtitle("Churn") +
@@ -273,7 +279,12 @@ univariate10 <- ggplot(churn, aes(x = StreamingMovies)) +
   ggtitle("StreamingMovies") +
   scale_fill_viridis_d()
 
-univariate11 <- ggplot(churn, aes(x = Tenure)) +
+univariate11 <- ggplot(churn, aes(x = PaymentMethod)) +
+  geom_bar(aes(fill = PaymentMethod)) +
+  ggtitle("PaymentMethod") +
+  scale_fill_viridis_d()
+
+univariate12 <- ggplot(churn, aes(x = Tenure)) +
   geom_histogram(aes(fill = ..count..), binwidth = 5) +
   ggtitle("Tenure (In Months)") +
   scale_fill_viridis_c()
@@ -281,7 +292,7 @@ univariate11 <- ggplot(churn, aes(x = Tenure)) +
 # Arrange all plots into a grid
 gridExtra::grid.arrange(
   univariate9, univariate10,
-  univariate11,
+  univariate11, univariate12,
   ncol = 2
 )
 ```
@@ -308,11 +319,12 @@ The bivariate plots for the reduced model contain the following variables and th
 
 9.  StreamingMovies vs. Churn (Bar chart)
 
-10. Tenure vs. Churn (Histogram)
+10. PaymentMethod vs. Churn (Bar chart)
+
+11. Tenure vs. Churn (Histogram)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # bivariate plots ---------------------------------------------------------
-#Techie vs Churn
 bivariate1 <- ggplot(churn, aes(x = Techie, fill = Churn)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by Techie") +
@@ -321,7 +333,6 @@ bivariate1 <- ggplot(churn, aes(x = Techie, fill = Churn)) +
   scale_fill_viridis_d(name = "Churn") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-#Contract vs Churn
 bivariate2 <- ggplot(churn, aes(x = Contract, fill = Churn)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by Contract") +
@@ -329,7 +340,6 @@ bivariate2 <- ggplot(churn, aes(x = Contract, fill = Churn)) +
   ylab("Count of Customers") +
   scale_fill_viridis_d(name = "Churn")
 
-#InternetService vs Churn
 bivariate3 <- ggplot(churn, aes(x = Churn, fill = InternetService)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by InternetService") +
@@ -337,7 +347,6 @@ bivariate3 <- ggplot(churn, aes(x = Churn, fill = InternetService)) +
   ylab("Proportion") +
   scale_fill_viridis_d(name = "InternetService")
 
-#Phone vs Churn
 bivariate4 <- ggplot(churn, aes(x = Churn, fill = Phone)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by Phone") +
@@ -356,7 +365,6 @@ gridExtra::grid.arrange(
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-#Multiple vs Churn
 bivariate5 <- ggplot(churn, aes(x = Churn, fill = Multiple)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by Multiple") +
@@ -364,7 +372,6 @@ bivariate5 <- ggplot(churn, aes(x = Churn, fill = Multiple)) +
   ylab("Proportion") +
   scale_fill_viridis_d(name = "Multiple")
 
-#OnlineBackup vs Churn
 bivariate6 <- ggplot(churn, aes(x = Churn, fill = OnlineBackup)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by OnlineBackup") +
@@ -372,7 +379,6 @@ bivariate6 <- ggplot(churn, aes(x = Churn, fill = OnlineBackup)) +
   ylab("Proportion") +
   scale_fill_viridis_d(name = "OnlineBackup")
 
-#DeviceProtection vs Churn
 bivariate7 <- ggplot(churn, aes(x = Churn, fill = DeviceProtection)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by DeviceProtection") +
@@ -380,7 +386,6 @@ bivariate7 <- ggplot(churn, aes(x = Churn, fill = DeviceProtection)) +
   ylab("Proportion") +
   scale_fill_viridis_d(name = "DeviceProtection")
 
-#StreamingTV vs Churn
 bivariate8 <- ggplot(churn, aes(x = Churn, fill = StreamingTV)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by StreamingTV") +
@@ -400,7 +405,6 @@ gridExtra::grid.arrange(
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-#StreamingMovies vs Churn
 bivariate9 <- ggplot(churn, aes(x = Churn, fill = StreamingMovies)) +
   geom_bar(position = "fill", alpha = 0.8) +
   ggtitle("Churn by StreamingMovies") +
@@ -408,8 +412,14 @@ bivariate9 <- ggplot(churn, aes(x = Churn, fill = StreamingMovies)) +
   ylab("Proportion") +
   scale_fill_viridis_d(name = "StreamingMovies")
 
-#Tenure vs Churn
-bivariate10 <- ggplot(churn, aes(x = Tenure, fill = Churn)) +
+bivariate10 <- ggplot(churn, aes(x = PaymentMethod, fill = Churn)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Payment Method") +
+  xlab("Payment Method") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "Churn")
+
+bivariate11 <- ggplot(churn, aes(x = Tenure, fill = Churn)) +
   geom_histogram(alpha = 0.7, position = "identity", bins = 20) +
   ggtitle("Churn by Tenure") +
   xlab("Tenure") +
@@ -420,6 +430,7 @@ bivariate10 <- ggplot(churn, aes(x = Tenure, fill = Churn)) +
 gridExtra::grid.arrange(
   bivariate9,
   bivariate10,
+  bivariate11,
   ncol = 2
 )
 ```
@@ -438,7 +449,7 @@ To align with my research question, binary variables, such as Churn and Techie, 
 I begin by creating a logistic regression model using `glm()` because I need to use the statistical family "binomial' for logistic regression. I based the model on the training set of data, `churn_train`.
 
 ```{r  warning=FALSE, echo=FALSE, include=FALSE}
-# The initial model -------------------------------------------------------
+# splitting the data
 
 set.seed(123)
 
@@ -451,93 +462,138 @@ churn_test <- testing(split)
 ```
 
 ```{r warning=FALSE}
+# initial model
+
 initial_model <- glm(Churn ~. , data = churn_train, family = 'binomial')
 summary(initial_model)
 ```
 
 The summary of the initial model shows that there are several variables whose coefficients do not add any statistically significant information to the model. I'll address these in the next step.
 
-The null deviance is 9251.6 on 7999 degrees of freedom, meaning that my response variable, `Churn`, shows a lot of variability without predictors and could be explained by adding predictor variables. The residual deviance of 3419.4 on 7910 degrees of freedom indicates that the predictor variables do indeed provide an effective explanation of the variability in `Churn`.
+The null deviance is 9251.6 on 7999 degrees of freedom, meaning that my response variable, `Churn`, shows a lot of variability without predictors and could be explained by adding predictor variables. The residual deviance of 3457.9 on 7953 degrees of freedom indicates that the predictor variables do indeed provide an effective explanation of the variability in `Churn`.
 
-The AIC for this model is 3599.4. I will reference this number again when comparing the reduced model.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
-plot(initial_model)
-```
+The AIC for this model is 3551.9. I will reference this number again when comparing the reduced model.
 
 **D2**. I’ve chosen to use backward stepwise selection **(Larose & Larose, 2019)**, because I have a large amount of variables and backward elimination will remove each insignificant variable until only those values that have a meaningful contribution will remain.
 
-**D3**. After backward elimination I was left with the following model.
+**D3**. After backward elimination I was left with the following model. However, this model will be refined further in the coming steps.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 reduced_model <- stepAIC(object = initial_model, direction = "backward", trace = FALSE)
 summary(reduced_model)
-
 ```
 
 I checked for multicoliniarity using `vif()` by checking for values above 5. This model returned a few that were exceptionally high. `Bandwidth_GB_Year` was the highest with a vif value of 2656.593644. I manually removed this variable from the model and checked vif again to find that the other variables were less than 5 aside from `MonthlyCharge` whose value was 16.889045. Once these two variables were removed from the model all the vif values were under 5.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 
 vif_values <- vif(reduced_model)
-vif_values #Looking for VIF values above 5. 
+vif_values #Looking for VIF values above 10.
 
-# Removed Bandwidth_GB_Year because of a VIF of 2656.593644 and MonthlyCharge with 16.889045
-reduced_model <- glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
-                       Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
-                       StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
-                       Tenure, family = "binomial", 
-                     data = churn_train)
+
+reduced_model <- update(reduced_model, . ~ . - Bandwidth_GB_Year)
+
+vif_values <- vif(reduced_model)
+vif_values #Looking for VIF values above 10.
+
+reduced_model <- update(reduced_model, . ~ . - MonthlyCharge)
+
+vif_values <- vif(reduced_model)
+vif_values #Looking for VIF values above 10.
 
 summary(reduced_model)
 ```
 
-Lastly I needed to remove the variables from the model that were not adding any value. `Children`, `Age`, `PaperlessBilling1`, and `OnlineSecurity1` all have coefficients that were not statistically significant. The following is the reduced model.
+Lastly I needed to remove the variables from the model that were not adding any value. `Age`, `Children`, `OnlineSecurity`, and `PaperlessBilling` all have coefficients that were not statistically significant. `PaymentMethod` had two dummy variables that had coefficients that were not statistically significant and one that was very highly significant at the 0.001 level. So `PaymentMethod` was retained in the reduced model due to the high significance of one of the dummy variables within the `PaymentMethod` variable. The following is the reduced model.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 
 # Removed values that did not have a statistically significant coefficient
-reduced_model <- glm(formula = Churn ~ Techie + Contract + InternetService + 
-                       Phone + Multiple + OnlineBackup + DeviceProtection + 
-                       StreamingTV + StreamingMovies + PaymentMethod + 
-                       Tenure, family = "binomial", 
-                     data = churn_train)
+
+#
+reduced_model <- update(reduced_model, . ~ . - Age)
 summary(reduced_model)
 
+reduced_model <- update(reduced_model, . ~ . - Children)
+summary(reduced_model)
+
+reduced_model <- update(reduced_model, . ~ . - OnlineSecurity)
+summary(reduced_model)
+
+reduced_model <- update(reduced_model, . ~ . - PaperlessBilling)
+summary(reduced_model)
+```
+
+The coefficients in the reduced model include variables whose coefficients are statistically significant at the 0.001 level. `Phone1` was kept because it showed a very minor significance, 0.1, but because of the vast number of variables that had no significance in the initial model I decided to keep `Phone1`.
+
+**Plots for the initial model**
+
+```{r}
+par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
+plot(initial_model)
+```
+
+**Plots for the reduced model**
+
+```{r}
 par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
 plot(reduced_model)
 ```
 
-The coefficients in the reduced model include variables whose coefficient is statistically significant at the 0.001 level. `Phone1` was kept because it showed a very minor significance, 0.1, but because of the vast number of variables that had no significance I decided to keep `Phone1`. `PaymentMethodCredit Card (automatic)` and `PaymentMethodMaild Check` were also kept in the model despite having an insignificant coefficient value. These dummy variables were retained because `PaymentMethod` is the variable and these 2 mentioned above are 2 of the levels. Because `PaymentMethodMailed Check` has a high significance at 0.001 I have decided to keep the variable `PaymentMethod` in the model.
+**E1**.  The AIC was used as one of the model evaluation metrics. The AIC for the initial model was **3551.914**, while the AIC for the reduced model was **3598.617**. The reduced model, having a higher AIC value, suggests that the model fits the data worse than the initial model. However, This is expected since the reduced model uses far fewer predictor variables.
 
-**E1**.  The AIC was used as one of the model evaluation metrics. The AIC for the initial model was **3599.4**, while the AIC for the reduced model was **3598.6**. The reduced model, having a lower AIC value, suggests that the model fits the data well while using far fewer predictors.
+```{r message=FALSE, warning=FALSE}
+AIC(initial_model) # AIC = 3551.914
+AIC(reduced_model) # AIC = 3598.617
+```
 
 Another metric used is a chi square test on the initial model and the reduced model. The chi square test will determine if the reduced model (simpler model) fits the data significantly worse than the initial model (complex model).
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 
 anova(initial_model, reduced_model, "Chaisq")
 ```
 
-The Chi-square test indicates that the reduced model has more residual degrees of freedom because it includes fewer predictors. However, the reduced model has a higher residual deviance, meaning it fits the data worse than the initial model. This is expected since eliminating predictors generally reduces the model's ability to explain the variance in the data. The difference in deviance between the models is -147.17, which confirms that the reduced model explains less variance than the initial model. Again, this is anticipated because fewer predictors are included.
+The Chi-square test indicates that the reduced model has more residual degrees of freedom because it includes fewer predictors. However, the reduced model has a higher residual deviance, meaning it fits the data worse than the initial model. This is expected since eliminating predictors generally reduces the model's ability to explain the variance in the data. The difference in deviance between the models is -108.7, which confirms that the reduced model explains less variance than the initial model. Again, this is anticipated because fewer predictors are included.
 
-The p-value for the Chi-square test is 9.088e-07, which is far smaller than the significance threshold of 0.05. This indicates that the difference in deviance between the two models is statistically significant, meaning the initial model fits the data significantly better than the reduced model.
+The p-value for the Chi-square test is 1.453e-10, which is far smaller than the significance threshold of 0.05. This indicates that the difference in deviance between the two models is statistically significant, meaning the initial model fits the data significantly better than the reduced model.
 
-However, the AIC for the reduced model is slightly smaller than that of the initial model, suggesting that the reduced model achieves a similar predictive power. In the next section, I will provide a detailed analysis of the reduced model's accuracy, but for now, it is worth noting that the reduced model predicts churn correctly 90.375% of the time.
+In addition, the Akaike Information Criterion (AIC) for both models is similar with the reduced model being slightly higher. This indicates that the initial model maintains a better balance between model fit and complexity. The reduced model, however, has far fewer predictors making it a simpler but robust model. In the next section, I will provide a detailed analysis of the reduced model's accuracy, but for now, it is worth noting that the reduced model predicts churn correctly 90.25% of the time.
 
-To summarize the comparison, while the initial model fits the data better, it is also far more complex. The reduced model, on the other hand, achieves similar predictive power (\>90% accuracy) with fewer predictors, demonstrating one of the benefits of simpler models: reduced data collection costs.
+Another model evaluation metric used in this analysis is the Receiver Operation Characteristic curve (ROC). The ROC curve shows the trade off between the 'True Positive Rate' and the 'False Positive Rate'. A model with good performance will have a blue line that hugs the top left of the graph.\
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+p1 <- predict(reduced_model, churn_train, type='response')
+p2 <- predict(reduced_model, churn_test, type = 'response')
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#Checking the ROC curve. Hoping to see a curve that hugs the top left corner 
+pred <- prediction(p2, churn_test$Churn)
+perf <- performance(pred, "tpr", "fpr")
+plot(perf, col = "blue", main = "ROC Curve")
+abline(0, 1, col = "red", lty = 2)
+```
+
+The 'Area Under the Curve' (AUC) measures the area under the ROC curve. A perfect model would have an AUC value of 1, indicating that the model can perfectly distinguish between positive and negative classes. A low AUC value suggests that the model struggles to differentiate between true positive and false positive rates, meaning it may not reliably predict which customers will churn, leading to poor discrimination and potentially higher rates of false positives.
+
+```{r message=FALSE, warning=FALSE}
+
+auc <- performance(pred, "auc")@y.values[[1]]
+auc # AUC = 0.9586676auc <- performance(pred, "auc")@y.values[[1]]
+```
+
+To summarize the comparison, while the initial model fits the data better, it is also far more complex. The reduced model, on the other hand, achieves similar predictive power (\>90% accuracy) with fewer predictors, demonstrating one of the benefits of simpler models: reduced data collection costs. Additionally, the AUC is very close to 1 (`0.9586676`) meaning that the model has an excellent ability to distinguish between churned customers and non-churned customers.
 
 **E2**. 
 
 I used the `predict()` function to predict the probabilities of churn in both the training set and the test set. If the probability is above 0.5, the `ifelse()` function assigns a '1', indicating that the predicted value is 'Churned,' and a '0' for 'Not Churned.'
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# predict -----------------------------------------------------------------
 p1 <- predict(reduced_model, churn_train, type='response')
 p2 <- predict(reduced_model, churn_test, type = 'response')
-
-# confusion matrix --------------------------------------------------------
 
 pred1 <- ifelse(p1 > 0.5, 1, 0) #if p1 is greater than 0.5 then return 1 else 0
 pred2 <- ifelse(p2 > 0.5, 1,0)
@@ -545,41 +601,49 @@ pred2 <- ifelse(p2 > 0.5, 1,0)
 
 I've included the confusion matrix for both the test set and the training set below. This confusion matrix evaluates the model's predictions for churn and consists of true negatives, false negatives, false positives, and true positives. By adding up the accurate predictions (true negatives and true positives) and dividing by the total observations in the data set, I calculate the accuracy rate. Similarly, the misclassification rate is calculated as `1− 'Accuracy rate'`.
 
-For the training set (`churn_train`), the model accurately predicted churn 7,103 times out of a total of 8,000 observations, resulting in an accuracy rate of 90.375%. `1−0.90375=0.0965` Thus, the misclassification error, or the rate at which the model is incorrect, is 9.65%.
+For the test set (`churn_test`), the model accurately predicted churn 1805 times out of a total of 2000 observations `(1389+416)/2000 = 0.9025`, resulting in an accuracy rate of 90.25%. Therefore, the misclassification error, or the rate at which the model is incorrect, is 9.75%, `1−0.9025=0.0975`.
 
-For the training set (`churn_test`), the model accurately predicted churn 1765 times out of a total of 2,000 observations, resulting in an accuracy rate of 90.25%. `1−0.9025=0.0975` therefore, the misclassification error for the test set is 9.65%.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
+#Training set --------------------------------------------------------
 table(Predicted = pred1, Actual = churn_train$Churn) #confusion matrix
-# (5401+1702)/8000 = 0.90375 model is 90.375% accurate
-# 1 - 0.90375 = 0.0965 misclassification error. 9.65% of the time the prediction is wrong
 
+train_accuracy <- (5528+1702)/8000
+train_misclassification <- 1 - train_accuracy
+
+train_accuracy*100 #model is 90.375% accurate
+train_misclassification*100 #9.625% of the time the prediction is wrong
+
+#Test set -------------------------------------------------------------
 table(Predicted = pred2, Actual = churn_test$Churn) #confusion matrix
-# (1349+416)/2000 = 0.9025 The model is 90.25% accurate in its predictions
-# 1 - 0.9025 = 0.975 misclassification error. 9.75% of the time the prediction is wrong 
 
-#Both models are similar in accuracy and misclassification
+test_accuracy <- (1389+416)/2000
+test_misclassification <- 1 - test_accuracy
+
+test_accuracy*100 #model is 90.25% accurate
+test_misclassification*100 #9.75% of the time the prediction is wrong
 ```
 
-**E3**.  The full error-free code will be included in my submission files. It will be titled ***CodeV1T2.R***.\
+**E3**.  The full error-free code will be included in my submission files. It will be titled ***CodeV2T2.R***.\
  
 
 ## **Part V: Data Summary and Implications**
 
 **F1**.
 
+**The reduced model formula:**
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-reduced_model <- glm(formula = Churn ~ Techie + Contract + InternetService + 
-                       Phone + Multiple + OnlineBackup + DeviceProtection + 
-                       StreamingTV + StreamingMovies + PaymentMethod + 
-                       Tenure, family = "binomial", 
-                     data = churn_train)
+reduced_model <- glm(formula = Churn ~ Techie + Contract + InternetService + Phone + 
+    Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+    StreamingMovies + PaymentMethod + Tenure, family = "binomial", 
+    data = churn_train)
+
 summary(reduced_model)
 ```
 
 Several variables show a strong and significant association with churn. The variable with the most notable positive association is `StreamingMovies1` having an coefficient of 3.48437, which means that, holding all other variables constant, subscribing to `StreamingMovies` (increasing the predictor variable by 1) increases the log-odds of churn by 3.48437.
 
-To convert the log odds into odds I will get the exponentiated coefficients from the reduced model. (**RStudio, n.d.)**
+log-odds are not as easy to understand as odds ratios so I will convert the log-odds into odds ratios by exponentiating coefficients from the reduced model. (**RStudio, n.d.)**
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Exponentiate the coefficients to get the odds ratios
@@ -588,15 +652,15 @@ odds_ratios <- exp(coef(reduced_model))
 odds_ratios
 ```
 
-The odds of churn are **32.60** times higher for customers with `StreamingMovies` services. similarly, `StreamingTV1` and `Multiple1` have 18.96 and 5.17 respectively, times higher odds of churning. Likewise, when a customer is a Techie (`Techie1`), the odds of churn are 2.993794507 times higher than non-techie customers.
+The odds of churn are **32.60** times higher for customers with `StreamingMovies` services. similarly, `StreamingTV1` and `Multiple1` have 18.96 and 5.17 respectively, times higher odds of churning. Likewise, when a customer identifies themselves as a `Techie` (`Techie1`), the odds of this customer churning are 2.99 times higher than 'non-techie' customers.
 
-This model contains almost exclusively, variables whose statistical significance is 0.001. one variable has a 0.1 significance and two other dummy variables are not statistically significant but could not be removed because they are just part of a variable that does include a very statistically significant coefficient.
+This model contains almost exclusively, variables whose statistical significance is 0.001. one variable has a 0.1 significance and two other dummy variables are not statistically significant but could not be removed because they are part of a variable that does include a very statistically significant coefficient and I decided to retain this variable.
 
-This reduced model successfully predicts customer churn at a rate over 90%. Statistically, variables such as `Techie`, `Contract`, `InternetService`, `Multiple`, `StreamingTV`, `StreamingMovies`, and `Tenure` are highly significant, with p-values below 0.05. For instance, customers with `StreamingMovies1` or `StreamingTV1` are significantly more likely to churn, while longer contracts decreases the likelihood of churn. The model successfully reduces the number of variables making the model simpler and does not sacrafice fit or performance. Practically, these findings can offer meaningful insights since the company can accurately predict is a if a specific customer is going to churn or not.
+This reduced model successfully predicts customer churn at a rate over 90%. Statistically, variables such as `Techie`, `Contract`, `InternetService`, `Multiple`, `StreamingTV`, `StreamingMovies`, and `Tenure` are highly significant, with p-values below 0.05. For instance, customers with `StreamingMovies1` or `StreamingTV1` are significantly more likely to churn, while longer contracts decreases the likelihood of churn. The model successfully reduces the number of variables making the model simpler. Practically, these findings can offer meaningful insights since the company can accurately predict if a specific customer is going to churn or not.
 
-It is important to remember that correlation does not equal causation. For example, just because customers with a two year contract has far lower odds of churn as compared to a customer on the month to month contract, that does not mean that the contract length is the cause of the churn odds. There may be other factors that are not provided in the data set that are the actual cause of the lower odds.
+It is important to note that correlation does not equal causation. For example, just because customers with a two year contract has far lower odds of churn as compared to a customer on the month to month contract, that does not mean that the contract length is the cause of the churn odds. There may be other factors that are not provided in the data set that are the actual cause of the lower odds. That being said, we can still accurately predict that customers with longer contracts are less likely to churn.
 
-**F2**. The company should focus on longer `contracts`, specifically one or two year contracts, `InternetServiceFiber Optic` and `phone` services. These variables have the greatest effect on increasing customer churn. While I can not say that any of these variables are the cause of the customer not churning, the customers who subscribe to these services have far lower odds of churning than customers who do not subscribe. It also appears that streaming services are having a detrimental effect on customer churn. The company should investigate this further by collecting survey data that captures customer satisfaction. `StreamingTV` and `StreamingMovies` are the two most detrimental services to the company and should be investigated further.\
+**F2**. The company should focus on longer `contracts`, specifically one or two year contracts, `InternetService None`, and `InternetServiceFiber Optic` services. These variables have the greatest effect on increasing customer churn. While I can not say that any of these variables are the cause of the customer not churning, the customers who subscribe to these services have far lower odds of churning than customers who do not subscribe. It also appears that streaming services are having a detrimental effect on customer churn. The company should investigate this further by collecting survey data that captures customer satisfaction. `StreamingTV` and `StreamingMovies` are the two most detrimental services to the company and should be investigated further.\
  
 
 ## **Part VI: Demonstration**
