@@ -80,32 +80,41 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>B1:</strong> KNN analyzes the dataset by finding the k-nearest neighbors, based on a method like euclidean distance <strong>(GeeksforGeeks, nd)</strong>, and classifying a new data point based on the majority of those nearest neighbors. The expected outcome of this analysis is to identify customers who are likely to churn based on their similarities to other customers.</p>
 <p><strong>B2:</strong> KNN assumes that data contained in the data set are in closes proximity to other data points that are similar <strong>(Towards Data Science, 2018)</strong>. In other words, similar customers have similar churn outcomes.</p>
 <p><strong>B3:</strong> The following libraries were used to complete this analysis.</p>
-<p><strong><em>Tidyverse</em></strong> was used for general data wrangling. I used tidyverse for converting variables to other data types (factor, int, and numeric), and removing variables I was not going to use in the analysis by subsetting the dataset with the <code>!</code> (not operator).</p>
+<p><strong><em>Tidyverse</em></strong> was used for general data wrangling. I also used tidyverse for converting variables to other data types (factor, int, and numeric).</p>
 <p><strong><em>Caret</em></strong> was maybe the most used library. It was used for tasks involved in training the model like <code>trainControl()</code> for cross validation, in this case a 10 fold cross validation that was repeated 3 times to evaluate the models performance. Further training was completed with the <code>train()</code> function. The train function in caret allowed me to find and select the best K value as well as to use “center” and “scale” to standardize the data. Caret allowed me to evaluate the models performance and make predictions. I was able to generate predictions for the test data with the <code>predict()</code> function within caret. Lastly, I was able to evaluate the models performance by creating a confusion matrix using <code>confusionMatrix()</code>. This function let me evaluate the sensitivity, specificity, accuracy, and several other measures.</p>
 <p><strong><em>ROCR</em></strong> was used to evaluate and visualize the model’s performance by plotting the ROC curve and calculating the AUC. I used <code>prediction()</code> to create an object ‘<em>perf</em>’ to evaluate the model’s performance using the <code>performance()</code> function. The performance function allowed me to calculate the true positive and false positive rates, both of which are required for plotting the ROC curve. I used <code>plot()</code> to plot the model’s performance with a colorized line and a red dashed line, that represents a baseline where the model would be no better than random guessing. After this I calculated the AUC using the performance function again.</p>
 </section>
 <section id="part-iii-data-preparation" class="level1">
 <h1><strong>Part III: Data Preparation</strong></h1>
-<p><strong>C1:</strong> My data preparation goals were to ensure that the categorical variables, binary variables in this case, were properly encoded as numeric values (0/1) <strong>(R is My Hammer, n.d., <em>Pre-Processing</em>)</strong>, and the quantitative variable <code>Tenure</code> is scaled appropriately so that KNN can accurately calculate distances.</p>
+<p><strong>C1:</strong> My data preparation goals were to ensure that the categorical variables were properly encoded as numeric values (0/1) <strong>(R is My Hammer, n.d., <em>Pre-Processing</em>)</strong>, and the quantitative variable <code>Tenure</code> is scaled appropriately so that KNN can accurately calculate distances. There are also some categorical variables that have multiple unique values that needed to be encoded into dummy variables. I did this using one-hot encoding.</p>
 <p><strong>C2:</strong> In D208 Task 2 I had created a reduced logistic regression model using Akaike Information Criterion (AIC) and backward elimination. I chose to use those same variables from the reduced logistic regression model because they all had a statistically significant p-value. The selected variables are as follows:</p>
-<p><strong>Categorical Variables (Binary Factor):</strong></p>
+<p><strong>Categorical Variables:</strong></p>
 <p><code>Churn</code> (Dependent variable), <code>Techie</code>, <code>Contract</code>, <code>InternetService</code>, <code>Phone</code>, <code>Multiple</code>, <code>OnlineBackup</code>, <code>DeviceProtection</code>, <code>StreamingTV</code>, <code>StreamingMovies</code> and, <code>PaymentMethod</code></p>
 <p><strong>Quantitative variable:</strong></p>
 <p><code>Tenure</code> (Numeric)</p>
-<p><strong>C3:</strong> To ensure the model interprets categorical variables correctly, I converted all binary categorical variables to factors with levels <code>0</code> and <code>1</code> for “No”, and “Yes.” Additionally, I ensured that <code>Tenure</code> is numeric because a tenure of 30 months should be more similar to 35 months than 10 months. Because of this it is essential that tenure is numeric. Next I removed all the variables that I was not going to use by selecting only the variables that were included in my reduced model in D208. Lastly, I standardized the data because KNN is based on distance calculations and a large tenure could dominate the distance calculation. In my code below the standardization (z-score standardization), in which each of the variables have a mean of 0 and a standard deviation of 1 <strong>(Buya, 2023)</strong>, is accomplished with the line <code>preProcess = c("center", "scale")</code>.</p>
+<p><strong>C3:</strong> I began by removing all the variables that I was not going to use by selecting only the variables that were included in my reduced model in D208. To ensure the model interprets categorical variables correctly, I converted all binary categorical variables to factors with levels <code>0</code> and <code>1</code> for “No”, and “Yes.” Then I created dummy variables for the categorical variables that had multiple categories. Additionally, I ensured that <code>Tenure</code> is numeric because a tenure of 30 months should be more similar to 35 months than 10 months. Because of this it is essential that tenure is numeric. Lastly, I standardized the data because KNN is based on distance calculations and a large tenure could dominate the distance calculation. In my code below the standardization (z-score standardization), in which each of the variables have a mean of 0 and a standard deviation of 1 <strong>(Buya, 2023)</strong>, is accomplished with the line <code>churn$Tenure &lt;- as.numeric(scale(churn$Tenure))</code>. <code>Scale()</code> will return a matrix by default so I ensured that it is converted to numeric after scaling.</p>
 <p><strong>C4:</strong> The cleaned data set will be included in my submission files and will be named <code>CLEANED_churn.csv</code>.</p>
 </section>
 <section id="part-iv-analysis" class="level1">
 <h1><strong>Part IV: Analysis</strong></h1>
 <p><strong>D1:</strong> I split the data into training and test data with an 80/20 split.</p>
 <p><strong>D2:</strong>&nbsp;I used KNN to predict customer churn based on factors like <code>Techie</code>, <code>Contract</code>, <code>InternetService</code>, <code>Phone</code>, <code>Multiple</code>, <code>OnlineBackup</code>, <code>DeviceProtection</code>, <code>StreamingTV</code>, <code>StreamingMovies</code> and, <code>PaymentMethod</code>. To improve accuracy I applied cross validation with the <code>method="repeatedcv"</code>. This 10 fold cross validation process is repeated 3 times.</p>
-<p>Before training, I standardized the data using <code>preProcess = c("center", "scale")</code>. This ensures that any particular values does not dominate the distance measurements the KNN relies on. I then trained the model and testing it on new data, checking how well it predicted churn using a confusion matrix.</p>
+<p>Before training, I standardized the quantitative variable using <code>churn$Tenure &lt;- as.numeric(scale(churn$Tenure))</code>. This ensures that this particular values does not dominate the distance measurements the KNN relies on because the other variables are all binary at this point. I used the <code>predict()</code> function to make predictions using new data stored in the training set.</p>
 <p>To further evaluate the model I created a ROC curve, which shows how well the model distinguishes between customers who churn and those who do not. Along with the ROC, I also calculated the AUC to confirm the model’s performance.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="D209_Task1_V1_Writeup_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 <p><strong>D3:</strong>&nbsp;The code used explained in section D2 is provided below.</p>
 </section>
 <section id="part-v-data-summary-and-implications" class="level1">
 <h1><strong>Part V: Data Summary and Implications</strong></h1>
-<p><strong>E1:</strong> AUC ranges from 0.5 - 1. Values close to 1 indicates that the model is accurately separating churned and non-churned customers. In this case, the AUC score is 0.939 meaning that the model has a strong ability to rank customers based on their likelihood of churning.</p>
+<p><strong>E1:</strong> AUC ranges from 0.5 - 1. Values close to 1 indicates that the model is accurately separating churned and non-churned customers. In this case, the AUC score is 0.9422046 meaning that the model has a strong ability to rank customers based on their likelihood of churning.</p>
 <p><strong>E2.</strong> &nbsp;</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
@@ -113,39 +122,39 @@ ul.task-list li input[type="checkbox"] {
 
           Reference
 Prediction   No  Yes
-       No  1417  194
-       Yes   64  311
+       No  1382  140
+       Yes   99  365
                                           
-               Accuracy : 0.8701          
-                 95% CI : (0.8545, 0.8846)
+               Accuracy : 0.8797          
+                 95% CI : (0.8645, 0.8937)
     No Information Rate : 0.7457          
     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
                                           
-                  Kappa : 0.6257          
+                  Kappa : 0.674           
                                           
- Mcnemar's Test P-Value : 9.653e-16       
+ Mcnemar's Test P-Value : 0.009671        
                                           
-            Sensitivity : 0.9568          
-            Specificity : 0.6158          
-         Pos Pred Value : 0.8796          
-         Neg Pred Value : 0.8293          
+            Sensitivity : 0.9332          
+            Specificity : 0.7228          
+         Pos Pred Value : 0.9080          
+         Neg Pred Value : 0.7866          
              Prevalence : 0.7457          
-         Detection Rate : 0.7135          
-   Detection Prevalence : 0.8112          
-      Balanced Accuracy : 0.7863          
+         Detection Rate : 0.6959          
+   Detection Prevalence : 0.7664          
+      Balanced Accuracy : 0.8280          
                                           
        'Positive' Class : No              
                                           </code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "AUC : 0.939"</code></pre>
+<pre><code>[1] "AUC : 0.943"</code></pre>
 </div>
 </div>
-<p>This model has an accuracy of 87.01%, meaning that it can correctly predict the churn status of a custom the majority of the time. This models accuracy is better than the No Information Rate of 74.57%, meaning that it performs significantly better than if the model just predicted based on the majority class. The p-value of &lt; 2.2e-16 confirms that this model’s predictions are not due to random chance. The sensitivity rate of this model is 95.68%, meaning that the model is very good at identifying the true negatives, or the customers who did not churn. In contrast, 61.58% (specificity) of the time, the model correctly identified the true positives, the customers who did churn.</p>
-<p>Despite the reletively low specificity, the model has balanced predictive values, meaning that in real world predictions this model does a good job correctly predicting the churn status of customers. When the model predicts a customer will not churn, it is correct 87.96% of the time (<code>Pos Pred Value</code>). Similarly, when the model predicts that a customer will churn, it is correct 82.93% of the time (<code>Neg Pred Value</code>).</p>
-<p>Considering the accuracy rate of 87.01% and the AUC score of 0.939, I can conclude that in most cases, this model will correctly predict or identify the churn status of a customer. Businesses can use this model to proactively target customers who are at risk for churn.</p>
-<p><strong>E3.</strong>&nbsp;One limitation of this analysis is the use of mostly binary variables in the model. Since KNN works with distance measurements (euclidean distance in this case), it works best with continuous variables where the variables have a wider range of distance. But with Binary variables with only 1 or 0 as their values, the distances are shorter and lose precision. In this KNN model I have only one continuous variable, <code>Tenure</code>.</p>
-<p>E4. Based on the model’s performance, the organization should focus on proactive retention strategies for at-risk customers. With 87.01% accuracy and an AUC of 0.939, the model effectively predicts churn, allowing the company to intervene early. Since it correctly identifies customers who churn 82.93% of the time, the company should use these insights to offer personalized discounts, improved support, or loyalty incentives to address the customers who are at risk of churning.</p>
+<p>This model has an accuracy of 87.97%, meaning that it can correctly predict the churn status of a custom the majority of the time. This models accuracy is better than the No Information Rate of 74.57%, meaning that it performs significantly better than if the model just predicted based on the majority class. The p-value of &lt; 2.2e-16 confirms that this model’s predictions are not due to random chance. The sensitivity rate of this model is 93.32%, meaning that the model is very good at identifying the true negatives, or the customers who did not churn. In contrast, 72.28% (specificity) of the time, the model correctly identified the true positives, the customers who did churn.</p>
+<p>Despite the relatively low specificity, the model has balanced predictive values, meaning that in real world predictions this model does a good job correctly predicting the churn status of customers. When the model predicts a customer will not churn, it is correct 90.80% of the time (<code>Pos Pred Value</code>). Similarly, when the model predicts that a customer will churn, it is correct 78.66% of the time (<code>Neg Pred Value</code>).</p>
+<p>Considering the accuracy rate of 87.97% and the AUC score of 0.9422046, I can conclude that in the majority of cases, this model will correctly predict or identify the churn status of a customer. Businesses can use this model to proactively target customers who are at risk for churn.</p>
+<p><strong>E3.</strong>&nbsp;One limitation of this analysis is the use of mostly binary variables in the model. Since KNN works with distance measurements (euclidean distance in this case), it works best with continuous variables where the variables have a wider range of distance. But with Binary variables with only 1 or 0 as their values, the distances are shorter and lose precision. In this KNN model I have only one continuous variable, <code>Tenure</code>, and the rest are binary.</p>
+<p><strong>E4.</strong> Based on the model’s performance, the organization should focus on proactive retention strategies for at-risk customers. With 87.97% and the AUC score of 0.9422046, the model effectively predicts churn, allowing the company to intervene early. Since it correctly identifies customers who churn 72.28% of the time, the company should use these insights to offer personalized discounts, improved support, or loyalty incentives to address the customers who are at risk of churning.</p>
 </section>
 <section id="part-vi-demonstration" class="level1">
 <h1><strong>Part VI: Demonstration</strong></h1>
