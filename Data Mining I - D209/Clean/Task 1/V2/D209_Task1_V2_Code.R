@@ -1,3 +1,5 @@
+#Student ID: 012170282
+
 #install.packages("tidyverse")
 #install.packages("tidymodels")
 library(caret) # Used for building the KNN model (train function), performing cross-validation (trainControl), and evaluating performance (confusionMatrix).
@@ -19,7 +21,7 @@ theme_set(theme_minimal())
 sum(is.na(churn))
 sum(duplicated(churn))
 
-# Clearn/Prepare Data -----------------------------------------------------
+# Clean/Prepare Data -----------------------------------------------------
 #Removing columns im not going to use
 churn$Churn <- as.factor(churn$Churn)
 
@@ -65,8 +67,7 @@ trControl <- trainControl(method = "repeatedcv",
                           number = 10,
                           repeats = 3)
 
-
-# My reduced model from D208
+# Knn Model
 fit <- train(Churn ~ .,
              data = training,
              method = 'knn',

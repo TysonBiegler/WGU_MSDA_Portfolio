@@ -72,8 +72,7 @@ trControl <- trainControl(method = "repeatedcv",
                           number = 10,
                           repeats = 3)
 
-
-# My reduced model from D208
+# Knn Model
 fit <- train(Churn ~ .,
              data = training,
              method = 'knn',
