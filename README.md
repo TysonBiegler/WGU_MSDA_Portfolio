@@ -42,7 +42,7 @@ Feel free to connect with me and follow along with my progress.
 
 <!-- BEGIN COURSE-->
 - [Orientation - ORA1](Orientation%20-%20ORA1)
-- [The Data Analytics Journey - D204](The%20Data%20Analytics%20Journey%20-%20D204)
+- [The Data Analytics Journey - D204](The%20Data%20Analytics%20Journey%20-%20%20D204)
 - [Data Acquisition - D205](Data%20Acquisition%20-%20D205) *PostgreSQL*
 - [Data Cleaning - D206](Data%20Cleaning%20-%20D206) *SQL, R and Principal Component Analysis (PCA)*
 - [Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in R (ANOVA, Chi-Square, T-test)*
