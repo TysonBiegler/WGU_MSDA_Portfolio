@@ -69,7 +69,7 @@ churn <- churn %>%
 scaled_churn <- as.data.frame(scale(churn))
 names(scaled_churn)#"Age","Income", "Outage_sec_perweek","Tenure","MonthlyCharge","Bandwidth_GB_Year" 
 
-## Export cleaned data to CSV ---------------------------------------------------
+# Export cleaned data to CSV ---------------------------------------------------
 write.csv(scaled_churn, "C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data mining II - D212/Cleaned/Task2/churn_cleaned_data.csv", row.names = FALSE)
 
 pca <- prcomp(scaled_churn, center = FALSE, scale = FALSE)
