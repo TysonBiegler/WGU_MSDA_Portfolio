@@ -53,8 +53,10 @@ Feel free to connect with me and follow along with my progress.
 - [Data Mining 2 - D212](Data%20Mining%20II%20-%20D212) *K-Means, Principal Component Analysis (PCA), Market Basket Analysis*
 - [Advanced Data Analytics - D213](Advanced%20Data%20Analytics%20-%20D213) *Coming Soon*
 - [Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214) *Coming Soon*
-<!-- END COURSES -->
+  
+![Program Completion](https://progress-bar.dev/71?title=Program%20Completion)
 
+<!-- END COURSES -->
 #
 
 ### 📊 My Github Stats
