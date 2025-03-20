@@ -58,14 +58,6 @@ Feel free to connect with me and follow along with my progress.
 #
 
 ### 📊 My Github Stats
-<picture>
-  <source
-    srcset="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true&theme=dracula"
-    media="(prefers-color-scheme: dark)"
-  />
-  <source
-    srcset="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true"
-    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
-  />
-  <img src="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true" />
-</picture>
+<img src="https://github-readme-stats.vercel.app/api?username=tysonbiegler&&show_icons=true&count_private=true&theme=radical"/>|<img src="https://github-readme-streak-stats.herokuapp.com/?user=tysonbiegler&theme=radical"/>|
+|---|---|
+
