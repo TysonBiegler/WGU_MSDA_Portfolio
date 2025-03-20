@@ -47,7 +47,7 @@ Feel free to connect with me and follow along with my progress.
 - [Data Cleaning - D206](Data%20Cleaning%20-%20D206) *SQL, R and Principal Component Analysis (PCA)*
 - [Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in R (ANOVA, Chi-Square, T-test)*
 - [Predictive Modeling – D208](Predictive%20Modeling%20–%20D208) *Linear and Logistic Regression*
-- [Data Mining 1 - D209](Data%20Mining%201%20-%20D209) *Coming Soon*
+- [Data Mining 1 - D209](Data%20Mining%20I%20-%20D209) *Coming Soon*
 - [Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210) *SQL and Tableau*
 - [Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *SQL and Tableau*
 - [Data Mining 2 - D212](Data%20Mining%202%20-%20D212) *Coming Soon*
