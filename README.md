@@ -6,7 +6,7 @@
 <br>
 I began learning web development in 2018 and decided I really enjoyed analytics after learning to use SQL in a web development bootcamp. So, I dove into data analytics in 2020. I completed several projects and certification programs ranging from the [Google data analytics professional certificate](https://www.coursera.org/account/accomplishments/professional-cert/PJYAPL3D7B2R) to [CS50](https://certificates.cs50.io/f6af04be-d727-4f4a-9236-4ef3e0989a83.pdf?size=letter) from Harvard University. 
 
-I began my masters program in data analytics through Western govoners university in May 2024 and this is my portfolio of projects from that program. 
+I began my masters program in data analytics through western governors university in May 2024 and this is my portfolio of projects from that program. 
 
 Listed below is my linkedin profile and my portfolio hosted by Maven analytics. 
 Feel free to connect with me and follow along with my progress.
@@ -40,32 +40,26 @@ Feel free to connect with me and follow along with my progress.
 
 ### 🎓 My Course Assessments
 
+🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 71% Complete
+
 <!-- BEGIN COURSE-->
-- [Orientation - ORA1](Orientation%20-%20ORA1)
-- [The Data Analytics Journey - D204](The%20Data%20Analytics%20Journey%20-%20D204)
-- [Data Acquisition - D205](Data%20Acquisition%20-%20D205) *PostgreSQL*
-- [Data Cleaning - D206](Data%20Cleaning%20-%20D206) *SQL, R and Principal Component Analysis (PCA)*
-- [Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in R (ANOVA, Chi-Square, T-test)*
-- [Predictive Modeling – D208](Predictive%20Modeling%20–%20D208) *Linear and Logistic Regression*
-- [Data Mining 1 - D209](Data%20Mining%201%20-%20D209) *Coming Soon*
-- [Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210) *SQL and Tableau*
-- [Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *SQL and Tableau*
-- [Data Mining 2 - D212](Data%20Mining%202%20-%20D212) *Coming Soon*
+- ✅[Orientation - ORA1](Orientation%20-%20ORA1)
+- ✅[The Data Analytics Journey - D204](The%20Data%20Analytics%20Journey%20-%20%20D204)
+- ✅[Data Acquisition - D205](Data%20Acquisition%20-%20D205) *PostgreSQL*
+- ✅[Data Cleaning - D206](Data%20Cleaning%20-%20D206) *SQL, R and Principal Component Analysis (PCA)*
+- ✅[Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in R (ANOVA, Chi-Square, T-test)*
+- ✅[Predictive Modeling – D208](Predictive%20Modeling%20–%20D208) *Linear and Logistic Regression*
+- ✅[Data Mining 1 - D209](Data%20Mining%20I%20-%20D209) *k-Nearest Neighbor and Decision tree analysis*
+- ✅[Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210) *SQL and Tableau*
+- ✅[Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *SQL and Tableau*
+- ✍️[Data Mining 2 - D212](Data%20Mining%20II%20-%20D212) *K-Means, Principal Component Analysis (PCA), Market Basket Analysis*
 - [Advanced Data Analytics - D213](Advanced%20Data%20Analytics%20-%20D213) *Coming Soon*
 - [Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214) *Coming Soon*
-<!-- END COURSES -->
 
+<!-- END COURSES -->
 #
 
 ### 📊 My Github Stats
-<picture>
-  <source
-    srcset="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true&theme=dracula"
-    media="(prefers-color-scheme: dark)"
-  />
-  <source
-    srcset="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true"
-    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
-  />
-  <img src="https://github-readme-stats.vercel.app/api?username=tysonbiegler&show_icons=true" />
-</picture>
+<img src="https://github-readme-stats.vercel.app/api?username=tysonbiegler&&show_icons=true&count_private=true&theme=radical"/>|<img src="https://github-readme-streak-stats.herokuapp.com/?user=tysonbiegler&theme=radical"/>|
+|---|---|
+
