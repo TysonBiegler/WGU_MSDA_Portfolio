@@ -40,7 +40,7 @@ Feel free to connect with me and follow along with my progress.
 
 ### 🎓 My Course Assessments
 
-🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 71% Complete
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 81% Complete
 
 <!-- BEGIN COURSE-->
 - ✅[Orientation - ORA1](Orientation%20-%20ORA1)
@@ -52,7 +52,7 @@ Feel free to connect with me and follow along with my progress.
 - ✅[Data Mining 1 - D209](Data%20Mining%20I%20-%20D209) *k-Nearest Neighbor and Decision tree analysis*
 - ✅[Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210) *SQL and Tableau*
 - ✅[Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *SQL and Tableau*
-- ✍️[Data Mining 2 - D212](Data%20Mining%20II%20-%20D212) *K-Means, Principal Component Analysis (PCA), Market Basket Analysis*
+- ✅[Data Mining 2 - D212](Data%20Mining%20II%20-%20D212) *K-Means, Principal Component Analysis (PCA), Market Basket Analysis*
 - ✍️[Advanced Data Analytics - D213](Advanced%20Data%20Analytics%20-%20D213) *Time Series Modeling, Sentiment Analysis Using Neural Networks*
 - [Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214) *Coming Soon*
 
