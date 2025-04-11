@@ -179,7 +179,7 @@ The third rule `{glipizide} => {abilify}` has the highest support (0.0137), mean
 
 **D2:** There are many practical implications of this analysis, such as understanding commodities among diagnosis. For example according to drugs.com, Metformin is primarily used to manage diabetes ((Drugs.com, 2023a) where as Abilify is an antipychotic (Drugs.com, 2023b). This appears to suggest that a subset of patients with diabetes is also being treated for mental health issues. Additionally, if a pharmacy knows these associations they can better stock medications if they know that patients that are prescribed Abilify (the most common prescription in the dataset) have a 43.54% probability that they will also need Metformin.
 
-**D3:** Based on this analysis, the hospital executives should focus on medication management to ensure all frequently co-prescribed medications are available, assuming that this hospital chain provides the medications as well as prescribes them. Additionally, this information should be loaded into the electronic health record so that the health care providers can review common medication combinations and make more informed decisions. \
+**D3:** Based on this analysis, the hospital executives should focus on medication management to ensure all frequently co-prescribed medications are available, assuming that this hospital chain provides the medications as well as prescribes them. Additionally, this information should be loaded into the electronic health record so that the health care providers can review common medication combinations and make more informed decisions.\
 
 ## **Part V: Attachments**
 

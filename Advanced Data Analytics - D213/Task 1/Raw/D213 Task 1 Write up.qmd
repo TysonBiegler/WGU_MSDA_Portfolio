@@ -1,0 +1,504 @@
+---
+title: "Advanced Data Analytics - D213 Task 1"
+author: "Tyson Biegler"
+sbutitle: "Student ID: 012170282"
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+#####################################
+# Tyson Biegler
+# Student ID: 012170282
+# Advanced Data Analytics - D213 Task 1
+#####################################
+
+#####################################
+# Initial setup 
+#####################################
+# Load necessary libraries
+library(tidyverse)
+library(forecast)
+library(tseries)
+
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Advanced Data Analytics - D213/Task 1/Raw')
+data <- read_csv("teleco_time_series.csv")
+
+# Create a date sequence for 731 days starting from 2023-01-01
+data$Day <- seq.Date(from = as.Date("2023-01-01"), by = "day", length.out = 731)
+
+# Verify the date range
+range(data$Day)
+
+data<-as.data.frame(data)
+
+str(data)
+#view(data)
+
+#converting to ts
+Y <- ts(data$Revenue, start = c(2023, 1), frequency = 365)
+
+str(Y)
+#####################################
+#C1 plot ts data
+#####################################
+autoplot(Y, main = "Time series of Revenue")
+
+#####################################
+#C2 explain gaps and length
+#####################################
+#checking for length and missing values
+cat('There are', length(data$Day),'rows of data.')  # Sequence length
+cat('Missing values:',any(is.na(data)))  # Check for missing values
+
+#####################################
+#C3 evaluate stationarity
+#####################################
+adf.test(Y)   # adf states that the data is stationary (p-value = 0.02431) but there is a clear upward trend
+#Removing the trend
+
+ndiffs(Y) #ndiffs function still recommends that one difference is required to make the data stationary. 
+
+DY <- diff(Y, s = 1) #s=1 meaning that the data has a seasonal patteren that happens 1 time per year
+adf.test(DY)  # still shows stationarity but there is no longer a trend. p-value = 0.01
+plot(DY)
+
+
+#####################################
+# C4 Training and Test split - 80/20 Split
+#####################################
+
+train <- Y[1:floor(0.8 * length(Y))]  #the first 80% of the data for training
+test <- Y[(floor(0.8 * length(Y)) + 1):length(Y)]  #the remaining 20% for testing
+
+# Plot the splits
+plot(train, main = "Training set (80% of data)", type = 'l')
+plot(test, main = "Testing set (20% of data)", type = 'l')
+
+
+#####################################
+#C5 export cleaned data
+#####################################
+# Export cleaned data to CSV
+write.csv(Y, "C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Advanced Data Analytics - D213/Task 1/Clean/cleaned_ts_data.csv", row.names = FALSE)
+
+#####################################
+#D1 plot the following: 
+#####################################
+#the decomposed ts
+decomposed <- stl(Y,t.window=365, s.window="periodic", robust=TRUE)
+plot(decomposed)
+summary(decomposed)
+
+#seasonality. There apears to be seasonality
+seasonal <- decomposed$time.series[, "seasonal"]
+plot(seasonal, main = "Seasonality of decomposed time series", ylab = "Seasonality", xlab = "Time", type = "l")
+summary(seasonal)
+
+#trend
+trend <- decomposed$time.series[, "trend"]
+plot(trend, main = "Trend of decomposed time series", ylab = "Trend", xlab = "Time", type = "l")
+summary(trend)
+
+#autocorrelation
+ggAcf(DY)
+ggPacf(DY)
+
+#spectral density 
+spectrum(Y)
+
+#confirm lack of trend in residuals of decomposed series. 
+#Stationarity Check with ADF Test
+adf.test(decomposed$time.series[, "remainder"])
+
+#Ljung-Box test to check for autocorrelation in residuals. 
+Box.test(decomposed$time.series[, "remainder"], lag = 1, type = "Ljung-Box")
+
+#Autocorrelation plot with ACF
+ggAcf(decomposed$time.series[, "remainder"])
+
+plot(decomposed$time.series[, "remainder"])
+ggAcf(decomposed$time.series[, "remainder"])
+ggPacf(decomposed$time.series[, "remainder"])
+
+ggtsdisplay(DY)
+
+#####################################
+#D2 ARIMA model that accounts for trend aand seasonality of the ts data
+#####################################
+fit_arima <- auto.arima(train, d=1, D=1, stepwise = FALSE, approximation = FALSE, trace = TRUE)
+#accounting for trend with d=1. Tells arima that before it fits the data, take the difference of the data
+#accounting for seasonality with D=1. Gets rid of the seasonality by taking the first seasonal difference
+#stepwise=FALSE trying all models to get the most accurate results
+#approximation=FALSE because time isnt an issue. If it were an issue then approximation could be set to TRUE but it would come at the cost of approximated AIC values.
+summary(fit_arima)
+
+#####################################
+#D3 forecast using the D2 model
+#####################################
+fcast <- forecast(fit_arima, h=180) #forecasting 90 days in advance
+autoplot(fcast)
+
+#####################################
+#D4 code outputs for analysis
+#####################################
+print(summary(fcast))
+ggAcf(fcast$residuals)
+
+#####################################
+#E1 Results need to include the following: 
+#####################################
+
+#model evaluation procedure and error metric
+acc <- accuracy(fcast, test)  # RMSE, MAE, etc.
+
+print(acc)
+#####################################
+#E2 plot annotated visualization of the forecast of final model compared to the test set
+#####################################
+n <- length(train) + length(test)
+train_size <- length(train)
+
+
+plot(1:n, c(train, test), 
+     type = "l", 
+     xlab = "Date", 
+     ylab = "Revenue", 
+     main = "Forecast with Test Data Overlay",
+     xaxt = "n")
+
+
+axis(1, at = seq(1, n, by = 100), labels = data$Day[seq(1, n, by = 100)])
+
+
+lines((train_size + 1):n, test, col = "red")
+
+
+polygon(c((n + 1):(n + length(fcast$mean)), rev((n + 1):(n + length(fcast$mean)))), 
+        c(fcast$lower[,1], rev(fcast$upper[,1])), 
+        col = rgb(1, 0, 0.5, alpha = 0.2), 
+        border = NA)
+
+polygon(c((n + 1):(n + length(fcast$mean)), rev((n + 1):(n + length(fcast$mean)))), 
+        c(fcast$lower[,2], rev(fcast$upper[,2])), 
+        col = rgb(1, 0, 0.5, alpha = 0.19), 
+        border = NA)
+
+
+lines((n + 1):(n + length(fcast$mean)), fcast$mean, col = "blue")
+
+
+legend("topleft", 
+       legend = c("Actual", "Test", "Forecast", "80% CI", "95% CI"),
+       col = c("black", "red", "blue", "pink", "pink"), 
+       lty = c(1, 1, 1, NA, NA), 
+       fill = c(NA, NA, NA, "pink", "pink"))
+
+```
+
+## **Part I: Research Question**
+
+A1. Can the ARIMA model effectively forecast 180 days of telecom revenue data with high accuracy?
+
+A2. The main purpose of this assessment is to evaluate the ARIMA model's ability to accurately forecast 180 days of revenue data. The objective is to assess the model's performance by comparing its forecasts to the actual observed revenue values from the test data.
+
+## **Part II: Method Justification**
+
+B1. Time series models assume that the data is stationary (GeeksforGeeks, 2024), meaning that the mean and variance remain constant over time. Additionally, time series models typicaly rely on autocorrelation, where past values influence current ones. This is important because models like ARIMA leverage this correlation to identify patterns over time, enabling accurate forecast pred
+
+## **Part III: Data Preparation**
+
+C1. The time series plot shows a clear upward trend over the years. There appears to be some variability along the way without any imediate signs of patters or seasonality. These will be investigated further later.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Time plot
+plot(Y, main = "Time series of Revenue", type='l')
+```
+
+C2. The time step formatting required that the days be converted into a proper date format. In this time series model I chose to start the date on 2023-01-01 and ending on 2024-12-31 as shown in the code `range(data$Day)`.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create a date sequence for 731 days starting from 2023-01-01
+data$Day <- seq.Date(from = as.Date("2023-01-01"), by = "day", length.out = 731)
+
+range(data$Day)
+```
+
+This formatting uses daily intervals to ensure a regular time step without any gaps. However, to ensure that there were no gaps, I ran `any(is.na(data))` and `length(data$Day)`. Lastly the data is converted into a time series object with a yearly frequency of 365 observations per year.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+data<-as.data.frame(data)
+
+#converting to ts
+Y <- ts(data$Revenue, start = c(2023, 1), frequency = 365)
+
+#checking for length and missing values
+cat('There are', length(data$Day),'rows of data.')  # Sequence length
+cat('Missing values:',any(is.na(data)))  # Check for missing values
+```
+
+C3. I checked stationarity using the Augmented Dickey-Fuller (ADF) test. Initially the test returned a p-value of 0.02431 when ran on the original data. A p-value of this size suggests that the data is stationary (StatisticsHowTo, n.d.). However, there is a visible trend in the data.
+
+The `ndiffs()` function suggests that time series data needs differencing. I differenced the data and accounted for seasonality (`DY <- diff(Y, s = 1)`) and ran ADF on the differenced data. The new p-value shows improved stationarity and a more significant result at .01 as well as removal of the trend.
+
+The seasonal differencecing accounts for the yearly seasonality that appears to occur once a year. I will explain more about this in the coming sections.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+adfY <- adf.test(Y)   # adf states that the data is stationary (p-value = 0.02431) but there is a clear upward trend
+
+#Removing the trend
+ndiffsY <- ndiffs(Y) #ndiffs function still recommends that one difference is required to make the data stationary. 
+
+DY <- diff(Y, s = 1) #s=1 meaning that the data has a seasonal patteren that happens 1 time per year
+
+adfDY<- adf.test(DY)  # still shows stationarity but there is no longer a trend. p-value = 0.01
+
+adfY
+cat('Recomended number of differencing:', ndiffsY)
+```
+
+After differencing the time series data (Y):
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+adfDY
+
+plot(DY)
+```
+
+C4.  In order to prepare the data, I started by loading the libraries (`tidyverse` , `forecast` , `tseries`) and then I converted the data into a time series format noting the daily nature of the data with `frequency=365`.
+
+```{r}
+#converting to ts
+Y <- ts(data$Revenue, start = c(2023, 1), frequency = 365)
+```
+
+I checked for missing values to ensure there were no gaps in the data, and then plotted the data to visualize trends and any fluctuations.
+
+Before exporting the cleaned data, I split the data into a train and test set, 80/20 split. I allocated the first 80% of the data to the training set, and the remaining 20% to the test set.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+train <- Y[1:floor(0.8 * length(Y))]  #the first 80% of the data for training
+test <- Y[(floor(0.8 * length(Y)) + 1):length(Y)]  #the remaining 20% for testing
+
+# Plot the splits
+plot(train, main = "Training set (80% of data)", type = 'l')
+plot(test, main = "Testing set (20% of data)", type = 'l')
+
+
+```
+
+C5.  A copy of the cleaned csv file will be included in the submission files. The cleaned csv file is named `cleaned_ts_data.csv`
+
+## **Part IV: Model Identification and Analysis**
+
+D1. The seasonality component shows and IQR accounting for 29.1% of the total IQR meaning that the seasonal fluctuations have an impact on the variability of the data. This seasonality can also be seen in the plot below.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(decomposed)
+
+#seasonality. There apears to be seasonality
+
+seasonal <- decomposed$time.series[, "seasonal"]
+plot(seasonal, main = "Seasonality of decomposed time series", ylab = "Seasonality", xlab = "Time", type = "l")
+
+```
+
+In addition, the spectral density plot shows that the highest spectral density happens at the lower end of the frequencies, suggesting a long term seasonality.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#spectral density 
+spectrum(Y)
+```
+
+#### Trend
+
+The decomposed time series plot shows a clean upward trend. The data begins in 2023 and gradually increases through 2025.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#trend
+trend <- decomposed$time.series[, "trend"]
+plot(trend, main = "Trend of decomposed time series", ylab = "Trend", xlab = "Time", type = "l")
+summary(trend)
+```
+
+#### ACF
+
+In the Autocorrelation (ACF) plot of the differenced data, it appears that most values fall within the confidence lines. However, there are several lines that do pass the confidence lines indicating that there may be seasonality, or at least a strong relationship witht the previous lag. Seasonality can be examined further in the decomposition plot using `stl()`. This plot also shows a significant correlation at lag 2 and then tappers off, indicating an `AR(2)`.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#autocorrelation 
+ggAcf(DY)
+```
+
+#### PACF
+
+The Partial Autocorrelation (PACF) plot of the differenced data, looks very similar to the ACF plot where most of the values fall within the confidence interval lines. This would suggest that there is minimal partial autocorrelation at most lags. This plot shows a clear spike at lag 1 and then tappers off, indicating an `AR(1)`. Because PACF better isolates the relationship at each lag, I will be interested in an ARMIA model with an `AR(1)`.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#Partial autocorrelation 
+ggPacf(DY)
+```
+
+The decomposed time series plot shows several of the components already spoken about in previous sections, in addition to the remainder component. In essence, decomposition is the break down of the data set into its key components. The remainder component being the only one not yet spoken about explicitly, explains the portion of the data that can not be explained by the seasonal or tend components. In otherwords, the elements within this remainder component are the ones that do not follow a consistent trend or cyclical pattern (seasonality).
+
+In this plot we can see that the remainder fluctuates around 0 with minor ups and downs. However, near the end of 2024 we can see a significant dip in the remainder that would suggest that during this period, an external or random event happened that affected the data which is why it wouldn't be captured by the trend or seasonality in the data.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+decomposed <- stl(Y, t.window=365, s.window="periodic", robust=TRUE)
+plot(decomposed)
+```
+
+The **Ljung-box test**, tests the if the residuals show any autocorrelation. with a p-value far less than 0.05 (\<2.2e-16) at lag 1, I can assume that there is some pattern or dependence that is not fully explained by the seasonality or trend mentioned earlier.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#Ljung-Box test to check for autocorrelation in residuals. 
+Box.test(decomposed$time.series[, "remainder"], lag = 1, type = "Ljung-Box")
+```
+
+To confirm the residuals (remainder) do not have a trend, I computed the ADF once again but this time on the remainder component. We can see that the p-value (`p-value=0.01`) is less than the standard significance level of 0.05. While the data, statistically, appears to be stationary, the Ljung-box test would still indicate that there might still be some predictable relationship between the lags.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#confirm lack of trend in residuals of decomposed series.  
+#Stationarity Check with ADF Test 
+
+adf.test(decomposed$time.series[, "remainder"])
+```
+
+The ACF of the residuals plot shows that several peaks that are outside the confidence intervals. This means that the some patters or dependancy still exists in the data.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+ggAcf(decomposed$time.series[, "remainder"]) 
+```
+
+However, when looking at the PACF we can see that only lags 1 and 2 have a direct significant influence on the remainder component. After lag 2 all the spikes fall within the confidence interval and the spikes get smaller overtime. While the ACF plot suggests that there is autocorrelation at many different lags, the PACF plot clarifies that the patterns seen in the ACF are likely indirect relationships that stem from the first 2 lags.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+ggPacf(decomposed$time.series[, "remainder"])
+```
+
+**Decomposed Time Series**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+plot(decomposed$time.series[, "remainder"]) 
+```
+
+D2. I used `auto.arima()` to find the best ARIMA model. `d=1` tells ARIMAto take the difference of the data before it fits the data. `D=1` accounts for seasonality. `Stepwise=FALSE` trys all models to get the most accurate results. And lastly, `approximation=FALSE` ensures that the `AIC` values are not approximated. Run time was not an issue here so I set approximation to false (RDocumentation, n.d.).
+
+```{r message=FALSE, warning=FALSE}
+fit_arima <- auto.arima(train, d=1, D=1, stepwise = FALSE, approximation = FALSE, trace = TRUE)
+
+#accounting for trend with d=1. Tells arima that before it fits the data, take the difference of the data
+
+#accounting for seasonality with D=1. Gets rid of the seasonality by taking the first seasonal difference
+
+#stepwise=FALSE trying all models to get the most accurate results
+
+#approximation=FALSE because time isnt an issue. If it were an issue thenapproximation could be set to TRUE but it would come at the cost of approximated AIC values.
+```
+
+We can see that the best model, according the auto.arima() is `ARIMA(1,1,0) with drift` (accounting for the trend).
+
+The model summary shows that the `AR(1)` that was mentioned in the D1 as a result of the PACF test was accurate. 'I', shows that difference has been applied, and '0' indicates that there is no moving average in this model.
+
+D3. The following plot shows the forecast with confidence intervals for 90 days in advance.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+autoplot(fcast)
+```
+
+D4. In the following code output, you can see the daily values for 90 days as well as the upper and lower confidence values.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+print(summary(fcast))
+```
+
+D5. The full code file will be included in the submission files. The code file will be named `D213_code.R`
+
+## **Part V: Data Summary and Implications**
+
+E1. As mentioned in section D2 the ARIMA model with the best fit is `ARIMA(1,1,0) with drift`.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(fit_arima)
+```
+
+The predictions intervals are 80% (Lo), and 95%(Hi) for each forecast point. For example, at point 585, the forecast is 13.34397, with an 80% interval of 12.74438 on the low end and 13.94356 on the high end. Likewise, 95% interval of 12.426978 on the low end and 14.26097 on the high end. In other wards, for point 585, I can say that there is an 80% chance that the value is between 13.34397 and 12.74438. However, there is a 95% chance that the value is between 12.426978 and 14.26097 . So the higher the confidence, the wider the range because it is reflecting the greater uncertainty in the prediction.
+
+The forecast length is 180 days worth of data because the data contains enough information to identify season trends or patterns.
+
+The error metrics that are provided in the summary function include RMSE and MAE as well as others. To test how well the data forecasts the trained data, I will be comparing the test set vs the training set.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Summarize key accuracy metrics
+acc <- accuracy(fcast, test)  # RMSE, MAE, etc.
+
+print(acc)
+
+```
+
+This ARIMA model `(1,1,0)` appears to work well with the training data as indicated by the low `RMSE (0.4666594)`, `MASE (0.8756595)`, meaning that it first the historical data well. However, when tested on the unseen data, the model does not do as well. The errors `RMSE (2.2949433)`, and `MASE (4.2303496)` are much higher with the test data, and the model tends to underestimate the values as evidenced by the negative `ME (-1.432728e+00)`.
+
+E2. Annotated visual of the forecast and test data:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+n <- length(train) + length(test)
+train_size <- length(train)
+
+
+plot(1:n, c(train, test), 
+     type = "l", 
+     xlab = "Date", 
+     ylab = "Revenue", 
+     main = "Forecast with Test Data Overlay",
+     xaxt = "n")
+
+
+axis(1, at = seq(1, n, by = 100), labels = data$Day[seq(1, n, by = 100)])
+
+
+lines((train_size + 1):n, test, col = "red")
+
+
+polygon(c((n + 1):(n + length(fcast$mean)), rev((n + 1):(n + length(fcast$mean)))), 
+        c(fcast$lower[,1], rev(fcast$upper[,1])), 
+        col = rgb(1, 0, 0.5, alpha = 0.2), 
+        border = NA)
+
+polygon(c((n + 1):(n + length(fcast$mean)), rev((n + 1):(n + length(fcast$mean)))), 
+        c(fcast$lower[,2], rev(fcast$upper[,2])), 
+        col = rgb(1, 0, 0.5, alpha = 0.19), 
+        border = NA)
+
+
+lines((n + 1):(n + length(fcast$mean)), fcast$mean, col = "blue")
+
+
+legend("topleft", 
+       legend = c("Actual", "Test", "Forecast", "80% CI", "95% CI"),
+       col = c("black", "red", "blue", "pink", "pink"), 
+       lty = c(1, 1, 1, NA, NA), 
+       fill = c(NA, NA, NA, "pink", "pink"))
+
+```
+
+E3. This model performs well with the historical data in that it can identify patters and trends accurately but seems to struggle with future data as it tends to underestimate the actual values. Because of this I would recommend that the company take into account the model's tendency to under predict revenue and expect that the actual revenue will be someone higher. This could also imply that the demand is higher as well, and therefore the company should take this into account when allocating resources or esitimating inventory. Additionally I would recommend monittoring this model's performance on a regular schedule to compare the actual and foretasted numbers.
+
+## **Part VI: Reporting**
+
+G-H.  Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
+
+GeeksforGeeks. (2024, October 9). *Time series in R - Stationarity testing*. GeeksforGeeks. <https://www.geeksforgeeks.org/time-series-in-r-stationarity-testing/>
+
+RDocumentation. (n.d.). *auto.arima function – forecast package (version 8.16)*. <https://www.rdocumentation.org/packages/forecast/versions/8.16/topics/auto.arima>
+
+StatisticsHowTo. (n.d.). *ADF – Augmented Dickey-Fuller test*. StatisticsHowTo. <https://www.statisticshowto.com/adf-augmented-dickey-fuller-test/>
+
+weecology. (2020, September 21). *Introduction to making forecasts from time-series models in R* \[Video\]. YouTube. <https://www.youtube.com/watch?v=kyPg3jV4pJ8>
+
+### 
