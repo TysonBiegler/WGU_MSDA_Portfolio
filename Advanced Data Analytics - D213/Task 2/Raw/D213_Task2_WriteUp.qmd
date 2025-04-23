@@ -1,0 +1,304 @@
+---
+title: "D213 Task 2"
+author: "Tyson Biegler"
+subtitle: "Student ID: 012170282"
+format: pdf
+editor: visual
+---
+
+```{r echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+#####################################
+# Tyson Biegler
+# Student ID: 012170282
+# Advanced Data Analytics - D213 Task 2
+#####################################
+
+################################
+#INITIAL SETUP
+################################
+library(tidyverse)
+library(tokenizers)
+library(tm)
+library(stringi)
+library(keras)
+library(tensorflow)
+library(tidytext)
+library(word2vec)
+
+#set working dir
+setwd("~/GitHub/WGU_MSDA_Portfolio/Advanced Data Analytics - D213/Task 2/Raw/data")
+
+yelp_df <- data.frame()
+imdb_df <- data.frame()
+amazon_df <- data.frame()
+yelp_data <- readLines("yelp_labelled.txt", encoding = "UTF-8")
+imdb_data <- readLines("imdb_labelled.txt", encoding = "UTF-8")
+amazon_data <- readLines("amazon_cells_labelled.txt", encoding = "UTF-8")
+
+for (line in yelp_data) {
+  split_data <- unlist(strsplit(line, "\t"))
+  yelp_df <- rbind(yelp_df, data.frame(split_data[1], as.integer(split_data[2])))
+}
+# Clean up for next run
+line=""
+split_data=""
+
+for (line in imdb_data) {
+  split_data <- unlist(strsplit(line, "\t"))
+  imdb_df <- rbind(imdb_df, data.frame(split_data[1], as.integer(split_data[2])))
+}
+# Clean up for next run
+line=""
+split_data=""
+
+for (line in amazon_data) {
+  split_data <- unlist(strsplit(line, "\t"))
+  amazon_df <- rbind(amazon_df, data.frame(split_data[1], as.integer(split_data[2])))
+}
+
+# Clean up as no longer needed
+rm(line)
+rm(split_data)
+
+merged_df <- rbind(amazon_df, imdb_df, yelp_df)
+
+glimpse(merged_df)
+
+colnames(merged_df) <- c("text", "sentiment")
+
+################################
+#EDA
+################################
+#sum(duplicated(merged_df)) #checking for duplicates
+#merged_df <- merged_df[!duplicated(merged_df), ] #removing duplicates
+#sum(duplicated(merged_df)) #checking for duplicates
+
+colSums(is.na(merged_df)) #checking for missing values
+
+str(merged_df)
+
+head(merged_df)
+
+################################
+#CLEANING
+################################ 
+#checking for non english characters  SOURCE: https://ss64.com/ascii.html
+count_non_english_chars <- function(text) {
+  chars <- utf8ToInt(text)
+  non_english_chars <- chars[chars < 32 | chars > 126]  
+  return(length(non_english_chars))
+}
+
+non_english <- sum(sapply(merged_df$text, count_non_english_chars))
+cat("Total non-English characters:", non_english, "\n")
+
+clean_text <- function(text) {
+  text <- tolower(text) # converting to lowercase
+  text <- removeWords(text, stopwords("en")) # removing English stopwords
+  text <- gsub("[[:punct:]]", "", text) # removing punctuation
+  text <- stri_trans_general(text, "Latin-ASCII") # normalizing to ASCII
+  text <- iconv(text, "latin1", "ASCII", sub = "") # removing non-ASCII characters like emojis
+  text <- gsub("[^\x01-\x7F]", "", text) # removing non-ASCII characters
+  text <- gsub("\\b\\d+\\b", "", text) # remove numbers
+  text <- stripWhitespace(text) # removing extra whitespace
+  text <- trimws(text) # trimming leading and trailing whitespace
+  return(text)
+}
+
+# Apply the function to the "text" column
+merged_df$text <- sapply(merged_df$text, clean_text)
+
+head(merged_df$text)
+
+#confirming that non english characters are gone
+non_english <- sum(sapply(merged_df$text, count_non_english_chars))
+cat("Total non-English characters:", non_english, "\n")
+
+################################
+#Tokenization
+################################
+tokenized <- merged_df %>%
+  mutate(id = row_number()) %>%
+  unnest_tokens(word, text, to_lower = FALSE)
+
+tokenized <- tokenized %>%
+  filter(word != "", !is.na(word))
+
+vocabulary_size <- tokenized %>%
+  distinct(word) %>%
+  nrow()
+
+cat("Vocabulary Size:", vocabulary_size, "\n") #should be 256 accorind to sewell, whatever that means.... 
+
+#top 20 tokens
+top_tokens <- merged_df %>%
+  mutate(id = row_number()) %>%
+  unnest_tokens(word, text, to_lower = FALSE) %>%
+  filter(word != "", !is.na(word)) %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 20)
+
+#plot of the top tokens
+ggplot(top_tokens, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top Token Frequencies",
+       x = "Token", y = "Frequency") +
+  theme_minimal()
+
+################################
+#Sentence length, and Embedding length
+################################
+sentence_lengths <- sapply(strsplit(merged_df$text, "\\s+"), length)
+summary(sentence_lengths)
+
+hist(sentence_lengths,
+     main = "Distribution of sentence lengths",
+     xlab = "Sentence length",
+     ylab = "Frequency")
+
+index <- which.max(sentence_lengths)
+longest_sentence <- merged_df$text[index]
+token_length <- sentence_lengths[index]
+token_length
+
+cat("Longest sentence:",longest_sentence, '\nLength:', token_length, "tokens.")
+
+#embedding length
+embedding <- as.integer(round(sqrt((vocabulary_size)),0))
+
+input_length <- max(sentence_lengths)
+
+cat("Estimated word embeding length:", embedding, "\nProposed word embedding lenght:", input_length)
+
+
+```
+
+## Part I: Research Question
+
+A.  Describe the purpose of this data analysis by doing the following:
+
+<!-- -->
+
+1.  Summarize one research question that you will answer using neural network models and NLP techniques. Be sure the research question is relevant to a real-world organizational situation and sentiment analysis captured in your chosen data set(s).
+
+Note: If you choose to use more than one data set, you must concatenate them into one data set for parts II and III.
+
+2.  Define the objectives or goals of the data analysis. Be sure the objectives or goals are reasonable within the scope of the research question and are represented in the available data.
+
+3.  Identify a type of neural network capable of performing a text classification task that can be trained to produce useful predictions on text sequences on the selected data set.
+
+## Part II: Data Preparation
+
+B.  Summarize the data cleaning process by doing the following:
+
+<!-- -->
+
+1.  Perform exploratory data analysis on the chosen data set, and include an explanation of each of the following elements:
+
+According to **ss64.com (n.d.)**, the standard English characters have a 'Dec' value between 32-127.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+#checking for non english characters  SOURCE: https://ss64.com/ascii.html
+non_english <- sum(sapply(merged_df$text, count_non_english_chars))
+cat("Total non-English characters:", non_english, "\n")
+```
+
+The vocabulary size for this tokenized data set is 5101 unique words.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+cat("Vocabulary Size:", vocabulary_size, "\n")
+```
+
+• proposed word embedding length
+
+The max sentence length is 41 words with a data set median of 5.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+cat("Longest sentence:",longest_sentence, '\nLength:', token_length, "tokens.")
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+summary(sentence_lengths)
+
+hist(sentence_lengths,
+     main = "Distribution of sentence lengths",
+     xlab = "Sentence length",
+     ylab = "Frequency")
+```
+
+2.  Describe the goals of the tokenization process, including any code generated and packages that are used to normalize text during the tokenization process.
+
+3.  Explain the padding process used to standardize the length of sequences. Include the following in your explanation:
+
+• if the padding occurs before or after the text sequence
+
+• a screenshot of a single padded sequence
+
+4.  Identify how many categories of sentiment will be used and an activation function for the final dense layer of the network.
+
+5.  Explain the steps used to prepare the data for analysis, including the size of the training, validation, and test set split (based on the industry average).
+
+6.  Provide a copy of the prepared data set.
+
+    ```{r}
+    #write.csv(data, "C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Advanced Data Analytics - D213/Task 2/Clean/data.csv", row.names = FALSE)
+    ```
+
+## Part III: Network Architecture
+
+C.  Describe the type of network used by doing the following:
+
+<!-- -->
+
+1.  Provide the output of the model summary of the function from TensorFlow.
+
+2.  Discuss the number of layers, the type of layers, and the total number of parameters.
+
+3.  Justify the choice of hyperparameters, including the following elements:
+
+• activation functions
+
+• number of nodes per layer
+
+• loss function
+
+• optimizer
+
+• stopping criteria
+
+• evaluation metric
+
+## Part IV: Model Evaluation
+
+D.  Evaluate the model training process and its relevant outcomes by doing the following:
+
+<!-- -->
+
+1.  Discuss the impact of using stopping criteria to include defining the number of epochs, including a screenshot showing the final training epoch.
+
+2.  Assess the fitness of the model and any actions taken to address overfitting.
+
+3.  Provide visualizations of the model’s training process, including a line graph of the loss and chosen evaluation metric.
+
+4.  Discuss the predictive accuracy of the trained network using the chosen evaluation metric from part D3.
+
+## Part V: Summary and Recommendations
+
+E.  Provide the code you used to save the trained network within the neural network.
+
+F.  Discuss the functionality of your neural network, including the impact of the network architecture.
+
+G.  Recommend a course of action based on your results.
+
+## Part VI: Reporting
+
+H.  Show your neural network in an industry-relevant interactive development environment (e.g., a Jupyter Notebook). Include a PDF or HTML document of your executed notebook presentation.
+
+I.  Denote specific web sources you used to acquire segments of third-party code that was used to support the application.
+
+J.  Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
+
+    -   SS64. (n.d.). *ASCII table / character codes*. SS64.com. <https://ss64.com/ascii.html>
+
+K.  Demonstrate professional communication in the content and presentation of your submission.D213

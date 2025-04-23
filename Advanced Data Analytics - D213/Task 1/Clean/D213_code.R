@@ -149,40 +149,36 @@ print(acc)
 #####################################
 #E2 plot annotated visualization of the forecast of final model compared to the test set
 #####################################
-n <- length(train) + length(test)
-train_size <- length(train)
+
+days <- 0:(length(Y) - 1)  # Days from 0 to 730
+
+# Finding the split
+train_end <- floor(0.8 * length(Y))  # Day 584 (80% of 731)
+test_length <- length(test)  # 146 days (20% of 731)
+
+plot(days, Y, type = "n", main = "", xlab = "Day", ylab = "Revenue", 
+     ylim = range(Y, fcast$lower, fcast$upper, na.rm = TRUE))
+
+# Train
+lines(days[1:train_end], train, lwd = 2)
+
+# Test
+lines(days[(train_end + 1):length(Y)], test, col = "darkorange", lwd = 2)
+
+# forecast
+forecast_days <- days[train_end:(train_end + test_length - 1)]  # Days 584 to 729 (146 days)
+lines(forecast_days, fcast$mean[1:test_length], col = "darkgreen", lwd = 2)
+
+# 95% confidence interval
+polygon(c(forecast_days, rev(forecast_days)), 
+        c(fcast$lower[1:test_length, 2], rev(fcast$upper[1:test_length, 2])), 
+        col = rgb(0, 0, 1, 0.3), border = NA)
+
+# Legend
+legend("topleft", legend = c("train", "test", "forecast", "confidence interval"), 
+       col = c("black", "darkorange", "darkgreen", NA, NA), 
+       lwd = c(2, 2, 2, NA), 
+       fill = c(NA, NA, NA, rgb(0, 0, 1, 0.2)))
 
 
-plot(1:n, c(train, test), 
-     type = "l", 
-     xlab = "Date", 
-     ylab = "Revenue", 
-     main = "Forecast with Test Data Overlay",
-     xaxt = "n")
 
-
-axis(1, at = seq(1, n, by = 100), labels = data$Day[seq(1, n, by = 100)])
-
-
-lines((train_size + 1):n, test, col = "red")
-
-
-polygon(c((n + 1):(n + length(fcast$mean)), rev((n + 1):(n + length(fcast$mean)))), 
-        c(fcast$lower[,1], rev(fcast$upper[,1])), 
-        col = rgb(1, 0, 0.5, alpha = 0.2), 
-        border = NA)
-
-polygon(c((n + 1):(n + length(fcast$mean)), rev((n + 1):(n + length(fcast$mean)))), 
-        c(fcast$lower[,2], rev(fcast$upper[,2])), 
-        col = rgb(1, 0, 0.5, alpha = 0.19), 
-        border = NA)
-
-
-lines((n + 1):(n + length(fcast$mean)), fcast$mean, col = "blue")
-
-
-legend("topleft", 
-       legend = c("Actual", "Test", "Forecast", "80% CI", "95% CI"),
-       col = c("black", "red", "blue", "pink", "pink"), 
-       lty = c(1, 1, 1, NA, NA), 
-       fill = c(NA, NA, NA, "pink", "pink"))
