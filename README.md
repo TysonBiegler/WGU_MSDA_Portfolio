@@ -42,7 +42,7 @@ Feel free to connect with me and follow along with my progress.
 
 ### 🎓 My Course Assessments
 
-🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 90% Complete
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 99% Complete
 
 <!-- BEGIN COURSE-->
 - ✅[Orientation - ORA1](Orientation%20-%20ORA1)
