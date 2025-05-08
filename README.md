@@ -56,7 +56,7 @@ Feel free to connect with me and follow along with my progress.
 - ✅[Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *SQL and Tableau*
 - ✅[Data Mining 2 - D212](Data%20Mining%20II%20-%20D212) *K-Means, Principal Component Analysis (PCA), Market Basket Analysis*
 - ✅[Advanced Data Analytics - D213](Advanced%20Data%20Analytics%20-%20D213) *Time Series Modeling, Sentiment Analysis Using Neural Networks*
-- ✍️[Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214)
+- ✍️[Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214) Time Series Modeling with Meta's Prophet Framework
 
 <!-- END COURSES -->
 #
