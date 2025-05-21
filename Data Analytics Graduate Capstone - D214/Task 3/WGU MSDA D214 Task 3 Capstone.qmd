@@ -1,0 +1,167 @@
+---
+title: "WGU MSDA D214 Task 3 Capstone"
+author: "Tyson Biegler"
+format: html
+theme: sandstone
+date: today
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+# Load necessary libraries
+library(tidyverse)
+library(prophet)
+library(lubridate)
+
+# set the wd and load the data
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data Analytics Graduate Capstone - D214/Raw/Datasets/bike_share')
+data <- read_csv("day.csv")
+
+# ensure that the date is the correct format
+data$dteday <- ymd(data$dteday)
+
+# plot data
+qplot(dteday, cnt, data = data,
+      main = "Bike Rentals in Washington DC",
+      xlab = "Date", ylab = "Count of Rentals")
+
+# prepare dataframe
+df <- data.frame(
+  ds = data$dteday,
+  y = data$cnt,
+  temp = data$temp,
+  hum = data$hum
+)
+
+# Build Enhanced Model (with holidays, temp, hum)
+m_enhanced <- prophet()
+m_enhanced <- add_country_holidays(m_enhanced, country_name = 'US')
+m_enhanced <- add_regressor(m_enhanced, 'temp')
+m_enhanced <- add_regressor(m_enhanced, 'hum')
+m_enhanced <- fit.prophet(m_enhanced, df)
+
+# Build Baseline Model (without holidays, temp, hum)
+df_base <- df[, c("ds", "y")]  # only date and y
+m_base <- prophet()
+m_base <- fit.prophet(m_base, df_base)
+
+# Cross-validation for both models
+cv_enhanced <- cross_validation(m_enhanced, initial = 540, period = 30, horizon = 90, units = "days")
+cv_base <- cross_validation(m_base, initial = 540, period = 30, horizon = 90, units = "days")
+
+# Performance metrics
+perf_enhanced <- performance_metrics(cv_enhanced)
+perf_base <- performance_metrics(cv_base)
+
+# Paired t-test on RMSE
+t_test_result <- t.test(perf_base$rmse, perf_enhanced$rmse, paired = TRUE)
+print(t_test_result)
+
+# visualize RMSE comparison
+boxplot(perf_base$rmse, perf_enhanced$rmse,
+        names = c("Baseline", "Enhanced"),
+        main = "RMSE Comparison",
+        ylab = "RMSE")
+
+# Forecast plot from Enhanced Model
+future <- make_future_dataframe(m_enhanced, periods = 90)
+
+# Sample from Jan–Mar historical data since that is what is being forecasted
+winter_data <- data %>% filter(month(dteday) %in% c(1, 2, 3))
+
+# Add temp and hum to future
+future$temp <- c(df$temp, runif(90, min(winter_data$temp), max(winter_data$temp)))
+future$hum <- c(df$hum, runif(90, min(winter_data$hum), max(winter_data$hum)))
+
+
+# Forecast
+forecast <- predict(m_enhanced, future)
+
+# Plot forecast
+plot(m_enhanced, forecast) +
+  xlab("Date") + ylab("Count of Rentals") + ggtitle("Bike Rentals Forecast")
+
+# Prophet components
+prophet_plot_components(m_enhanced, forecast)
+
+```
+
+# Executive Summary: Bike rental forecast analysis using Meta's prophet
+
+## Problem statement and hypothesis
+
+The Goal of this analysis was to assess whether incorporating external variables like temperature, humidity and US holidays improves the forecasting accuracy of daily bike rentals for Capital Bikeshare in Washington DC.
+
+The **null hypothesis** is that these variables do not statistically significantly enhance the forecasting accuracy, while the **alternative hypothesis** is that they do statistically significantly enhance the forecasting accuracy.
+
+Accurately forecasting of bike rental demand is critical given that Washington experiences a high influx of tourism each year (RoadGenius, 2024) as well as the global scale of bike share programs (Fanaee-T, 2013).
+
+## Data analysis process
+
+The data used in this analysis is from the UCI Machine Learning Repository, comprising of two years of Capital Bikeshare's 731 daily rental data. The dataset also includes weather data from freemeteo.com. Data preparation was conducted in R using tidyverse, lubridate, and prophet libraries. The dataset was formatted to meet prophet's requirements, ds for date, and y for rental count (Facebook, n.d. - a). Plotting the data reveals a clear upward trend and potential seasonality as it appears that the winter months have consistently fewer rentals than the summer
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# plot data
+qplot(dteday, cnt, data = data,
+      main = "Bike Rentals in Washington DC",
+      xlab = "Date", ylab = "Count of Rentals")
+```
+
+Two models were created. The first is the baseline model that includes date, and rental count, and the second model is the enhanced model that contains the additional variables of temperature, humidity, and US holidays.
+
+Cross validation was performed with a 540 day training window, a 30 day period, and a 90 day forecast horizon. Model performance was evaluated using the Root Mean Square Error (RMSE), and a paired t-test compared the RMSEs to determine the statistical significance.
+
+## Findings
+
+The enhanced model outperformed the base model with a statistically significant *(p-value \< 2.2e-16)* reduction in RMSE
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+print(t_test_result)
+```
+
+This supports the alternative hypothesis that these regressors do significantly improve the forecasting accuracy.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# visualize RMSE comparison
+boxplot(perf_base$rmse, perf_enhanced$rmse,
+        names = c("Baseline", "Enhanced"),
+        main = "RMSE Comparison",
+        ylab = "RMSE")
+```
+
+Component plots reveal an upward trend in rentals, weekly seasonality that appears to peak on Fridays, yearly seasonality with low rentals in January and highs in April, May, and October, and Holiday effects such as the consistent reduction in rentals during December.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# Prophet components
+prophet_plot_components(m_enhanced, forecast)
+
+```
+
+The 90 days forecast appears to capture similar patterns and trends that are displayed in the historical data.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# Plot forecast
+plot(m_enhanced, forecast) +
+  xlab("Date") + ylab("Count of Rentals") + ggtitle("Bike Rentals Forecast")
+```
+
+## Limitations
+
+A key limitation is the use of simulated temperature and humidity values for the 90-day forecast, that was simulated from random sampling of historical winter data through January to March. These values may not reflect actual weather conditions, potentially reducing forecast reliability. Prophet’s requirement for known or forecasted regressor values for future dates adds complexity, as future weather data must be estimated (Facebook, n.d. -b). Additionally, the dataset lacks financial data like the costs of rentals limiting insights into pricing impacts on rental demand.
+
+## Proposed actions
+
+Capital Bikeshare should integrate weather forecasts and holiday calendars into their inventory management strategies to optimize bike allocation. Real time weather data and holiday schedules can inform daily and seasonal planning, ensuring sufficient bike availability during peak demand periods and holidays.
+
+## Expected benefits
+
+Implementing this enhanced model's forecast data into Capital Bikeshare's inventory allocation strategies would ensure that bikes are distributed more efficiently and that demand is being met throughout the year, particularly on holidays and time when weather is predicted to be extreme.
+
+## Sources
+
+-   Fanaee-T, H. (2013). Bike Sharing Dataset. UCI Machine Learning Repository. https://archive.ics.uci.edu/ml/datasets/Bike+Sharing
+
+-   Facebook. (n.d. - a). Quick start. Prophet Documentation. https://facebook.github.io/prophet/docs/quick_start.html
+
+-   Facebook. (n.d. - b). Seasonality, Holiday Effects, And Regressors, Prophet Documentation. https://facebook.github.io/prophet/docs/seasonality%2C_holiday_effects%2C_and_regressors.html
+
+-   RoadGenius. (2024). Top 20 Most Visited Cities in the U.S. https://roadgenius.com/most-visited-cities-us/
