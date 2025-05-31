@@ -47,7 +47,7 @@ Feel free to connect with me and follow along with my progress.
 - ✅[02 The Data Analytics Journey - D204](02%20The%20Data%20Analytics%20Journey%20-%20%20D204)
 - ✅[03 Data Acquisition - D205](04%20Data%20Acquisition%20-%20D205) *PostgreSQL*
 - ✅[04 Data Cleaning - D206](05%20Data%20Cleaning%20-%20D206) *SQL, R and Principal Component Analysis (PCA)*
-- ✅[05 Exploratory Data Analysis - D207](06%20Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in R (ANOVA, Chi-Square, T-test)*
+- ✅[05 Exploratory Data Analysis - D207](06%20Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in Python (ANOVA, Chi-Square, T-test)*
 - ✅[06 Predictive Modeling – D208](07%20Predictive%20Modeling%20–%20D208) *Linear and Logistic Regression*
 - ✅[07 Data Mining 1 - D209](08%20Data%20Mining%20I%20-%20D209) *k-Nearest Neighbor and Decision tree analysis*
 - ✅[08 Representation and Reporting - D210](09%20Representation%20and%20Reporting%20-%20D210) *SQL and Tableau*
