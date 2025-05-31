@@ -45,18 +45,18 @@ Feel free to connect with me and follow along with my progress.
 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩✅ 100% Complete
 
 <!-- BEGIN COURSE-->
-- ✅[Orientation - ORA1](Orientation%20-%20ORA1)
-- ✅[The Data Analytics Journey - D204](The%20Data%20Analytics%20Journey%20-%20%20D204)
-- ✅[Data Acquisition - D205](Data%20Acquisition%20-%20D205) *PostgreSQL*
-- ✅[Data Cleaning - D206](Data%20Cleaning%20-%20D206) *SQL, R and Principal Component Analysis (PCA)*
-- ✅[Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in R (ANOVA, Chi-Square, T-test)*
-- ✅[Predictive Modeling – D208](Predictive%20Modeling%20–%20D208) *Linear and Logistic Regression*
-- ✅[Data Mining 1 - D209](Data%20Mining%20I%20-%20D209) *k-Nearest Neighbor and Decision tree analysis*
-- ✅[Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210) *SQL and Tableau*
-- ✅[Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *SQL and Tableau*
-- ✅[Data Mining 2 - D212](Data%20Mining%20II%20-%20D212) *K-Means, Principal Component Analysis (PCA), Market Basket Analysis*
-- ✅[Advanced Data Analytics - D213](Advanced%20Data%20Analytics%20-%20D213) *Time Series Modeling, Sentiment Analysis Using Neural Networks*
-- ✅[Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214) Time Series Modeling with Meta's Prophet Framework
+- ✅[01 Orientation - ORA1](01%20Orientation%20-%20ORA1)
+- ✅[02 The Data Analytics Journey - D204](The%20Data%20Analytics%20Journey%20-%20%20D204)
+- ✅[03 Data Acquisition - D205](Data%20Acquisition%20-%20D205) *PostgreSQL*
+- ✅[04 Data Cleaning - D206](Data%20Cleaning%20-%20D206) *SQL, R and Principal Component Analysis (PCA)*
+- ✅[05 Exploratory Data Analysis - D207](Exploratory%20Data%20Analysis%20-%20D207) *Parametric testing in R (ANOVA, Chi-Square, T-test)*
+- ✅[06 Predictive Modeling – D208](Predictive%20Modeling%20–%20D208) *Linear and Logistic Regression*
+- ✅[07 Data Mining 1 - D209](Data%20Mining%20I%20-%20D209) *k-Nearest Neighbor and Decision tree analysis*
+- ✅[08 Representation and Reporting - D210](Representation%20and%20Reporting%20-%20D210) *SQL and Tableau*
+- ✅[09 Advanced Data Acquisition - D211](Advanced%20Data%20Acquisition%20-%20D211) *SQL and Tableau*
+- ✅[10 Data Mining 2 - D212](Data%20Mining%20II%20-%20D212) *K-Means, Principal Component Analysis (PCA), Market Basket Analysis*
+- ✅[11 Advanced Data Analytics - D213](Advanced%20Data%20Analytics%20-%20D213) *Time Series Modeling, Sentiment Analysis Using Neural Networks*
+- ✅[12 Data Analytics Graduate Capstone - D214](Data%20Analytics%20Graduate%20Capstone%20-%20D214) Time Series Modeling with Meta's Prophet Framework
 
 <!-- END COURSES -->
 #
