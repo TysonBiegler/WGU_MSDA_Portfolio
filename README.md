@@ -31,10 +31,8 @@ Feel free to connect with me and follow along with my progress.
 <img align="left" alt="R Studio" width="30px" style="padding-right:10px;" src="https://th.bing.com/th/id/R.bef4329fc09a8e2ec3d33e50e2ce669e?rik=p9uAp6ZFXw06lg&pid=ImgRaw&r=0" />
 <img align="left" alt="Python" width="30px" style="padding-right:10px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-plain.svg" />
 <img align="left" alt="Jupyter Notebooks" width="30px" style="padding-right:10px;" src="https://logos-download.com/wp-content/uploads/2021/01/Jupyter_Logo.png" />
-<img align="left" alt="PostgreSQL" width="30px" style="padding-right:10px;" src="https://th.bing.com/th/id/R.c70f2deca63a20f47ba6dbc5e9f22af4?rik=DxXsa94FRFwm7w&pid=ImgRaw&r=0" />
+<img align="left" alt="PostgreSQL" width="30px" style="padding-right:10px;" src="https://www.postgresql.org/media/img/about/press/elephant.png" />
 <img align="left" alt="Tableau" width="60px" style="padding-right:10px;" src="zzz_readme_images/62e14245eb4d9a9dc054c181.png" />
-
-
 
 <br />
 
