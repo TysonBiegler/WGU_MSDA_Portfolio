@@ -8,7 +8,7 @@ I began learning web development in 2018 and decided I really enjoyed analytics 
 
 I began my masters program in data analytics through western governors university in May 2024 and this is my portfolio of projects from that program. 
 
-Listed below is my linkedin profile and my portfolio hosted by Maven analytics. 
+Listed below is my linkedin profile and my portfolio hosted by Maven analytics.
 Feel free to connect with me and follow along with my progress.
 
 <p>
@@ -18,6 +18,7 @@ Feel free to connect with me and follow along with my progress.
     <a href="https://www.mavenanalytics.io/profile/Tyson-Biegler/87928615">
         <img width="150px" src="https://github.com/user-attachments/assets/0de9d634-e15a-4015-945d-1c9d00e951f6" />
     </a>
+    
 </p>
 
 ---
