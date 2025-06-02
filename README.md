@@ -8,7 +8,7 @@ I began learning web development in 2018 and decided I really enjoyed analytics 
 
 I began my masters program in data analytics through western governors university in May 2024 and this is my portfolio of projects from that program. 
 
-Listed below is my linkedin profile and my portfolio hosted by Maven analytics.
+Listed below is my linkedin profile (Feel free to reach out) and my personal project portfolio hosted by Maven analytics.
 Feel free to connect with me and follow along with my progress.
 
 <p>
