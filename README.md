@@ -6,7 +6,7 @@
 <br>
 I began learning web development in 2018 and decided I really enjoyed analytics after learning to use SQL in a web development bootcamp. So, I dove into data analytics in 2020. I completed several projects and certification programs ranging from the [Google data analytics professional certificate](https://www.coursera.org/account/accomplishments/professional-cert/PJYAPL3D7B2R) to [CS50](https://certificates.cs50.io/f6af04be-d727-4f4a-9236-4ef3e0989a83.pdf?size=letter) from Harvard University. 
 
-I began my masters program in data analytics through western governors university in May 2024 and this is my portfolio of projects from that program. 
+I began my masters program in data analytics through western governors university in May 2024 and graduated in May 2025. This is my portfolio of projects from that program. 
 
 Listed below is my linkedin profile (Feel free to reach out) and my personal project portfolio hosted by Maven analytics.
 Feel free to connect with me and follow along with my progress.
