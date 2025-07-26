@@ -1,0 +1,615 @@
+---
+title: "D208 Task 2"
+author: "Tyson Biegler"
+subtitle: "Student ID: 012170282"
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+options(warn = -1) #disable warning
+#install.packages("tidyverse")
+
+library(tidyverse)
+library(tidymodels) 
+library(MASS) 
+library(car)
+library(viridis) # color-blind color scheme for plots
+
+# Set wd ------------------------------------------------------------------
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Predictive Modeling – D208/Raw/task2')
+
+# Get data ----------------------------------------------------------------
+churn <- read_csv("churn_clean.csv")
+theme_set(theme_minimal())
+
+
+# Research Question -------------------------------------------------------
+
+# Which factors are most strongly associated with customer churn, and how do they influence the likelihood of churn?
+
+# Exploring the Data ------------------------------------------------------
+#getting a general understanding of the data
+
+glimpse(churn)
+str(churn)
+
+#checking for na and duplicates
+sum(is.na(churn))
+sum(duplicated(churn))
+
+# Clearn/Prepare Data -----------------------------------------------------
+
+# Convert Specific Columns to Binary Factor with levels 1 and 0
+churn <- churn %>%
+  mutate(across(c(Churn, 
+                  Techie, 
+                  Port_modem, 
+                  Tablet, 
+                  Phone, 
+                  Multiple,
+                  OnlineSecurity, 
+                  OnlineBackup, 
+                  DeviceProtection, 
+                  TechSupport,
+                  StreamingTV, 
+                  StreamingMovies, 
+                  PaperlessBilling),
+                ~ factor(. == 'Yes', levels = c(FALSE, TRUE), labels = c(0, 1))))
+
+#churn <- churn %>%
+ # mutate(across(c(Churn, 
+  #                Techie, 
+   #               Port_modem, 
+    #              Tablet, 
+     #             Phone, 
+      #            Multiple,
+       #           OnlineSecurity, 
+        #          OnlineBackup, 
+         #         DeviceProtection, 
+          #        TechSupport,
+           #       StreamingTV, 
+            #      StreamingMovies, 
+             #     PaperlessBilling),
+              #  ~ as.numeric(. == 'Yes')) )
+
+
+# Convert Specific Columns to Factors
+churn <- churn %>%
+  mutate_at(vars(City,
+                 State,
+                 Zip,
+                 Gender,
+                 Marital,
+                 Contract,
+                 Area,
+                 County,
+                 PaymentMethod,
+                 InternetService
+  ),
+  as.factor)
+
+# Convert Continuous Columns to Numeric
+churn <- churn %>%
+  mutate_at(vars(Tenure, MonthlyCharge, Bandwidth_GB_Year, Outage_sec_perweek), as.numeric)
+
+# Convert Columns to Integer for Count Variables
+churn <- churn %>% 
+  mutate_at(vars(Children, Age, Population, Email, Contacts, Yearly_equip_failure), as.integer)
+
+
+
+#Removing columns im not going to use
+churn <- churn[, !(names(churn) %in% c("CaseOrder", 
+                                       "Customer_id", 
+                                       "Interaction",
+                                       "UID",
+                                       "Lat", 
+                                       "Lng",
+                                       "County",
+                                       "TimeZone", 
+                                       "Job",
+                                       "City",
+                                       "State",
+                                       "Zip",
+                                       "Item1",
+                                       "Item2",
+                                       "Item3",
+                                       "Item4",
+                                       "Item5",
+                                       "Item6",
+                                       "Item7",
+                                       "Item8"
+        
+))]
+str(churn)
+```
+
+## **Part I: Research Question**
+
+**A1.** Which factors are most strongly associated with customer churn, and how do they influence the likelihood of churn?
+
+**A2.** This analysis aims to create a multiple logistic regression model to accurately predict customer churn. Company executives can use this model's data to accurately address customer churn.
+
+------------------------------------------------------------------------
+
+## **Part II: Method Justification**
+
+**B1**.  According to Zach Bobbitt from statology.org, there are 6 logistic regression assumptions. **(Z. Bobbit 2020)**\
+
+1.  The Response variable needs to be binary. I will be using a binary factor type in this analysis.
+
+2.  The observations need to be independent because they do not represent the same individual. For example, time series data about the height of an individual would violate this assumption because the observations are all repeated measurements unique to an individual.
+
+3.  multi-colinearity needs to be minimized among variables. Multicolinearity occurs when there is a high correlation between variables. Multi-colinearity is a problem because the highly correlated variables essentially tell the same story and do not add any unique information.
+
+4.  Outliers have been appropriately managed.
+
+5.  The relationship between the explanatory variables and the logit of the response variable is linear.
+
+6.  Lastly, linear regression assumes that the sample size is large enough to ensure reliable and meaningful conclusions from the fitted model.
+
+**B2**.  I will use R within R-Studio to perform this analysis. While Python can perform this same statistical analysis, it was not explicitly designed for this purpose. R, on the other hand, was specifically designed for statistical analysis (**Ihaka, n.d., p. 12**). Due to this, R is the more logical choice for performing statistical tasks. Secondly, I have more experience using R than I do with Python. I've used R to complete previous courses, and I feel that it is more intuitive than Python.
+
+**B3**.  Logistic regression is the appropriate technique for this analysis because the dependent variable is binary (Yes = 1, No = 0). Additionally, the predictor variables include a mix of categorical and continuous types, making logistic regression a good choice. Lastly, logistic regression ranks customers based on their odds of churning, enabling the company to identify and address at-risk customers promptly.
+
+------------------------------------------------------------------------
+
+## **Part III: Data Preparation**
+
+**C1**. In order for a logistic regression model to function properly and to accurately answer the research question, I need to ensure that my cleaning and preparation goals are met. First, I need to make sure that the variables I focus on are meaningful and relevant to the research question. Secondly, I have to ensure that categorical data are encoded as factors so that R can appropriately create dummy variables using its built-in one-hot encoding feature. Similarly, I need to confirm that quantitative data are correctly formatted as numeric or integer types to avoid processing errors and ensure accurate results.
+
+Too achieve these goals I need to remove irrelevant columns such as `customer_id`, `CaseOrder`, and some other columns with irrelevant data to my question. Secondly, I have to update the data types that I will explain more in section C4.
+
+**C2**. The dependent variable I’m explaining is ‘`Churn`.’ After removing several columns of data that had too many unique entries or contained irrelevant information, such as customer_id, `lat` and `lng`, I was left with around 70 independent variables, including the automatically generated dummy variables. The numeric and integer types all include a min, 1st Qu, Median, Mean, 3rd Qu, and Max values, whereas the factors include just the count for each level. The summary statistics below show all the variables, including the dependent variable, that I will use in my linear model. I will explain how I ended up with these variables in the next few sections.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(churn)
+```
+
+**C3**.  After running step-wise model selection based on the Akaike Information Criterion (AIC) and Backward elimination, I was left with far fewer variables than the initial mode. At this point my reduced model included 38 variables (including dummy variables). I eliminated more after insepcting the values of `VIF()`, which I will explain later. The following charts are the distributions of the variables I included in the final “**reduced_model.**”
+
+**Univariate plots**
+
+The univariate plots for the reduced model contain the following variables and their dummy variables.
+
+1.  Churn
+
+2.  Techie
+
+3.  Contract
+
+4.  InternetService
+
+5.  Phone
+
+6.  Multiple
+
+7.  OnlineBackup
+
+8.  DeviceProtection
+
+9.  StreamingTV
+
+10. StreamingMovies
+
+11. Tenure
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+# univariate plots --------------------------------------------------------
+
+univariate1 <- ggplot(churn, aes(x = Churn)) + 
+  geom_bar(aes(fill = Churn)) + 
+  ggtitle("Churn") +
+  scale_fill_viridis_d()
+
+univariate2 <- ggplot(churn, aes(x = Techie)) + 
+  geom_bar(aes(fill = Techie)) + 
+  ggtitle("Techie") +
+  scale_fill_viridis_d()
+
+univariate3 <- ggplot(churn, aes(x = Contract)) +
+  geom_bar(aes(fill = Contract)) +
+  ggtitle("Contract") +
+  scale_fill_viridis_d()
+
+univariate4 <- ggplot(churn, aes(x = InternetService)) +
+  geom_bar(aes(fill = InternetService)) +
+  ggtitle("InternetService") +
+  scale_fill_viridis_d()
+
+
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  univariate1, univariate2, 
+  univariate3, univariate4,
+  ncol = 2
+)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+univariate5 <- ggplot(churn, aes(x = Phone)) +
+  geom_bar(aes(fill = Phone)) +
+  ggtitle("Phone") +
+  scale_fill_viridis_d()
+
+univariate6 <- ggplot(churn, aes(x = Multiple)) +
+  geom_bar(aes(fill = Multiple)) +
+  ggtitle("Multiple") +
+  scale_fill_viridis_d()
+
+univariate7 <- ggplot(churn, aes(x = OnlineBackup)) +
+  geom_bar(aes(fill = OnlineBackup)) +
+  ggtitle("OnlineBackup") +
+  scale_fill_viridis_d()
+
+univariate8 <- ggplot(churn, aes(x = DeviceProtection)) +
+  geom_bar(aes(fill = DeviceProtection)) +
+  ggtitle("DeviceProtection") +
+  scale_fill_viridis_d()
+
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  univariate5, univariate6,
+  univariate7, univariate8,
+  ncol = 2
+)
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+univariate9 <- ggplot(churn, aes(x = StreamingTV)) +
+  geom_bar(aes(fill = StreamingTV)) +
+  ggtitle("StreamingTV") +
+  scale_fill_viridis_d()
+
+univariate10 <- ggplot(churn, aes(x = StreamingMovies)) +
+  geom_bar(aes(fill = StreamingMovies)) +
+  ggtitle("StreamingMovies") +
+  scale_fill_viridis_d()
+
+univariate11 <- ggplot(churn, aes(x = Tenure)) +
+  geom_histogram(aes(fill = ..count..), binwidth = 5) +
+  ggtitle("Tenure (In Months)") +
+  scale_fill_viridis_c()
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  univariate9, univariate10,
+  univariate11,
+  ncol = 2
+)
+```
+
+**Bivariate plots**
+
+The bivariate plots for the reduced model contain the following variables and their dummy variables.
+
+1.  Techie vs. Churn (Bar chart)
+
+2.  Contract vs. Churn (Bar chart)
+
+3.  InternetService vs. Churn (Bar chart)
+
+4.  Phone vs. Churn (Bar chart)
+
+5.  Multiple vs. Churn (Bar chart)
+
+6.  OnlineBackup vs. Churn (Bar chart)
+
+7.  DeviceProtection vs. Churn (Bar chart)
+
+8.  StreamingTV vs. Churn (Bar chart)
+
+9.  StreamingMovies vs. Churn (Bar chart)
+
+10. Tenure vs. Churn (Histogram)
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# bivariate plots ---------------------------------------------------------
+#Techie vs Churn
+bivariate1 <- ggplot(churn, aes(x = Techie, fill = Churn)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Techie") +
+  xlab("Techie") +
+  ylab("Count of Customers") +
+  scale_fill_viridis_d(name = "Churn") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#Contract vs Churn
+bivariate2 <- ggplot(churn, aes(x = Contract, fill = Churn)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Contract") +
+  xlab("Contract") +
+  ylab("Count of Customers") +
+  scale_fill_viridis_d(name = "Churn")
+
+#InternetService vs Churn
+bivariate3 <- ggplot(churn, aes(x = Churn, fill = InternetService)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by InternetService") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "InternetService")
+
+#Phone vs Churn
+bivariate4 <- ggplot(churn, aes(x = Churn, fill = Phone)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Phone") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "Phone")
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  bivariate1, bivariate2, bivariate3,
+  bivariate4,
+  ncol = 2
+)
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#Multiple vs Churn
+bivariate5 <- ggplot(churn, aes(x = Churn, fill = Multiple)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by Multiple") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "Multiple")
+
+#OnlineBackup vs Churn
+bivariate6 <- ggplot(churn, aes(x = Churn, fill = OnlineBackup)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by OnlineBackup") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "OnlineBackup")
+
+#DeviceProtection vs Churn
+bivariate7 <- ggplot(churn, aes(x = Churn, fill = DeviceProtection)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by DeviceProtection") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "DeviceProtection")
+
+#StreamingTV vs Churn
+bivariate8 <- ggplot(churn, aes(x = Churn, fill = StreamingTV)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by StreamingTV") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "StreamingTV")
+
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  bivariate5, bivariate6,
+  bivariate7, bivariate8,
+  ncol = 2
+)
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+#StreamingMovies vs Churn
+bivariate9 <- ggplot(churn, aes(x = Churn, fill = StreamingMovies)) +
+  geom_bar(position = "fill", alpha = 0.8) +
+  ggtitle("Churn by StreamingMovies") +
+  xlab("Churn") +
+  ylab("Proportion") +
+  scale_fill_viridis_d(name = "StreamingMovies")
+
+#Tenure vs Churn
+bivariate10 <- ggplot(churn, aes(x = Tenure, fill = Churn)) +
+  geom_histogram(alpha = 0.7, position = "identity", bins = 20) +
+  ggtitle("Churn by Tenure") +
+  xlab("Tenure") +
+  ylab("Count") +
+  scale_fill_viridis_d(name = "Churn")
+
+# Arrange all plots into a grid
+gridExtra::grid.arrange(
+  bivariate9,
+  bivariate10,
+  ncol = 2
+)
+```
+
+**C4**. R automatically generates dummy variables for each unique value in these factor variables. Because of this the categorical variables will be converted to factors. The remaining quantitative variables will be converted to integers or numeric, depending on the values.
+
+To align with my research question, binary variables, such as Churn and Techie, were converted to a factor encoded as 0 for No and 1 for Yes.
+
+**C5**. The prepared data set will be included in my submission files.\
+ 
+
+## **Part IV: Model Comparison and Analysis**
+
+**D1.** To set up my initial model i first started by separating in the data in to training and test sets with a 80/20 split. The initial model will attempt to explain `Churn` by all the remaining variables in the data set that were not removed in the data cleaning step.\
+\
+I begin by creating a logistic regression model using `glm()` because I need to use the statistical family "binomial' for logistic regression. I based the model on the training set of data, `churn_train`.
+
+```{r  warning=FALSE, echo=FALSE, include=FALSE}
+# The initial model -------------------------------------------------------
+
+set.seed(123)
+
+split <- initial_split(churn,
+                       prop = .80,
+                       strata = Churn)
+
+churn_train <- training(split)
+churn_test <- testing(split)
+```
+
+```{r warning=FALSE}
+initial_model <- glm(Churn ~. , data = churn_train, family = 'binomial')
+summary(initial_model)
+```
+
+The summary of the initial model shows that there are several variables whose coefficients do not add any statistically significant information to the model. I'll address these in the next step.
+
+The null deviance is 9251.6 on 7999 degrees of freedom, meaning that my response variable, `Churn`, shows a lot of variability without predictors and could be explained by adding predictor variables. The residual deviance of 3419.4 on 7910 degrees of freedom indicates that the predictor variables do indeed provide an effective explanation of the variability in `Churn`.
+
+The AIC for this model is 3599.4. I will reference this number again when comparing the reduced model.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
+plot(initial_model)
+```
+
+**D2**. I’ve chosen to use backward stepwise selection **(Larose & Larose, 2019)**, because I have a large amount of variables and backward elimination will remove each insignificant variable until only those values that have a meaningful contribution will remain.
+
+**D3**. After backward elimination I was left with the following model.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+reduced_model <- stepAIC(object = initial_model, direction = "backward", trace = FALSE)
+summary(reduced_model)
+
+```
+
+I checked for multicoliniarity using `vif()` by checking for values above 5. This model returned a few that were exceptionally high. `Bandwidth_GB_Year` was the highest with a vif value of 2656.593644. I manually removed this variable from the model and checked vif again to find that the other variables were less than 5 aside from `MonthlyCharge` whose value was 16.889045. Once these two variables were removed from the model all the vif values were under 5.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+vif_values <- vif(reduced_model)
+vif_values #Looking for VIF values above 5. 
+
+# Removed Bandwidth_GB_Year because of a VIF of 2656.593644 and MonthlyCharge with 16.889045
+reduced_model <- glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
+                       Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+                       StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
+                       Tenure, family = "binomial", 
+                     data = churn_train)
+
+summary(reduced_model)
+```
+
+Lastly I needed to remove the variables from the model that were not adding any value. `Children`, `Age`, `PaperlessBilling1`, and `OnlineSecurity1` all have coefficients that were not statistically significant. The following is the reduced model.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+# Removed values that did not have a statistically significant coefficient
+reduced_model <- glm(formula = Churn ~ Techie + Contract + InternetService + 
+                       Phone + Multiple + OnlineBackup + DeviceProtection + 
+                       StreamingTV + StreamingMovies + PaymentMethod + 
+                       Tenure, family = "binomial", 
+                     data = churn_train)
+summary(reduced_model)
+
+par(mfrow = c(2, 2)) # Arrange plots in a 2x2 grid
+plot(reduced_model)
+```
+
+The coefficients in the reduced model include variables whose coefficient is statistically significant at the 0.001 level. `Phone1` was kept because it showed a very minor significance, 0.1, but because of the vast number of variables that had no significance I decided to keep `Phone1`. `PaymentMethodCredit Card (automatic)` and `PaymentMethodMaild Check` were also kept in the model despite having an insignificant coefficient value. These dummy variables were retained because `PaymentMethod` is the variable and these 2 mentioned above are 2 of the levels. Because `PaymentMethodMailed Check` has a high significance at 0.001 I have decided to keep the variable `PaymentMethod` in the model.
+
+**E1**.  The AIC was used as one of the model evaluation metrics. The AIC for the initial model was **3599.4**, while the AIC for the reduced model was **3598.6**. The reduced model, having a lower AIC value, suggests that the model fits the data well while using far fewer predictors.
+
+Another metric used is a chi square test on the initial model and the reduced model. The chi square test will determine if the reduced model (simpler model) fits the data significantly worse than the initial model (complex model).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+anova(initial_model, reduced_model, "Chaisq")
+```
+
+The Chi-square test indicates that the reduced model has more residual degrees of freedom because it includes fewer predictors. However, the reduced model has a higher residual deviance, meaning it fits the data worse than the initial model. This is expected since eliminating predictors generally reduces the model's ability to explain the variance in the data. The difference in deviance between the models is -147.17, which confirms that the reduced model explains less variance than the initial model. Again, this is anticipated because fewer predictors are included.
+
+The p-value for the Chi-square test is 9.088e-07, which is far smaller than the significance threshold of 0.05. This indicates that the difference in deviance between the two models is statistically significant, meaning the initial model fits the data significantly better than the reduced model.
+
+However, the AIC for the reduced model is slightly smaller than that of the initial model, suggesting that the reduced model achieves a similar predictive power. In the next section, I will provide a detailed analysis of the reduced model's accuracy, but for now, it is worth noting that the reduced model predicts churn correctly 90.375% of the time.
+
+To summarize the comparison, while the initial model fits the data better, it is also far more complex. The reduced model, on the other hand, achieves similar predictive power (\>90% accuracy) with fewer predictors, demonstrating one of the benefits of simpler models: reduced data collection costs.
+
+**E2**. 
+
+I used the `predict()` function to predict the probabilities of churn in both the training set and the test set. If the probability is above 0.5, the `ifelse()` function assigns a '1', indicating that the predicted value is 'Churned,' and a '0' for 'Not Churned.'
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# predict -----------------------------------------------------------------
+p1 <- predict(reduced_model, churn_train, type='response')
+p2 <- predict(reduced_model, churn_test, type = 'response')
+
+# confusion matrix --------------------------------------------------------
+
+pred1 <- ifelse(p1 > 0.5, 1, 0) #if p1 is greater than 0.5 then return 1 else 0
+pred2 <- ifelse(p2 > 0.5, 1,0)
+```
+
+I've included the confusion matrix for both the test set and the training set below. This confusion matrix evaluates the model's predictions for churn and consists of true negatives, false negatives, false positives, and true positives. By adding up the accurate predictions (true negatives and true positives) and dividing by the total observations in the data set, I calculate the accuracy rate. Similarly, the misclassification rate is calculated as `1− 'Accuracy rate'`.
+
+For the training set (`churn_train`), the model accurately predicted churn 7,103 times out of a total of 8,000 observations, resulting in an accuracy rate of 90.375%. `1−0.90375=0.0965` Thus, the misclassification error, or the rate at which the model is incorrect, is 9.65%.
+
+For the training set (`churn_test`), the model accurately predicted churn 1765 times out of a total of 2,000 observations, resulting in an accuracy rate of 90.25%. `1−0.9025=0.0975` therefore, the misclassification error for the test set is 9.65%.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+table(Predicted = pred1, Actual = churn_train$Churn) #confusion matrix
+# (5401+1702)/8000 = 0.90375 model is 90.375% accurate
+# 1 - 0.90375 = 0.0965 misclassification error. 9.65% of the time the prediction is wrong
+
+table(Predicted = pred2, Actual = churn_test$Churn) #confusion matrix
+# (1349+416)/2000 = 0.9025 The model is 90.25% accurate in its predictions
+# 1 - 0.9025 = 0.975 misclassification error. 9.75% of the time the prediction is wrong 
+
+#Both models are similar in accuracy and misclassification
+```
+
+**E3**.  The full error-free code will be included in my submission files. It will be titled ***CodeV1T2.R***.\
+ 
+
+## **Part V: Data Summary and Implications**
+
+**F1**.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+reduced_model <- glm(formula = Churn ~ Techie + Contract + InternetService + 
+                       Phone + Multiple + OnlineBackup + DeviceProtection + 
+                       StreamingTV + StreamingMovies + PaymentMethod + 
+                       Tenure, family = "binomial", 
+                     data = churn_train)
+summary(reduced_model)
+```
+
+Several variables show a strong and significant association with churn. The variable with the most notable positive association is `StreamingMovies1` having an coefficient of 3.48437, which means that, holding all other variables constant, subscribing to `StreamingMovies` (increasing the predictor variable by 1) increases the log-odds of churn by 3.48437.
+
+To convert the log odds into odds I will get the exponentiated coefficients from the reduced model. (**RStudio, n.d.)**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Exponentiate the coefficients to get the odds ratios
+odds_ratios <- exp(coef(reduced_model))
+
+odds_ratios
+```
+
+The odds of churn are **32.60** times higher for customers with `StreamingMovies` services. similarly, `StreamingTV1` and `Multiple1` have 18.96 and 5.17 respectively, times higher odds of churning. Likewise, when a customer is a Techie (`Techie1`), the odds of churn are 2.993794507 times higher than non-techie customers.
+
+This model contains almost exclusively, variables whose statistical significance is 0.001. one variable has a 0.1 significance and two other dummy variables are not statistically significant but could not be removed because they are just part of a variable that does include a very statistically significant coefficient.
+
+This reduced model successfully predicts customer churn at a rate over 90%. Statistically, variables such as `Techie`, `Contract`, `InternetService`, `Multiple`, `StreamingTV`, `StreamingMovies`, and `Tenure` are highly significant, with p-values below 0.05. For instance, customers with `StreamingMovies1` or `StreamingTV1` are significantly more likely to churn, while longer contracts decreases the likelihood of churn. The model successfully reduces the number of variables making the model simpler and does not sacrafice fit or performance. Practically, these findings can offer meaningful insights since the company can accurately predict is a if a specific customer is going to churn or not.
+
+It is important to remember that correlation does not equal causation. For example, just because customers with a two year contract has far lower odds of churn as compared to a customer on the month to month contract, that does not mean that the contract length is the cause of the churn odds. There may be other factors that are not provided in the data set that are the actual cause of the lower odds.
+
+**F2**. The company should focus on longer `contracts`, specifically one or two year contracts, `InternetServiceFiber Optic` and `phone` services. These variables have the greatest effect on increasing customer churn. While I can not say that any of these variables are the cause of the customer not churning, the customers who subscribe to these services have far lower odds of churning than customers who do not subscribe. It also appears that streaming services are having a detrimental effect on customer churn. The company should investigate this further by collecting survey data that captures customer satisfaction. `StreamingTV` and `StreamingMovies` are the two most detrimental services to the company and should be investigated further.\
+ 
+
+## **Part VI: Demonstration**
+
+**G1**. The Panopto presentation link will be included in my submission.\
+ 
+
+**H - I  Sources**\
+
+1.  **Bobbitt, Z.** (2020, October 13).The 6 Assumptions of Logistic Regression (With Examples). Statology. Retrieved December 29, 2024, from https://www.statology.org/assumptions-of-logistic-regression/)
+
+2.  **Ihaka, R. (n.d.).** The R Project: A brief history and thoughts about the future (p. 12). The University of Auckland. Retrieved November 17, 2024, from https://www.stat.auckland.ac.nz/\~ihaka/downloads/Otago.pdf
+
+3.  **Larose, C. D., & Larose, D. T. (2019)**. Data science using Python and R. Wiley. Retrieved from https://eds.p.ebscohost.com/eds/ebookviewer/ebook/bmxlYmtfXzIwOTEzNzFfX0FO0?sid=04ef9475-3bed 4dbe-8317-a1c5eb6da3cb\@redis&vid=0&format=EB&lpid=lp_151&rid=0
+
+4.  **RStudio. (n.d.)**. *Logistic regression example*. RStudio. Retrieved January 5, 2025, from https://rstudio-pubs-static.s3.amazonaws.com/182726_aef0a3092d4240f3830c2a7a9546916a.html

@@ -1,0 +1,415 @@
+---
+title: "D212 Data Mining II Task 2"
+author: "Tyson Biegler - Student ID: 012170282"
+format: html
+editor: visual
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+# Tyson Biegler
+# Student ID: 012170282
+# D212 Data Mining II Task 2
+
+
+# Load necessary libraries
+library(tidyverse)
+library(plyr)
+library(factoextra)
+library(stats)
+
+options(scipen = 999) #To prevent scientific notation in the charts
+
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data mining II - D212/Raw')
+
+# Data acquisition --------------------------------------------------------
+churn <- read_csv("churn_clean.csv")
+
+# Cleaning Data -----------------------------------------------------------
+boxplot(churn$Age)  #No outliers
+
+# Income
+boxplot(churn$Income,
+        main = "Boxplot of Income",
+        ylab = "Value (Income in dollars)")
+boxplot.stats(churn$Income) # looking for the value of the upper whisker
+sum(churn$Income > 104166.70) #336 values above the upper whisker value
+churn$Income <- pmin(churn$Income, 104166.70)
+
+#NOTE:
+#If I impute with the mean then high income earners have an artificially low income and the customer similarities would be inaccurate. 
+#If I remove all outliers then I loose 336 rows (not a lot concerning the 10000 rows total), but im still loosing data. 
+#So Ive decided to use the pmin function to cap all the income above the upper whisker to the value of the upper whisker. All rows are retained, and the extreme outliers are capped at a more realistic value as opposed to the mean which would be alot lower. 
+
+boxplot(churn$Outage_sec_perweek,
+        main = "Outage_sec_perweek boxplot",
+        ylab = "Value (Seconds)")
+boxplot.stats(churn$Outage_sec_perweek)
+sum(churn$Outage_sec_perweek > 17.861530) #retaining the values because of the small number (43 values)
+
+# PCA ---------------------------------------------------------------------
+
+#Selecting only the numeric variables
+churn <- select(churn, where(is.numeric))
+glimpse(churn)
+
+# Remove discrete numeric variables
+churn <- churn %>%
+  select(-c(CaseOrder,
+            Lat,
+            Lng,
+            Zip,
+            Population,
+            Children,
+            Email, 
+            Contacts, 
+            Yearly_equip_failure, 
+            Item1, 
+            Item2, 
+            Item3, 
+            Item4, 
+            Item5, 
+            Item6, 
+            Item7, 
+            Item8))
+
+
+# Running PCA and scaling the data
+scaled_churn <- as.data.frame(scale(churn))
+pca <- prcomp(scaled_churn, center = FALSE, scale = FALSE)
+
+# Summary and loadings
+summary(pca)
+
+#Loading Matrix
+print(pca$rotation)
+
+
+# Elbow Method ------------------------------------------------------------
+# Summary and scree plot
+summary(pca)
+
+fviz_eig(pca, choice = "variance", addlabels = TRUE, 
+         main = "Scree Plot(Elbow Method)", xlab = "Principal Component", ylab = "Variance Explained (%)")
+
+#Selecting the first 2 PCs based on the elobw plot
+print(pca$rotation[, 1:2])
+#Explained variance for the selected pcs
+explained_variance <- pca$sdev^2 / sum(pca$sdev^2)
+print(explained_variance[1:2])
+#Total variance caputed by PCA
+print(sum(explained_variance[1:2]))
+
+#NOTE:                                                                                                             
+#Elbow method explains 0.503114 of total variance. Because the total explained variance is so low I will try the Kaiser method because the second through the fifth principal components are essentially the same explained variance, between 17.1% - 16.2%. So I want to see if the Kaiser method will suggest keeping more than 2 PCs. 
+
+
+# Kaiser Method -----------------------------------------------------------
+
+#Calculating eigenvalues for Kaiser method
+eigenvalues <- pca$sdev^2
+print(eigenvalues)
+#Select components with eigenvalues > 1
+kaiser_method <- sum(eigenvalues > 1)
+cat('Number of components to keep:', kaiser_method)
+
+#Selected PCs
+print(pca$rotation[, 1:kaiser_method]) #selecting values 1 through the number returned by the sum(eigenvalues > 1) formula.
+
+#Explained variance for the selected components
+explained_variance <- eigenvalues / sum(eigenvalues)
+print(explained_variance[1:kaiser_method])
+
+# Total variance captured
+print(sum(explained_variance[1:kaiser_method]))
+total_variance <- sum(explained_variance[1:kaiser_method])
+
+percentage <- round(sum(explained_variance[1:kaiser_method]) * 100, 2)
+
+cat('Total variance explained in the first',kaiser_method,'components:',percentage,"%", '(',total_variance, ')')
+
+fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE,
+         main = "Scree Plot (Kaiser Method)", xlab = "Principal Component", ylab = "Eigenvalue") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red")
+
+
+#NOTE:
+#The Kaiser method suggest keeping 3 principal components and results in an explained total variance of 67.08%. So I will use the Kaiser method in my write up. 
+
+# Visualize variable contributions
+fviz_pca_var(pca, col.var = "contrib", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE)
+
+```
+
+**Part I: Research Question**
+
+**A1.** I want to see if I can use PCA to determine which factors are the highest contributors to customer churn.
+
+**A2.** My goal is to identify and prioritize the most significant factors that are contributing to customer churn by using PCA as a dimension reduction technique, while retaining the factors that explain the most variance in the data.
+
+**Part II: Method Justification**
+
+**B1.** PCA analyzes the data by reducing the features into a smaller set of 'principal components' that are ordered by the variance they explain. PCA helps to reduce the dimensionality while maintaining as much variance or patterns as possible while simplifying the dataset *(Lever et al., 2017)*. It does this by calculating the covariance between variables before comparing the covariance between difference variables in the da
+
+**B2.** One of the major assumptions of PCA is that the data is continuous numerical data (*Thaddeus, 2019*). This is because PCA relies on calculating the covariance between variables and categorical variables do not have a numerical distance.
+
+**Part III: Data Preparation**
+
+**C1.** The continuous variables I will be using are listed below:
+
+```{r}
+print(names(churn))
+```
+
+As mentioned above, it is important that the variables are continuous. I've included `Age` in the variables I'll be using because a person's age is continonus, but here in the dataset it is recorded as a discrete variable. \
+\
+I checked for outliers in all the variables listed above and found outliers in `Outage_sec_perweek`, and `Income`. `Outage_sec_perweek` only had 43 values that were outliers and they did not appear to be so extreme that they needed to be removed and therefore they were retained.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data mining II - D212/Raw')
+churn <- read_csv("churn_clean.csv")
+
+boxplot(churn$Outage_sec_perweek,
+        main = "Outage_sec_perweek boxplot with outliers",
+        ylab = "Value (Seconds)")
+```
+
+Income had more 'significant' outliers.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data mining II - D212/Raw')
+
+churn <- read_csv("churn_clean.csv")
+
+boxplot(churn$Income,
+        main = "Boxplot of Income with outliers",
+        ylab = "Value (Income in dollars)")
+```
+
+I chose to cap the income values at the value of the upper whisker using the `pmin()` function. The mean of income is \$39,806.93 and the Max is \$258,900.70 so imputing the mean would distort the actual incomes so much that this data would not be able to be used accurately in some of the clustering models. Removing the outliers was another option since there were only 336 outliers in the 10,000 row dataset. However, removing these rows excludes the high earning customers from any clustering or regression analysis. Because of this, I chose to just cap the highest earning incomes at the value of the upper whisker, \$104,166.70
+
+Income after using `pmin()`
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# Income
+churn$Income <- pmin(churn$Income, 104166.70)
+
+boxplot(churn$Income,
+        main = "Boxplot of Income with outliers capped",
+        ylab = "Value (Income in dollars)")
+
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+# Tyson Biegler
+# Student ID: 012170282
+# D212 Data Mining II Task 2
+
+
+# Load necessary libraries
+library(tidyverse)
+library(plyr)
+library(factoextra)
+library(stats)
+
+options(scipen = 999) #To prevent scientific notation in the charts
+
+setwd('C:/Users/tyson/Documents/GitHub/WGU_MSDA_Portfolio/Data mining II - D212/Raw')
+
+# Data acquisition --------------------------------------------------------
+churn <- read_csv("churn_clean.csv")
+
+# Cleaning Data -----------------------------------------------------------
+boxplot(churn$Age)  #No outliers
+
+# Income
+boxplot(churn$Income,
+        main = "Boxplot of Income",
+        ylab = "Value (Income in dollars)")
+boxplot.stats(churn$Income) # looking for the value of the upper whisker
+sum(churn$Income > 104166.70) #336 values above the upper whisker value
+churn$Income <- pmin(churn$Income, 104166.70)
+
+#NOTE:
+#If I impute with the mean then high income earners have an artificially low income and the customer similarities would be inaccurate. 
+#If I remove all outliers then I loose 336 rows (not a lot concerning the 10000 rows total), but im still loosing data. 
+#So Ive decided to use the pmin function to cap all the income above the upper whisker to the value of the upper whisker. All rows are retained, and the extreme outliers are capped at a more realistic value as opposed to the mean which would be alot lower. 
+
+boxplot(churn$Outage_sec_perweek,
+        main = "Outage_sec_perweek boxplot",
+        ylab = "Value (Seconds)")
+boxplot.stats(churn$Outage_sec_perweek)
+sum(churn$Outage_sec_perweek > 17.861530) #retaining the values because of the small number (43 values)
+
+# PCA ---------------------------------------------------------------------
+
+#Selecting only the numeric variables
+churn <- select(churn, where(is.numeric))
+glimpse(churn)
+
+# Remove discrete numeric variables
+churn <- churn %>%
+  select(-c(CaseOrder,
+            Lat,
+            Lng,
+            Zip,
+            Population,
+            Children,
+            Email, 
+            Contacts, 
+            Yearly_equip_failure, 
+            Item1, 
+            Item2, 
+            Item3, 
+            Item4, 
+            Item5, 
+            Item6, 
+            Item7, 
+            Item8))
+
+
+# Running PCA and scaling the data
+scaled_churn <- as.data.frame(scale(churn))
+pca <- prcomp(scaled_churn, center = FALSE, scale = FALSE)
+
+# Summary and loadings
+summary(pca)
+
+#Loading Matrix
+print(pca$rotation)
+
+
+# Elbow Method ------------------------------------------------------------
+# Summary and scree plot
+summary(pca)
+
+fviz_eig(pca, choice = "variance", addlabels = TRUE, 
+         main = "Scree Plot(Elbow Method)", xlab = "Principal Component", ylab = "Variance Explained (%)")
+
+#Selecting the first 2 PCs based on the elobw plot
+print(pca$rotation[, 1:2])
+#Explained variance for the selected pcs
+explained_variance <- pca$sdev^2 / sum(pca$sdev^2)
+print(explained_variance[1:2])
+#Total variance caputed by PCA
+print(sum(explained_variance[1:2]))
+
+#NOTE:                                                                                                             
+#Elbow method explains 0.503114 of total variance. Because the total explained variance is so low I will try the Kaiser method because the second through the fifth principal components are essentially the same explained variance, between 17.1% - 16.2%. So I want to see if the Kaiser method will suggest keeping more than 2 PCs. 
+
+
+# Kaiser Method -----------------------------------------------------------
+
+#Calculating eigenvalues for Kaiser method
+eigenvalues <- pca$sdev^2
+print(eigenvalues)
+#Select components with eigenvalues > 1
+kaiser_method <- sum(eigenvalues > 1)
+cat('Number of components to keep:', kaiser_method)
+
+#Selected PCs
+print(pca$rotation[, 1:kaiser_method]) #selecting values 1 through the number returned by the sum(eigenvalues > 1) formula.
+
+#Explained variance for the selected components
+explained_variance <- eigenvalues / sum(eigenvalues)
+print(explained_variance[1:kaiser_method])
+
+# Total variance captured
+print(sum(explained_variance[1:kaiser_method]))
+total_variance <- sum(explained_variance[1:kaiser_method])
+
+percentage <- round(sum(explained_variance[1:kaiser_method]) * 100, 2)
+
+cat('Total variance explained in the first',kaiser_method,'components:',percentage,"%", '(',total_variance, ')')
+
+fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE,
+         main = "Scree Plot (Kaiser Method)", xlab = "Principal Component", ylab = "Eigenvalue") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red")
+
+
+#NOTE:
+#The Kaiser method suggest keeping 3 principal components and results in an explained total variance of 67.08%. So I will use the Kaiser method in my write up. 
+
+# Visualize variable contributions
+fviz_pca_var(pca, col.var = "contrib", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE)
+
+```
+
+**C2.**  The cleaned CSV file will be included in the submission files and will be named 'CLEANED_churn.csv'. The dataset was scaled and saved as a data frame called 'scaled_churn'.
+
+```{r}
+# Standardize the variables into a new dataframe
+scaled_churn <- as.data.frame(scale(churn))
+
+head(scaled_churn)
+```
+
+**Part IV: Analysis**
+
+**D1.** In PC1 the greatest contributors are Tenure and Bandwidth_GB_Year. PC2's greatest contributors are Outage_sec_perweek and MonthlyCharge. PC3's single greatest contributor is Age. The first two principal components explain 50.31% of variance and 67.08 for the first three components.
+
+```{r}
+#Loading Matrix
+print(pca$rotation)
+
+# Summary and loadings
+summary(pca)
+```
+
+**D2.** Initially I opted to use the elbow method with a scree plot. The elbow below shows that the cutoff should be at 2 principal components accounting for 50.31% of the variance.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+fviz_eig(pca, choice = "variance", addlabels = TRUE, 
+         main = "Scree Plot", xlab = "Principal Component", ylab = "Variance Explained (%)")
+```
+
+The kaiser method suggested that the first three Principal Components are kept due to the these having an eigenvalue above 1 (*Statistics Easily 2023*). Retaining the first three principal components results in a model that accounts for 67.08% of the variance. Therefore I will be using the kaiser method for the remainder of this analysis.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+fviz_eig(pca, choice = "eigenvalue", addlabels = TRUE,
+         main = "Scree Plot (Kaiser Method)", xlab = "Principal Component", ylab = "Eigenvalue") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red")
+  
+eigenvalues <- pca$sdev^2
+cat('Eigenvalues:',eigenvalues)
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+#Select components with eigenvalues > 1
+kaiser_method <- sum(eigenvalues > 1)
+cat('Number of components to keep:', kaiser_method)
+
+#Selected PCs
+print(pca$rotation[, 1:kaiser_method]) #selecting values 1 through the number returned by the sum(eigenvalues > 1) formula.
+```
+
+**D3.** PC1 explains 33.22% of variance. PC2 explains 17.09% of variance. And PC3 explains 16.77% of variance.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+#Explained variance for the selected pcs
+explained_variance <- eigenvalues / sum(eigenvalues)
+print(explained_variance[1:kaiser_method])
+```
+
+**D4.** The first three principal components, recomended by the kaiser method, capture a total explained variance (*cumulative proportion*) of 67.08% or 0.6708397.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# Total variance captured
+total_variance <- sum(explained_variance[1:kaiser_method])
+
+percentage <- round(sum(explained_variance[1:kaiser_method]) * 100, 2)
+
+pca_summary <- summary(pca)
+print(pca_summary$importance[, 1:3])
+```
+
+5.  This PCA analysis reduced the original six principal components to three components while maintaining 67.08% of the original variance. PC1 is mainly influenced by `Tenure` and `Bandwidth_GB_Year`, PC2 by `Outage_sec_perweek` and `MonthlyCharge`, and PC3 by `Age`. While the elbow method suggested keeping two components, accounting for 50.31% of variance, the Kaiser method recommended three components with eigenvalues above 1. Therefore the Kaiser method was chosen for its high explained variance and better representation of the data.
+
+**Part V: Attachments**
+
+**E-F**. Sources:
+
+Lever, J., Krzywinski, M., & Altman, N. (2017). *Principal component analysis*. *Nature Methods, 14*(7), 641-642. <https://www.nature.com/articles/nmeth.4346>
+
+Statistics Easily. (2023). *What is Kaiser criterion? Detailed explanation*. <https://statisticseasily.com/glossario/what-is-kaiser-criterion-detailed-explanation/>
+
+Thaddeus. (2019, August 31). *When to use principal component analysis*. *Crunching the Data*. <https://www.crunchingnumbers.live/2019/08/31/when-to-use-principal-component-analysis/>

@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tyson Biegler">
+
+<title>D208 Task 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="WriteUpV1_T2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="WriteUpV1_T2_files/libs/quarto-html/quarto.js"></script>
+<script src="WriteUpV1_T2_files/libs/quarto-html/popper.min.js"></script>
+<script src="WriteUpV1_T2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="WriteUpV1_T2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="WriteUpV1_T2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="WriteUpV1_T2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="WriteUpV1_T2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="WriteUpV1_T2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="WriteUpV1_T2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">D208 Task 2</h1>
+<p class="subtitle lead">Student ID: 012170282</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tyson Biegler </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="part-i-research-question" class="level2">
+<h2 class="anchored" data-anchor-id="part-i-research-question"><strong>Part I: Research Question</strong></h2>
+<p><strong>A1.</strong>&nbsp;Which factors are most strongly associated with customer churn, and how do they influence the likelihood of churn?</p>
+<p><strong>A2.</strong>&nbsp;This analysis aims to create a multiple logistic regression model to accurately predict customer churn. Company executives can use this model’s data to accurately address customer churn.</p>
+<hr>
+</section>
+<section id="part-ii-method-justification" class="level2">
+<h2 class="anchored" data-anchor-id="part-ii-method-justification"><strong>Part II: Method Justification</strong></h2>
+<p><strong>B1</strong>.&nbsp;&nbsp;According to Zach Bobbitt from statology.org, there are 6 logistic regression assumptions. <strong>(Z. Bobbit 2020)</strong><br>
+</p>
+<ol type="1">
+<li><p>The Response variable needs to be binary. I will be using a binary factor type in this analysis.</p></li>
+<li><p>The observations need to be independent because they do not represent the same individual. For example, time series data about the height of an individual would violate this assumption because the observations are all repeated measurements unique to an individual.</p></li>
+<li><p>multi-colinearity needs to be minimized among variables. Multicolinearity occurs when there is a high correlation between variables. Multi-colinearity is a problem because the highly correlated variables essentially tell the same story and do not add any unique information.</p></li>
+<li><p>Outliers have been appropriately managed.</p></li>
+<li><p>The relationship between the explanatory variables and the logit of the response variable is linear.</p></li>
+<li><p>Lastly, linear regression assumes that the sample size is large enough to ensure reliable and meaningful conclusions from the fitted model.</p></li>
+</ol>
+<p><strong>B2</strong>.&nbsp; I will use R within R-Studio to perform this analysis. While Python can perform this same statistical analysis, it was not explicitly designed for this purpose. R, on the other hand, was specifically designed for statistical analysis (<strong>Ihaka, n.d., p.&nbsp;12</strong>). Due to this, R is the more logical choice for performing statistical tasks. Secondly, I have more experience using R than I do with Python. I’ve used R to complete previous courses, and I feel that it is more intuitive than Python.</p>
+<p><strong>B3</strong>.&nbsp;&nbsp;Logistic regression is the appropriate technique for this analysis because the dependent variable is binary (Yes = 1, No = 0). Additionally, the predictor variables include a mix of categorical and continuous types, making logistic regression a good choice. Lastly, logistic regression ranks customers based on their odds of churning, enabling the company to identify and address at-risk customers promptly.</p>
+<hr>
+</section>
+<section id="part-iii-data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="part-iii-data-preparation"><strong>Part III: Data Preparation</strong></h2>
+<p><strong>C1</strong>. In order for a logistic regression model to function properly and to accurately answer the research question, I need to ensure that my cleaning and preparation goals are met. First, I need to make sure that the variables I focus on are meaningful and relevant to the research question. Secondly, I have to ensure that categorical data are encoded as factors so that R can appropriately create dummy variables using its built-in one-hot encoding feature. Similarly, I need to confirm that quantitative data are correctly formatted as numeric or integer types to avoid processing errors and ensure accurate results.</p>
+<p>Too achieve these goals I need to remove irrelevant columns such as <code>customer_id</code>, <code>CaseOrder</code>, and some other columns with irrelevant data to my question. Secondly, I have to update the data types. The categorical variables will be converted to factors, and the remaining quantitative variables will be converted to integers or numerical, depending on the values.</p>
+<p><strong>C2</strong>. The dependent variable I’m explaining is ‘<code>Churn</code>.’ After removing several columns of data that had too many unique entries or contained irrelevant information, such as customer_id, <code>lat</code> and <code>lng</code>, I was left with around 70 independent variables, including the automatically generated dummy variables. The numeric and integer types all include a min, 1st Qu, Median, Mean, 3rd Qu, and Max values, whereas the factors include just the count for each level. The summary statistics below show all the variables, including the dependent variable, that I will use in my linear model. I will explain how I ended up with these variables in the next few sections.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>   Population           Area         Children           Age       
+ Min.   :     0   Rural   :3327   Min.   : 0.000   Min.   :18.00  
+ 1st Qu.:   738   Suburban:3346   1st Qu.: 0.000   1st Qu.:35.00  
+ Median :  2910   Urban   :3327   Median : 1.000   Median :53.00  
+ Mean   :  9757                   Mean   : 2.088   Mean   :53.08  
+ 3rd Qu.: 13168                   3rd Qu.: 3.000   3rd Qu.:71.00  
+ Max.   :111850                   Max.   :10.000   Max.   :89.00  
+     Income                  Marital           Gender     Churn   
+ Min.   :   348.7   Divorced     :2092   Female   :5025   0:7350  
+ 1st Qu.: 19224.7   Married      :1911   Male     :4744   1:2650  
+ Median : 33170.6   Never Married:1956   Nonbinary: 231           
+ Mean   : 39806.9   Separated    :2014                            
+ 3rd Qu.: 53246.2   Widowed      :2027                            
+ Max.   :258900.7                                                 
+ Outage_sec_perweek     Email          Contacts      Yearly_equip_failure
+ Min.   : 0.09975   Min.   : 1.00   Min.   :0.0000   Min.   :0.000       
+ 1st Qu.: 8.01821   1st Qu.:10.00   1st Qu.:0.0000   1st Qu.:0.000       
+ Median :10.01856   Median :12.00   Median :1.0000   Median :0.000       
+ Mean   :10.00185   Mean   :12.02   Mean   :0.9942   Mean   :0.398       
+ 3rd Qu.:11.96949   3rd Qu.:14.00   3rd Qu.:2.0000   3rd Qu.:1.000       
+ Max.   :21.20723   Max.   :23.00   Max.   :7.0000   Max.   :6.000       
+ Techie             Contract    Port_modem Tablet      InternetService Phone   
+ 0:8321   Month-to-month:5456   0:5166     0:7009   DSL        :3463   0: 933  
+ 1:1679   One year      :2102   1:4834     1:2991   Fiber Optic:4408   1:9067  
+          Two Year      :2442                       None       :2129           
+                                                                               
+                                                                               
+                                                                               
+ Multiple OnlineSecurity OnlineBackup DeviceProtection TechSupport StreamingTV
+ 0:5392   0:6424         0:5494       0:5614           0:6250      0:5071     
+ 1:4608   1:3576         1:4506       1:4386           1:3750      1:4929     
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+ StreamingMovies PaperlessBilling                  PaymentMethod 
+ 0:5110          0:4118           Bank Transfer(automatic):2229  
+ 1:4890          1:5882           Credit Card (automatic) :2083  
+                                  Electronic Check        :3398  
+                                  Mailed Check            :2290  
+                                                                 
+                                                                 
+     Tenure       MonthlyCharge    Bandwidth_GB_Year
+ Min.   : 1.000   Min.   : 79.98   Min.   : 155.5   
+ 1st Qu.: 7.918   1st Qu.:139.98   1st Qu.:1236.5   
+ Median :35.431   Median :167.48   Median :3279.5   
+ Mean   :34.526   Mean   :172.62   Mean   :3392.3   
+ 3rd Qu.:61.480   3rd Qu.:200.73   3rd Qu.:5586.1   
+ Max.   :71.999   Max.   :290.16   Max.   :7159.0   </code></pre>
+</div>
+</div>
+<p><strong>C3</strong>.&nbsp; After running step-wise model selection based on the Akaike Information Criterion (AIC) and Backward elimination, I was left with far fewer variables than the initial mode. At this point my reduced model included 38 variables (including dummy variables). I eliminated more using <code>VIF()</code>, which I will explain later. The following charts are the distributions of the variables I included in the final “<strong>reduced_model.</strong>”</p>
+<p><strong>Univariate plots</strong></p>
+<p>The univariate plots for the reduced model contain the following variables and their dummy variables.</p>
+<ol type="1">
+<li><p>Churn</p></li>
+<li><p>Techie</p></li>
+<li><p>Contract</p></li>
+<li><p>InternetService</p></li>
+<li><p>Phone</p></li>
+<li><p>Multiple</p></li>
+<li><p>OnlineBackup</p></li>
+<li><p>DeviceProtection</p></li>
+<li><p>StreamingTV</p></li>
+<li><p>StreamingMovies</p></li>
+<li><p>Tenure</p></li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Bivariate plots</strong></p>
+<p>The bivariate plots for the reduced model contain the following variables and their dummy variables.</p>
+<ol type="1">
+<li><p>Techie vs.&nbsp;Churn (Bar chart) x</p></li>
+<li><p>Contract vs.&nbsp;Churn (Bar chart) x</p></li>
+<li><p>InternetService vs.&nbsp;Churn (Bar chart)x</p></li>
+<li><p>Phone vs.&nbsp;Churn (Bar chart)x</p></li>
+<li><p>Multiple vs.&nbsp;Churn (Bar chart)x</p></li>
+<li><p>OnlineBackup vs.&nbsp;Churn (Bar chart)x</p></li>
+<li><p>DeviceProtection vs.&nbsp;Churn (Bar chart)x</p></li>
+<li><p>StreamingTV vs.&nbsp;Churn (Bar chart)x</p></li>
+<li><p>StreamingMovies vs.&nbsp;Churn (Bar chart)</p></li>
+<li><p>Tenure vs.&nbsp;Churn (Histogram)</p></li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>C4</strong>.&nbsp;renamed the survey response variables to improve clarity and converted them to factors. R automatically generates dummy variables for each unique value in these factor variables.</p>
+<p><strong>C5</strong>.&nbsp;The prepared data set will be included in my submission files.<br>
+&nbsp;</p>
+</section>
+<section id="part-iv-model-comparison-and-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="part-iv-model-comparison-and-analysis"><strong>Part IV: Model Comparison and Analysis</strong></h2>
+<p><strong>D1.</strong> To set up my initial model i first started by separating in the data in to training and test sets with a 80/20 split. The initial model will attempt to explain <code>Churn</code> by all the remaining variables in the data set that were not removed in the data cleaning step.<br>
+<br>
+I begin by creating a logistic regression model using <code>glm()</code> because I need to use the statistical family “binomial’ for logistic regression. I based the model on the training set of data, <code>churn_train</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>initial_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(Churn <span class="sc">~</span>. , <span class="at">data =</span> churn_train, <span class="at">family =</span> <span class="st">'binomial'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(initial_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ ., family = "binomial", data = churn_train)
+
+Coefficients:
+                                       Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -4.695e+00  1.657e+00  -2.834 0.004602 ** 
+Population                            1.193e-06  3.087e-06   0.387 0.699116    
+AreaSuburban                         -6.288e-02  1.074e-01  -0.585 0.558341    
+AreaUrban                             1.897e-02  1.059e-01   0.179 0.857872    
+Children                              4.517e-02  1.543e-01   0.293 0.769690    
+Age                                  -4.738e-03  1.649e-02  -0.287 0.773853    
+Income                                3.333e-07  1.526e-06   0.218 0.827085    
+MaritalMarried                        2.568e-01  1.371e-01   1.873 0.061090 .  
+MaritalNever Married                  3.253e-02  1.364e-01   0.238 0.811539    
+MaritalSeparated                      2.223e-01  1.349e-01   1.648 0.099412 .  
+MaritalWidowed                        2.503e-01  1.356e-01   1.847 0.064790 .  
+GenderMale                            4.191e-01  3.229e-01   1.298 0.194338    
+GenderNonbinary                      -9.937e-02  3.137e-01  -0.317 0.751449    
+Outage_sec_perweek                   -1.525e-02  1.461e-02  -1.043 0.296779    
+Email                                -5.357e-03  1.430e-02  -0.375 0.707866    
+Contacts                              5.818e-02  4.395e-02   1.324 0.185630    
+Yearly_equip_failure                 -2.839e-02  6.801e-02  -0.418 0.676306    
+Techie1                               1.099e+00  1.158e-01   9.488  &lt; 2e-16 ***
+ContractOne year                     -3.454e+00  1.448e-01 -23.856  &lt; 2e-16 ***
+ContractTwo Year                     -3.525e+00  1.430e-01 -24.653  &lt; 2e-16 ***
+Port_modem1                           1.055e-01  8.674e-02   1.216 0.224059    
+Tablet1                              -4.338e-02  9.476e-02  -0.458 0.647092    
+InternetServiceFiber Optic           -2.841e+00  2.357e+00  -1.205 0.228201    
+InternetServiceNone                  -1.572e+00  1.878e+00  -0.837 0.402565    
+Phone1                               -2.483e-01  1.459e-01  -1.701 0.088899 .  
+Multiple1                             3.146e-01  2.273e-01   1.384 0.166265    
+OnlineSecurity1                      -1.396e-01  3.506e-01  -0.398 0.690571    
+OnlineBackup1                        -8.369e-02  2.031e-01  -0.412 0.680264    
+DeviceProtection1                    -4.543e-02  2.621e-01  -0.173 0.862364    
+TechSupport1                         -2.075e-01  1.951e-01  -1.063 0.287607    
+StreamingTV1                          1.341e+00  5.701e-01   2.353 0.018635 *  
+StreamingMovies1                      1.437e+00  4.076e-01   3.525 0.000423 ***
+PaperlessBilling1                     1.577e-01  8.803e-02   1.791 0.073253 .  
+PaymentMethodCredit Card (automatic)  1.515e-01  1.308e-01   1.158 0.246918    
+PaymentMethodElectronic Check         5.683e-01  1.187e-01   4.789 1.67e-06 ***
+PaymentMethodMailed Check             9.916e-02  1.299e-01   0.763 0.445430    
+Tenure                               -5.721e-03  4.078e-01  -0.014 0.988808    
+MonthlyCharge                         4.486e-02  1.561e-02   2.874 0.004056 ** 
+Bandwidth_GB_Year                    -1.348e-03  4.978e-03  -0.271 0.786498    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3459.5  on 7961  degrees of freedom
+AIC: 3537.5
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p>The summary of the initial model shows that there are several variables whose coefficients do not add any statistically significant information to the model. I’ll address these in the next step.</p>
+<p>The null deviance is 9251.6 on 7999 degrees of freedom, meaning that my response variable, <code>Churn</code>, shows a lot of variability without predictors and could be explained by adding predictor variables. The residual deviance of 3419.4 on 7910 degrees of freedom indicates that the predictor variables do indeed provide an effective explanation of the variability in <code>Churn</code>.</p>
+<p>The AIC for this model is 3599.4. I will reference this number again when comparing the reduced model.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>D2</strong>.&nbsp;I’ve chosen to use backward stepwise selection <strong>(Larose &amp; Larose, 2019)</strong>, because I have a large amount of variables and backward elimination will remove each insignificant variable until only those values that have a meaningful contribution will remain.</p>
+<p><strong>D3</strong>. After backward elimination I was left with the following model.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
+    Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+    StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
+    Tenure + MonthlyCharge + Bandwidth_GB_Year, family = "binomial", 
+    data = churn_train)
+
+Coefficients:
+                                      Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -6.546167   0.670910  -9.757  &lt; 2e-16 ***
+Children                             -0.146373   0.042548  -3.440 0.000581 ***
+Age                                   0.015510   0.004485   3.458 0.000543 ***
+Techie1                               1.099979   0.115276   9.542  &lt; 2e-16 ***
+ContractOne year                     -3.445299   0.144164 -23.898  &lt; 2e-16 ***
+ContractTwo Year                     -3.507074   0.141909 -24.714  &lt; 2e-16 ***
+InternetServiceFiber Optic            0.095929   0.562920   0.170 0.864686    
+InternetServiceNone                   0.761809   0.489279   1.557 0.119470    
+Phone1                               -0.243791   0.145357  -1.677 0.093506 .  
+Multiple1                             0.463706   0.161808   2.866 0.004160 ** 
+OnlineSecurity1                      -0.564547   0.125614  -4.494 6.98e-06 ***
+OnlineBackup1                        -0.249549   0.139805  -1.785 0.074265 .  
+DeviceProtection1                    -0.337493   0.124476  -2.711 0.006702 ** 
+StreamingTV1                          0.710337   0.267354   2.657 0.007886 ** 
+StreamingMovies1                      1.097328   0.272227   4.031 5.56e-05 ***
+PaperlessBilling1                     0.149497   0.087666   1.705 0.088140 .  
+PaymentMethodCredit Card (automatic)  0.147691   0.130322   1.133 0.257100    
+PaymentMethodElectronic Check         0.564349   0.118028   4.781 1.74e-06 ***
+PaymentMethodMailed Check             0.102746   0.129278   0.795 0.426747    
+Tenure                               -0.512633   0.099884  -5.132 2.86e-07 ***
+MonthlyCharge                         0.026319   0.004895   5.377 7.59e-08 ***
+Bandwidth_GB_Year                     0.004843   0.001214   3.988 6.65e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3473.4  on 7978  degrees of freedom
+AIC: 3517.4
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p>I checked for multicoliniarity using <code>vif()</code> by checking for values above 5. This model returned a few that were exceptionally high. <code>Bandwidth_GB_Year</code> was the highest with a vif value of 2656.593644. I manually removed this variable from the model and checked vif again to find that the other variables were less than 5 aside from <code>MonthlyCharge</code> whose value was 16.889045. Once these two variables were removed from the model all the vif values were under 5.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                         GVIF Df GVIF^(1/(2*Df))
+Children             4.408718  1        2.099695
+Age                  4.524717  1        2.127138
+Techie               1.073101  1        1.035906
+Contract             1.671715  2        1.137079
+InternetService     80.958271  2        2.999614
+Phone                1.009656  1        1.004816
+Multiple             3.534505  1        1.880028
+OnlineSecurity       1.966776  1        1.402418
+OnlineBackup         2.627063  1        1.620822
+DeviceProtection     2.074451  1        1.440295
+StreamingTV          9.483245  1        3.079488
+StreamingMovies      9.806014  1        3.131456
+PaperlessBilling     1.007578  1        1.003782
+PaymentMethod        1.035359  3        1.005808
+Tenure            2289.554799  1       47.849293
+MonthlyCharge       22.288658  1        4.721087
+Bandwidth_GB_Year 2656.593644  1       51.542154</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ Children + Age + Techie + Contract + InternetService + 
+    Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+    StreamingTV + StreamingMovies + PaperlessBilling + PaymentMethod + 
+    Tenure, family = "binomial", data = churn_train)
+
+Coefficients:
+                                       Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -1.488e+00  2.402e-01  -6.196 5.80e-10 ***
+Children                              5.434e-03  2.009e-02   0.270   0.7868    
+Age                                  -4.828e-05  2.095e-03  -0.023   0.9816    
+Techie1                               1.092e+00  1.142e-01   9.562  &lt; 2e-16 ***
+ContractOne year                     -3.338e+00  1.386e-01 -24.088  &lt; 2e-16 ***
+ContractTwo Year                     -3.383e+00  1.356e-01 -24.941  &lt; 2e-16 ***
+InternetServiceFiber Optic           -1.393e+00  1.014e-01 -13.739  &lt; 2e-16 ***
+InternetServiceNone                  -1.571e+00  1.239e-01 -12.681  &lt; 2e-16 ***
+Phone1                               -2.839e-01  1.436e-01  -1.977   0.0481 *  
+Multiple1                             1.645e+00  9.266e-02  17.752  &lt; 2e-16 ***
+OnlineSecurity1                      -1.180e-01  8.896e-02  -1.326   0.1848    
+OnlineBackup1                         7.720e-01  8.735e-02   8.839  &lt; 2e-16 ***
+DeviceProtection1                     3.880e-01  8.617e-02   4.503 6.69e-06 ***
+StreamingTV1                          2.951e+00  1.083e-01  27.244  &lt; 2e-16 ***
+StreamingMovies1                      3.487e+00  1.151e-01  30.291  &lt; 2e-16 ***
+PaperlessBilling1                     1.409e-01  8.675e-02   1.624   0.1044    
+PaymentMethodCredit Card (automatic)  1.278e-01  1.293e-01   0.989   0.3228    
+PaymentMethodElectronic Check         5.390e-01  1.169e-01   4.612 3.98e-06 ***
+PaymentMethodMailed Check             7.236e-02  1.284e-01   0.563   0.5731    
+Tenure                               -1.093e-01  3.042e-03 -35.931  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3562.2  on 7980  degrees of freedom
+AIC: 3602.2
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p>Lastly I needed to remove the variables from the model that were not adding any value. <code>Children</code>, <code>Age</code>, <code>PaperlessBilling1</code>, and <code>OnlineSecurity1</code> all have coefficients that were not statistically significant. The following is the reduced model.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ Techie + Contract + InternetService + Phone + 
+    Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+    StreamingMovies + PaymentMethod + Tenure, family = "binomial", 
+    data = churn_train)
+
+Coefficients:
+                                      Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -1.437885   0.201869  -7.123 1.06e-12 ***
+Techie1                               1.096542   0.114025   9.617  &lt; 2e-16 ***
+ContractOne year                     -3.332606   0.138292 -24.098  &lt; 2e-16 ***
+ContractTwo Year                     -3.378544   0.135117 -25.005  &lt; 2e-16 ***
+InternetServiceFiber Optic           -1.385958   0.101166 -13.700  &lt; 2e-16 ***
+InternetServiceNone                  -1.563533   0.123708 -12.639  &lt; 2e-16 ***
+Phone1                               -0.284447   0.143618  -1.981   0.0476 *  
+Multiple1                             1.643771   0.092539  17.763  &lt; 2e-16 ***
+OnlineBackup1                         0.771504   0.087286   8.839  &lt; 2e-16 ***
+DeviceProtection1                     0.392773   0.086052   4.564 5.01e-06 ***
+StreamingTV1                          2.942199   0.107998  27.243  &lt; 2e-16 ***
+StreamingMovies1                      3.484371   0.114978  30.305  &lt; 2e-16 ***
+PaymentMethodCredit Card (automatic)  0.125430   0.129134   0.971   0.3314    
+PaymentMethodElectronic Check         0.532863   0.116672   4.567 4.94e-06 ***
+PaymentMethodMailed Check             0.064269   0.128329   0.501   0.6165    
+Tenure                               -0.109204   0.003037 -35.953  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3566.6  on 7984  degrees of freedom
+AIC: 3598.6
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="WriteUpV1_T2_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The coefficients in the reduced model include variables whose coefficient is statistically significant at the 0.001 level. <code>Phone1</code> was kept because it showed a very minor significance, 0.1, but because of the vast number of variables that had no significance I decided to keep <code>Phone1</code>. <code>PaymentMethodCredit Card (automatic)</code> and <code>PaymentMethodMaild Check</code> were also kept in the model despite having an insignificant coefficient value. These dummy variables were retained because <code>PaymentMethod</code> is the variable and these 2 mentioned above are 2 of the levels. Because <code>PaymentMethodMailed Check</code> has a high significance at 0.001 I have decided to keep the variable <code>PaymentMethod</code> in the model.</p>
+<p><strong>E1</strong>.&nbsp;&nbsp;The AIC was used as one of the model evaluation metrics. The AIC for the initial model was <strong>3599.4</strong>, while the AIC for the reduced model was <strong>3598.6</strong>. The reduced model, having a lower AIC value, suggests that the model fits the data well while using far fewer predictors.</p>
+<p>Another metric used is a chi square test on the initial model and the reduced model. The chi square test will determine if the reduced model (simpler model) fits the data significantly worse than the initial model (complex model).</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+
+Model 1: Churn ~ Population + Area + Children + Age + Income + Marital + 
+    Gender + Outage_sec_perweek + Email + Contacts + Yearly_equip_failure + 
+    Techie + Contract + Port_modem + Tablet + InternetService + 
+    Phone + Multiple + OnlineSecurity + OnlineBackup + DeviceProtection + 
+    TechSupport + StreamingTV + StreamingMovies + PaperlessBilling + 
+    PaymentMethod + Tenure + MonthlyCharge + Bandwidth_GB_Year
+Model 2: Churn ~ Techie + Contract + InternetService + Phone + Multiple + 
+    OnlineBackup + DeviceProtection + StreamingTV + StreamingMovies + 
+    PaymentMethod + Tenure
+  Resid. Df Resid. Dev  Df Deviance  Pr(&gt;Chi)    
+1      7961     3459.5                           
+2      7984     3566.6 -23  -107.13 8.062e-13 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>The Chi-square test indicates that the reduced model has more residual degrees of freedom because it includes fewer predictors. However, the reduced model has a higher residual deviance, meaning it fits the data worse than the initial model. This is expected since eliminating predictors generally reduces the model’s ability to explain the variance in the data. The difference in deviance between the models is -147.17, which confirms that the reduced model explains less variance than the initial model. Again, this is anticipated because fewer predictors are included.</p>
+<p>The p-value for the Chi-square test is 9.088e-07, which is far smaller than the significance threshold of 0.05. This indicates that the difference in deviance between the two models is statistically significant, meaning the initial model fits the data significantly better than the reduced model.</p>
+<p>However, the AIC for the reduced model is slightly smaller than that of the initial model, suggesting that the reduced model achieves a similar predictive power. In the next section, I will provide a detailed analysis of the reduced model’s accuracy, but for now, it is worth noting that the reduced model predicts churn correctly 90.375% of the time.</p>
+<p>To summarize the comparison, while the initial model fits the data better, it is also far more complex. The reduced model, on the other hand, achieves similar predictive power (&gt;90% accuracy) with fewer predictors, demonstrating one of the benefits of simpler models: reduced data collection costs.</p>
+<p><strong>E2</strong>.&nbsp;</p>
+<p>I used the <code>predict()</code> function to predict the probabilities of churn in both the training set and the test set. If the probability is above 0.5, the <code>ifelse()</code> function assigns a ‘1’, indicating that the predicted value is ‘Churned,’ and a ‘0’ for ‘Not Churned.’</p>
+<p>I’ve included the confusion matrix for both the test set and the training set below. This confusion matrix evaluates the model’s predictions for churn and consists of true negatives, false negatives, false positives, and true positives. By adding up the accurate predictions (true negatives and true positives) and dividing by the total observations in the data set, I calculate the accuracy rate. Similarly, the misclassification rate is calculated as <code>1− 'Accuracy&nbsp;rate'</code>.</p>
+<p>For the training set (<code>churn_train</code>), the model accurately predicted churn 7,103 times out of a total of 8,000 observations, resulting in an accuracy rate of 90.375%. <code>1−0.90375=0.0965</code> Thus, the misclassification error, or the rate at which the model is incorrect, is 9.65%.</p>
+<p>For the training set (<code>churn_test</code>), the model accurately predicted churn 1765 times out of a total of 2,000 observations, resulting in an accuracy rate of 90.25%. <code>1−0.9025=0.0975</code> therefore, the misclassification error for the test set is 9.65%.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>         Actual
+Predicted    0    1
+        0 5528  418
+        1  352 1702</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Actual
+Predicted    0    1
+        0 1389  114
+        1   81  416</code></pre>
+</div>
+</div>
+<p><strong>E3</strong>.&nbsp;&nbsp;The full error-free code will be included in my submission files. It will be titled <strong><em>CodeV1T2.R</em></strong>.<br>
+&nbsp;</p>
+</section>
+<section id="part-v-data-summary-and-implications" class="level2">
+<h2 class="anchored" data-anchor-id="part-v-data-summary-and-implications"><strong>Part V: Data Summary and Implications</strong></h2>
+<p><strong>F1</strong>.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Churn ~ Techie + Contract + InternetService + Phone + 
+    Multiple + OnlineBackup + DeviceProtection + StreamingTV + 
+    StreamingMovies + PaymentMethod + Tenure, family = "binomial", 
+    data = churn_train)
+
+Coefficients:
+                                      Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                          -1.437885   0.201869  -7.123 1.06e-12 ***
+Techie1                               1.096542   0.114025   9.617  &lt; 2e-16 ***
+ContractOne year                     -3.332606   0.138292 -24.098  &lt; 2e-16 ***
+ContractTwo Year                     -3.378544   0.135117 -25.005  &lt; 2e-16 ***
+InternetServiceFiber Optic           -1.385958   0.101166 -13.700  &lt; 2e-16 ***
+InternetServiceNone                  -1.563533   0.123708 -12.639  &lt; 2e-16 ***
+Phone1                               -0.284447   0.143618  -1.981   0.0476 *  
+Multiple1                             1.643771   0.092539  17.763  &lt; 2e-16 ***
+OnlineBackup1                         0.771504   0.087286   8.839  &lt; 2e-16 ***
+DeviceProtection1                     0.392773   0.086052   4.564 5.01e-06 ***
+StreamingTV1                          2.942199   0.107998  27.243  &lt; 2e-16 ***
+StreamingMovies1                      3.484371   0.114978  30.305  &lt; 2e-16 ***
+PaymentMethodCredit Card (automatic)  0.125430   0.129134   0.971   0.3314    
+PaymentMethodElectronic Check         0.532863   0.116672   4.567 4.94e-06 ***
+PaymentMethodMailed Check             0.064269   0.128329   0.501   0.6165    
+Tenure                               -0.109204   0.003037 -35.953  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 9251.6  on 7999  degrees of freedom
+Residual deviance: 3566.6  on 7984  degrees of freedom
+AIC: 3598.6
+
+Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<p>Several variables show a strong and significant association with churn. The variable with the most notable positive association is <code>StreamingMovies1</code> having an coefficient of 3.48437, which means that, holding all other variables constant, subscribing to <code>StreamingMovies</code> (increasing the predictor variable by 1) increases the log-odds of churn by 3.48437.</p>
+<p>To convert the log odds into odds I will get the exponentiated coefficients from the reduced model. (<strong>RStudio, n.d.)</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                         (Intercept)                              Techie1 
+                          0.23742937                           2.99379451 
+                    ContractOne year                     ContractTwo Year 
+                          0.03569994                           0.03409707 
+          InternetServiceFiber Optic                  InternetServiceNone 
+                          0.25008411                           0.20939488 
+                              Phone1                            Multiple1 
+                          0.75243019                           5.17464649 
+                       OnlineBackup1                    DeviceProtection1 
+                          2.16301715                           1.48108169 
+                        StreamingTV1                     StreamingMovies1 
+                         18.95749465                          32.60192313 
+PaymentMethodCredit Card (automatic)        PaymentMethodElectronic Check 
+                          1.13363635                           1.70380247 
+           PaymentMethodMailed Check                               Tenure 
+                          1.06637888                           0.89654711 </code></pre>
+</div>
+</div>
+<p>The odds of churn are <strong>32.60</strong> times higher for customers with <code>StreamingMovies</code> services. similarly, <code>StreamingTV1</code> and <code>Multiple1</code> have 18.96 and 5.17 respectively, times higher odds of churning. Likewise, when a customer is a Techie (<code>Techie1</code>), the odds of churn are 2.993794507 times higher than non-techie customers.</p>
+<p>This model contains almost exclusively, variables whose statistical significance is 0.001. one variable has a 0.1 significance and two other dummy variables are not statistically significant but could not be removed because they are just part of a variable that does include a very statistically significant coefficient.</p>
+<p>This reduced model successfully predicts customer churn at a rate over 90%. Statistically, variables such as <code>Techie</code>, <code>Contract</code>, <code>InternetService</code>, <code>Multiple</code>, <code>StreamingTV</code>, <code>StreamingMovies</code>, and <code>Tenure</code> are highly significant, with p-values below 0.05. For instance, customers with <code>StreamingMovies1</code> or <code>StreamingTV1</code> are significantly more likely to churn, while longer contracts decreases the likelihood of churn. The model successfully reduces the number of variables making the model simpler and does not sacrafice fit or performance. Practically, these findings can offer meaningful insights since the company can accurately predict is a if a specific customer is going to churn or not.</p>
+<p>It is important to remember that correlation does not equal causation. For example, just because customers with a two year contract has far lower odds of churn as compared to a customer on the month to month contract, that does not mean that the contract length is the cause of the churn odds. There may be other factors that are not provided in the data set that are the actual cause of the lower odds.</p>
+<p><strong>F2</strong>.&nbsp;The company should focus on longer <code>contracts</code>, specifically one or two year contracts, <code>InternetServiceFiber Optic</code> and <code>phone</code> services. These variables have the greatest effect on increasing customer churn. While I can not say that any of these variables are the cause of the customer not churning, the customers who subscribe to these services have far lower odds of churning than customers who do not subscribe. It also appears that streaming services are having a detrimental effect on customer churn. The company should investigate this further by collecting survey data that captures customer satisfaction. <code>StreamingTV</code> and <code>StreamingMovies</code> are the two most detrimental services to the company and should be investigated further.<br>
+&nbsp;</p>
+</section>
+<section id="part-vi-demonstration" class="level2">
+<h2 class="anchored" data-anchor-id="part-vi-demonstration"><strong>Part VI: Demonstration</strong></h2>
+<p><strong>G1</strong>. The Panopto presentation link will be included in my submission.<br>
+&nbsp;</p>
+<p><strong>H - I&nbsp;&nbsp;Sources</strong><br>
+</p>
+<ol type="1">
+<li><p><strong>Bobbitt, Z.</strong> (2020, October 13).The 6 Assumptions of Logistic Regression (With Examples). Statology. Retrieved December 29, 2024, from https://www.statology.org/assumptions-of-logistic-regression/)</p></li>
+<li><p><strong>Ihaka, R. (n.d.).</strong> The R Project: A brief history and thoughts about the future (p.&nbsp;12). The University of Auckland. Retrieved November 17, 2024, from https://www.stat.auckland.ac.nz/~ihaka/downloads/Otago.pdf</p></li>
+<li><p><strong>Larose, C. D., &amp; Larose, D. T. (2019)</strong>. Data science using Python and R. Wiley. Retrieved from https://eds.p.ebscohost.com/eds/ebookviewer/ebook/bmxlYmtfXzIwOTEzNzFfX0FO0?sid=04ef9475-3bed 4dbe-8317-a1c5eb6da3cb@redis&amp;vid=0&amp;format=EB&amp;lpid=lp_151&amp;rid=0</p></li>
+<li><p><strong>RStudio. (n.d.)</strong>. <em>Logistic regression example</em>. RStudio. Retrieved January 5, 2025, from https://rstudio-pubs-static.s3.amazonaws.com/182726_aef0a3092d4240f3830c2a7a9546916a.html</p></li>
+</ol>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
